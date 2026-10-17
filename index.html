@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مرصد رسكورا | MARSAD RISKORA</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f8fb;
+      color: #16334a;
+    }
+    header {
+      background: white;
+      padding: 22px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      border-bottom: 1px solid #e0eaf0;
+    }
+    .logo { color: #087e70; font-size: 23px; font-weight: bold; }
+    nav a {
+      color: #34566a;
+      text-decoration: none;
+      margin: 0 8px;
+      font-size: 14px;
+    }
+    .hero {
+      padding: 75px 8%;
+      background: linear-gradient(120deg, #e1f4ef, #e8f1fb);
+      text-align: center;
+    }
+    .hero h1 { font-size: 38px; margin: 0 0 18px; }
+    .hero p {
+      color: #557080;
+      line-height: 1.9;
+      max-width: 650px;
+      margin: 0 auto 25px;
+    }
+    button {
+      background: #087e70;
+      color: white;
+      border: 0;
+      padding: 13px 22px;
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .section { padding: 40px 7%; }
+    .section h2 { text-align: center; margin-bottom: 25px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e2ebef;
+      border-radius: 15px;
+      padding: 24px;
+      box-shadow: 0 5px 18px #17384b0a;
+    }
+    .card h3 { color: #087e70; }
+    .card p { color: #617889; line-height: 1.8; }
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #668091;
+      font-size: 13px;
+    }
+    @media(max-width:600px) {
+      .hero h1 { font-size: 29px; }
+      nav { line-height: 2.4; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🌿 مرصد رسكورا</div>
+    <nav>
+      <a href="#home">الرئيسية</a>
+      <a href="#analysis">تحليل المخاطر</a>
+      <a href="#compensation">محرك التعويض</a>
+      <a href="#about">عن المشروع</a>
+      <button onclick="toggleLanguage()" id="langBtn">English</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <h1 id="heroTitle">مرصد رسكورا</h1>
+      <p id="heroDesc">منصة ذكية لتحليل مخاطر المناخ ومساعدة المختصين على دراسة حدود التعويض في التأمين البارامتري باستخدام البيانات والتحليل الرياضي.</p>
+      <button onclick="document.getElementById('analysis').scrollIntoView({behavior:'smooth'})" id="startBtn">ابدئي الاستكشاف ←</button>
+    </section>
+
+    <section class="section" id="analysis">
+      <h2 id="analysisTitle">لوحة تحليل المخاطر</h2>
+      <div class="cards">
+        <div class="card">
+          <h3 id="rainTitle">🌧️ مخاطر الأمطار</h3>
+          <p id="rainDesc">دراسة مستويات الأمطار واختبار حدودها كمؤشر محتمل للتعويض.</p>
+        </div>
+        <div class="card">
+          <h3 id="windTitle">💨 مخاطر الرياح</h3>
+          <p id="windDesc">تحليل سرعة الرياح لتقييم المخاطر المناخية المحتملة.</p>
+        </div>
+        <div class="card">
+          <h3 id="heatTitle">🌡️ درجات الحرارة</h3>
+          <p id="heatDesc">دراسة درجات الحرارة القصوى وتأثيرها المحتمل على الممتلكات.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="compensation">
+      <h2 id="calcTitle">حاسبة التعويض التجريبية</h2>
+      <div class="card">
+        <p id="calcDesc">أدخلي كمية الأمطار وحد التعويض لمعرفة نتيجة المحاكاة.</p>
+        <label id="rainLabel" for="rainfall">كمية الأمطار (ملم)</label>
+        <input id="rainfall" type="number" min="0" value="85"
+          style="display:block;padding:12px;margin:12px 0;width:100%;max-width:300px;border:1px solid #ccdbe3;border-radius:8px">
+        <label id="triggerLabel" for="trigger">حد التعويض (ملم)</label>
+        <select id="trigger"
+          style="display:block;padding:12px;margin:12px 0;width:100%;max-width:300px;border:1px solid #ccdbe3;border-radius:8px">
+          <option value="60">60 ملم</option>
+          <option value="70">70 ملم</option>
+          <option value="75">75 ملم</option>
+          <option value="80" selected>80 ملم</option>
+          <option value="85">85 ملم</option>
+          <option value="90">90 ملم</option>
+        </select>
+        <button onclick="calculate()" id="calcBtn">احسبي النتيجة</button>
+        <h3 id="result" aria-live="polite">النتيجة تظهر هنا</h3>
+        <p id="notice">هذه محاكاة تعليمية ببيانات تجريبية، وليست عرض تأمين أو قرار تعويض فعلي.</p>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="card">
+        <h2 id="aboutTitle">عن مرصد رسكورا</h2>
+        <p id="aboutDesc">يهدف المشروع إلى دراسة العلاقة بين المؤشرات المناخية وحدود التعويض، مع مراعاة حماية المستفيد وتكلفة التأمين ومخاطر عدم تطابق المؤشر مع الضرر الفعلي.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footerText">مرصد رسكورا © 2026 — نموذج أولي تجريبي</footer>
+
+  <script>
+    let english = false;
+
+    function calculate() {
+      const rainfall = Number(document.getElementById('rainfall').value);
+      const trigger = Number(document.getElementById('trigger').value);
+      const result = document.getElementById('result');
+
+      if (document.getElementById('rainfall').value === '' || rainfall < 0) {
+        result.textContent = english ? 'Enter a valid rainfall value.' : 'أدخلي كمية أمطار صحيحة.';
+        return;
+      }
+
+      if (rainfall >= trigger) {
+        result.textContent = english
+          ? 'Simulation: the trigger was reached. A payout may apply under the policy terms.'
+          : 'المحاكاة: تحقق حد التعويض، وقد ينطبق التعويض وفق شروط الوثيقة.';
+      } else {
+        result.textContent = english
+          ? 'Simulation: the trigger was not reached.'
+          : 'المحاكاة: لم يتحقق حد التعويض.';
+      }
+    }
+
+    function toggleLanguage() {
+      english = !english;
+      document.documentElement.lang = english ? 'en' : 'ar';
+      document.documentElement.dir = english ? 'ltr' : 'rtl';
+
+      const translations = {
+        heroTitle: ['مرصد رسكورا', 'MARSAD RISKORA'],
+        heroDesc: [
+          'منصة ذكية لتحليل مخاطر المناخ ومساعدة المختصين على دراسة حدود التعويض في التأمين البارامتري باستخدام البيانات والتحليل الرياضي.',
+          'A prototype platform for climate risk analysis and mathematical evaluation of parametric insurance triggers.'
+        ],
+        startBtn: ['ابدئي الاستكشاف ←', 'Explore the platform →'],
+        analysisTitle: ['لوحة تحليل المخاطر', 'Risk Analysis'],
+        rainTitle: ['🌧️ مخاطر الأمطار', '🌧️ Rainfall Risk'],
+        rainDesc: ['دراسة مستويات الأمطار واختبار حدودها كمؤشر محتمل للتعويض.', 'Study rainfall levels and test potential payout triggers.'],
+        windTitle: ['💨 مخاطر الرياح', '💨 Wind Risk'],
+        windDesc: ['تحليل سرعة الرياح لتقييم المخاطر المناخية المحتملة.', 'Analyze wind speed to assess potential climate risks.'],
+        heatTitle: ['🌡️ درجات الحرارة', '🌡️ Temperature Risk'],
+        heatDesc: ['دراسة درجات الحرارة القصوى وتأثيرها المحتمل على الممتلكات.', 'Study extreme temperatures and their potential impact on property.'],
+        calcTitle: ['حاسبة التعويض التجريبية', 'Payout Simulator'],
+        calcDesc: ['أدخلي كمية الأمطار وحد التعويض لمعرفة نتيجة المحاكاة.', 'Enter rainfall and a trigger threshold to simulate the result.'],
+        rainLabel: ['كمية الأمطار (ملم)', 'Rainfall (mm)'],
+        triggerLabel: ['حد التعويض (ملم)', 'Payout trigger (mm)'],
+        calcBtn: ['احسبي النتيجة', 'Calculate result'],
+        aboutTitle: ['عن مرصد رسكورا', 'About MARSAD RISKORA'],
+        aboutDesc: ['يهدف المشروع إلى دراسة العلاقة بين المؤشرات المناخية وحدود التعويض، مع مراعاة حماية المستفيد وتكلفة التأمين ومخاطر عدم تطابق المؤشر مع الضرر الفعلي.', 'The project studies climate indices and payout triggers while considering customer protection, insurance cost, and basis risk.'],
+        footerText: ['مرصد رسكورا © 2026 — نموذج أولي تجريبي', 'MARSAD RISKORA © 2026 — Experimental prototype']
+      };
+
+      for (const id in translations) {
+        document.getElementById(id).textContent = translations[id][english ? 1 : 0];
+      }
+      document.getElementById('langBtn').textContent = english ? 'العربية' : 'English';
+      document.getElementById('result').textContent = english ? 'Result appears here' : 'النتيجة تظهر هنا';
+      document.getElementById('notice').textContent = english
+        ? 'Educational simulation using demo data. Not an insurance offer or actual payout decision.'
+        : 'هذه محاكاة تعليمية ببيانات تجريبية، وليست عرض تأمين أو قرار تعويض فعلي.';
+    }
+  </script>
+</body>
+</html>

@@ -2,215 +2,618 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مرصد رسكورا | MARSAD RISKORA</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f8fb;
-      color: #16334a;
-    }
-    header {
-      background: white;
-      padding: 22px 7%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      border-bottom: 1px solid #e0eaf0;
-    }
-    .logo { color: #087e70; font-size: 23px; font-weight: bold; }
-    nav a {
-      color: #34566a;
-      text-decoration: none;
-      margin: 0 8px;
-      font-size: 14px;
-    }
-    .hero {
-      padding: 75px 8%;
-      background: linear-gradient(120deg, #e1f4ef, #e8f1fb);
-      text-align: center;
-    }
-    .hero h1 { font-size: 38px; margin: 0 0 18px; }
-    .hero p {
-      color: #557080;
-      line-height: 1.9;
-      max-width: 650px;
-      margin: 0 auto 25px;
-    }
-    button {
-      background: #087e70;
-      color: white;
-      border: 0;
-      padding: 13px 22px;
-      border-radius: 9px;
-      cursor: pointer;
-      font-size: 15px;
-    }
-    .section { padding: 40px 7%; }
-    .section h2 { text-align: center; margin-bottom: 25px; }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 18px;
-    }
-    .card {
-      background: white;
-      border: 1px solid #e2ebef;
-      border-radius: 15px;
-      padding: 24px;
-      box-shadow: 0 5px 18px #17384b0a;
-    }
-    .card h3 { color: #087e70; }
-    .card p { color: #617889; line-height: 1.8; }
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #668091;
-      font-size: 13px;
-    }
-    @media(max-width:600px) {
-      .hero h1 { font-size: 29px; }
-      nav { line-height: 2.4; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#073b35">
+<title>مرصد رسكورا | MARSAD RISKORA</title>
+<style>
+:root{
+  --navy:#102b3f;--green:#087f68;--deep:#073b35;
+  --mint:#e8f5ef;--bg:#f5f8f7;--white:#fff;
+  --text:#243b45;--muted:#71818a;--border:#e1eae6;
+  --gold:#d8ad5b;--shadow:0 12px 35px #12382b0b;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);
+color:var(--text);line-height:1.8}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
+outline:3px solid #5bc9ad;outline-offset:2px}
+a{color:inherit;text-decoration:none}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.eyebrow{color:var(--green);font-size:12px;font-weight:bold;letter-spacing:.5px}
+.btn{border:0;border-radius:12px;padding:11px 17px;font-weight:bold;
+display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:var(--green);color:white}
+.btn-primary:hover{background:var(--deep)}
+.btn-light{background:var(--mint);color:var(--deep)}
+.btn-outline{background:white;color:var(--green);border:1px solid #c8ded4}
+.btn-block{width:100%}
+.badge{display:inline-block;border-radius:30px;padding:4px 10px;
+font-size:11px;background:var(--mint);color:var(--green);font-weight:bold}
+.badge-gold{background:#fff3d8;color:#93691b}
+.badge-demo{background:#fff1d7;color:#8a5b0b}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:clamp(25px,4vw,39px);line-height:1.4}
+h2{font-size:23px}
+h3{font-size:16px}
+p{color:var(--muted)}
+.card{background:white;border:1px solid var(--border);border-radius:19px;
+padding:20px;box-shadow:var(--shadow)}
+.field{display:grid;gap:7px;margin-bottom:15px}
+.field label{font-size:13px;font-weight:bold}
+.field input,.field select,.field textarea{
+width:100%;padding:12px;border:1px solid var(--border);border-radius:11px;
+background:white;color:var(--text)}
+.field textarea{min-height:95px;resize:vertical}
+.brand{display:flex;align-items:center;gap:11px;font-weight:bold;color:var(--deep)}
+.brand-mark{width:45px;height:45px;border-radius:15px;
+background:linear-gradient(140deg,#0c9478,#073b35);color:white;
+display:grid;place-items:center;font-size:24px;box-shadow:0 7px 20px #087f682c}
+.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1px}
+#loginScreen{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;
+background:white}
+.login-visual{background:radial-gradient(circle at 70% 20%,#176b5a,#073b35 60%,#102b3f);
+color:white;padding:55px;display:flex;flex-direction:column;justify-content:space-between}
+.login-visual h1{font-size:42px;max-width:500px}
+.login-visual p{color:#d0e7df}
+.orbit{width:190px;height:190px;border:1px solid #8acdb3;border-radius:50%;
+display:grid;place-items:center;position:relative;margin:40px auto}
+.orbit:before,.orbit:after{content:"";position:absolute;border:1px solid #8acdb36b;
+border-radius:50%;inset:20px}
+.orbit:after{inset:43px}
+.orbit span{font-size:55px;color:#b7e4d1;z-index:1}
+.login-form{display:flex;align-items:center;justify-content:center;padding:30px}
+.login-box{width:100%;max-width:420px}
+#app{min-height:100vh}
+.topbar{height:76px;background:white;border-bottom:1px solid var(--border);
+display:flex;align-items:center;justify-content:space-between;padding:12px 26px;
+position:sticky;top:0;z-index:10}
+.top-actions{display:flex;align-items:center;gap:10px}
+.avatar{width:37px;height:37px;border-radius:50%;background:var(--mint);
+color:var(--green);display:grid;place-items:center;font-weight:bold}
+.layout{display:grid;grid-template-columns:235px minmax(0,1fr);max-width:1600px;margin:auto}
+.sidebar{padding:22px 14px;background:white;border-left:1px solid var(--border);
+min-height:calc(100vh - 76px);position:sticky;top:76px;height:calc(100vh - 76px);
+overflow:auto}
+.nav-label{font-size:10px;color:#9aa8a8;padding:15px 12px 7px}
+.nav-item{width:100%;display:flex;align-items:center;gap:12px;padding:11px 12px;
+border:0;border-radius:11px;background:transparent;color:#63747a;
+text-align:right;margin:3px 0;font-size:13px}
+.nav-item .ico{font-size:19px;width:26px;text-align:center}
+.nav-item:hover,.nav-item.active{background:var(--mint);color:var(--green);font-weight:bold}
+.side-note{margin-top:25px;padding:13px;background:#f5faf7;border-radius:13px;
+font-size:11px;color:var(--muted)}
+main{padding:28px;min-width:0}
+.page{display:none;animation:fade .2s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:.5;transform:translateY(4px)}to{opacity:1;transform:none}}
+.page-heading{display:flex;justify-content:space-between;align-items:center;
+gap:15px;margin-bottom:23px;flex-wrap:wrap}
+.page-heading h1{font-size:27px;margin:4px 0}
+.hero{border-radius:23px;padding:30px;background:linear-gradient(115deg,#073b35,#087f68);
+color:white;display:flex;align-items:center;justify-content:space-between;gap:20px;
+overflow:hidden;position:relative}
+.hero:after{content:"";position:absolute;width:230px;height:230px;border:1px solid #ffffff20;
+border-radius:50%;left:12%;top:-110px;box-shadow:0 0 0 30px #ffffff08,0 0 0 65px #ffffff05}
+.hero h1{max-width:560px;font-size:clamp(25px,3vw,36px)}
+.hero p{color:#d0e9df;max-width:540px}
+.hero-symbol{font-size:100px;opacity:.85;z-index:1}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:18px 0}
+.stat{background:white;border:1px solid var(--border);border-radius:16px;padding:17px}
+.stat-icon{font-size:23px}
+.stat strong{display:block;font-size:25px;color:var(--deep);margin:5px 0}
+.stat small{color:var(--muted);font-size:11px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;
+margin:28px 0 13px}
+.section-head h2{margin:0;font-size:19px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.tile{border:1px solid var(--border);border-radius:16px;background:white;padding:18px;
+text-align:right;transition:.2s;min-width:0}
+.tile:hover{border-color:#91cdb7;transform:translateY(-2px);box-shadow:var(--shadow)}
+.tile-icon{width:45px;height:45px;border-radius:13px;background:var(--mint);
+display:grid;place-items:center;font-size:24px;margin-bottom:12px}
+.tile h3{margin:0 0 5px}
+.tile p{font-size:12px;margin:0 0 12px}
+.arrow{color:var(--green);font-weight:bold}
+.package{position:relative}
+.package.featured{border:2px solid var(--green)}
+.price{font-size:28px;color:var(--deep);font-weight:bold;margin:15px 0}
+.price small{font-size:12px;color:var(--muted);font-weight:normal}
+ul.clean{padding-right:20px;color:var(--muted);font-size:13px}
+ul.clean li{margin:7px 0}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:13px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:normal}
+th{background:#f6faf8;color:#657a7d;font-size:12px}
+.callout{border-radius:14px;padding:15px;background:#f0f8f4;
+border-right:4px solid var(--green);font-size:13px;color:var(--text);margin:15px 0}
+.callout.warning{background:#fff8e8;border-color:var(--gold)}
+.progress{height:7px;background:#e6efeb;border-radius:9px;overflow:hidden}
+.progress span{display:block;height:100%;background:var(--green);border-radius:9px}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.step{padding:8px 12px;border-radius:20px;background:#edf3f0;color:var(--muted);font-size:12px}
+.step.active{background:var(--green);color:white}
+.checkline{display:flex;align-items:flex-start;gap:10px;font-size:13px;margin:13px 0}
+.checkline input{margin-top:6px;accent-color:var(--green)}
+.notice{padding:14px 0;border-bottom:1px solid var(--border);display:flex;gap:13px}
+.notice:last-child{border:0}
+.notice-icon{width:42px;height:42px;flex-shrink:0;border-radius:13px;
+background:var(--mint);display:grid;place-items:center;font-size:20px}
+.footer{padding:20px 0;color:var(--muted);font-size:11px;text-align:center}
+.mobile-nav{display:none}
+.toast{position:fixed;bottom:20px;left:20px;background:var(--deep);color:white;
+padding:13px 18px;border-radius:12px;box-shadow:var(--shadow);z-index:99;max-width:90vw}
+.lang-en{direction:ltr;text-align:left}
+@media(max-width:1050px){
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hero-symbol{font-size:70px}
+}
+@media(max-width:720px){
+ #loginScreen{grid-template-columns:1fr}
+ .login-visual{padding:24px;min-height:240px}
+ .login-visual h1{font-size:27px}
+ .login-visual .orbit{display:none}
+ .login-visual .login-bottom{display:none}
+ .login-form{padding:26px 20px}
+ .topbar{height:65px;padding:10px 14px}
+ .topbar .brand-mark{width:37px;height:37px}
+ .topbar .brand small{display:none}
+ .layout{display:block}
+ .sidebar{display:none}
+ main{padding:18px 13px 85px}
+ .hero{padding:23px 19px}
+ .hero-symbol{display:none}
+ .hero h1{font-size:25px}
+ .stats{gap:9px}
+ .stat{padding:13px}
+ .stat strong{font-size:22px}
+ .grid-2,.grid-3{grid-template-columns:1fr}
+ .grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .card{padding:16px}
+ .page-heading h1{font-size:23px}
+ .mobile-nav{display:flex;position:fixed;bottom:0;right:0;left:0;z-index:20;
+ background:white;border-top:1px solid var(--border);justify-content:space-around;
+ padding:8px 2px calc(8px + env(safe-area-inset-bottom))}
+ .mobile-nav button{border:0;background:none;color:var(--muted);font-size:10px;
+ display:grid;gap:2px;justify-items:center;padding:3px}
+ .mobile-nav button span{font-size:21px}
+ .mobile-nav button.active{color:var(--green);font-weight:bold}
+ .section-head{margin-top:22px}
+}
+</style>
 </head>
 <body>
-  <header>
-    <div class="logo">🌿 مرصد رسكورا</div>
-    <nav>
-      <a href="#home">الرئيسية</a>
-      <a href="#analysis">تحليل المخاطر</a>
-      <a href="#compensation">محرك التعويض</a>
-      <a href="#about">عن المشروع</a>
-      <button onclick="toggleLanguage()" id="langBtn">English</button>
-    </nav>
-  </header>
 
-  <main>
-    <section class="hero" id="home">
-      <h1 id="heroTitle">مرصد رسكورا</h1>
-      <p id="heroDesc">منصة ذكية لتحليل مخاطر المناخ ومساعدة المختصين على دراسة حدود التعويض في التأمين البارامتري باستخدام البيانات والتحليل الرياضي.</p>
-      <button onclick="document.getElementById('analysis').scrollIntoView({behavior:'smooth'})" id="startBtn">ابدئي الاستكشاف ←</button>
-    </section>
-
-    <section class="section" id="analysis">
-      <h2 id="analysisTitle">لوحة تحليل المخاطر</h2>
-      <div class="cards">
-        <div class="card">
-          <h3 id="rainTitle">🌧️ مخاطر الأمطار</h3>
-          <p id="rainDesc">دراسة مستويات الأمطار واختبار حدودها كمؤشر محتمل للتعويض.</p>
-        </div>
-        <div class="card">
-          <h3 id="windTitle">💨 مخاطر الرياح</h3>
-          <p id="windDesc">تحليل سرعة الرياح لتقييم المخاطر المناخية المحتملة.</p>
-        </div>
-        <div class="card">
-          <h3 id="heatTitle">🌡️ درجات الحرارة</h3>
-          <p id="heatDesc">دراسة درجات الحرارة القصوى وتأثيرها المحتمل على الممتلكات.</p>
-        </div>
+<!-- تسجيل دخول تجريبي -->
+<section id="loginScreen">
+  <div class="login-visual">
+    <div class="brand" style="color:white">
+      <div class="brand-mark">⌁</div>
+      <div>مرصد رسكورا<small style="color:#c7e2d7">MARSAD RISKORA</small></div>
+    </div>
+    <div>
+      <span class="badge" style="background:#ffffff20;color:#d6f3e6">منصة تجريبية</span>
+      <h1>حماية أذكى، مبنية على البيانات.</h1>
+      <p>نموذج أولي لاستكشاف التأمين البارامتري وتحليل مؤشرات المخاطر المناخية في المملكة العربية السعودية.</p>
+      <div class="orbit"><span>⌁</span></div>
+    </div>
+    <div class="login-bottom small">نقرأ المؤشرات المناخية، ونستكشف خيارات الحماية.</div>
+  </div>
+  <div class="login-form">
+    <div class="login-box">
+      <div class="brand" style="margin-bottom:35px">
+        <div class="brand-mark">⌁</div>
+        <div>مرصد رسكورا<small>MARSAD RISKORA</small></div>
       </div>
-    </section>
+      <span class="eyebrow">أهلًا بك من جديد</span>
+      <h1 style="font-size:29px;margin:7px 0">ابدئي رحلتك بثقة</h1>
+      <p>سجّلي الدخول لاستكشاف المنصة التجريبية.</p>
+      <form id="loginForm">
+        <div class="field"><label for="loginEmail">البريد الإلكتروني</label>
+          <input id="loginEmail" type="email" placeholder="name@example.com" required></div>
+        <div class="field"><label for="loginName">الاسم</label>
+          <input id="loginName" type="text" placeholder="اكتبي اسمك" required></div>
+        <button class="btn btn-primary btn-block" type="submit">دخول إلى المنصة ←</button>
+      </form>
+      <p class="small" style="margin-top:18px">هذا تسجيل تجريبي فقط؛ لا يتم إنشاء حساب حقيقي أو التحقق من الهوية.</p>
+      <div class="footer">© مرصد رسكورا — نموذج أولي</div>
+    </div>
+  </div>
+</section>
 
-    <section class="section" id="compensation">
-      <h2 id="calcTitle">حاسبة التعويض التجريبية</h2>
-      <div class="card">
-        <p id="calcDesc">أدخلي كمية الأمطار وحد التعويض لمعرفة نتيجة المحاكاة.</p>
-        <label id="rainLabel" for="rainfall">كمية الأمطار (ملم)</label>
-        <input id="rainfall" type="number" min="0" value="85"
-          style="display:block;padding:12px;margin:12px 0;width:100%;max-width:300px;border:1px solid #ccdbe3;border-radius:8px">
-        <label id="triggerLabel" for="trigger">حد التعويض (ملم)</label>
-        <select id="trigger"
-          style="display:block;padding:12px;margin:12px 0;width:100%;max-width:300px;border:1px solid #ccdbe3;border-radius:8px">
-          <option value="60">60 ملم</option>
-          <option value="70">70 ملم</option>
-          <option value="75">75 ملم</option>
-          <option value="80" selected>80 ملم</option>
-          <option value="85">85 ملم</option>
-          <option value="90">90 ملم</option>
-        </select>
-        <button onclick="calculate()" id="calcBtn">احسبي النتيجة</button>
-        <h3 id="result" aria-live="polite">النتيجة تظهر هنا</h3>
-        <p id="notice">هذه محاكاة تعليمية ببيانات تجريبية، وليست عرض تأمين أو قرار تعويض فعلي.</p>
+<!-- التطبيق -->
+<div id="app" class="hidden">
+<header class="topbar">
+  <a href="#" class="brand" onclick="go('home');return false">
+    <div class="brand-mark">⌁</div>
+    <div>مرصد رسكورا<small>MARSAD RISKORA</small></div>
+  </a>
+  <div class="top-actions">
+    <button class="btn btn-light" onclick="go('notifications')" aria-label="الإشعارات">♧</button>
+    <button class="btn btn-outline" onclick="toggleLang()" id="langButton">EN</button>
+    <div class="avatar" id="avatar">م</div>
+  </div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="nav-label">القائمة الرئيسية</div>
+  <button class="nav-item active" data-page="home" onclick="go('home')"><span class="ico">⌂</span>الرئيسية</button>
+  <button class="nav-item" data-page="regions" onclick="go('regions')"><span class="ico">⌖</span>مناطق المملكة</button>
+  <button class="nav-item" data-page="hazards" onclick="go('hazards')"><span class="ico">☁</span>المخاطر المناخية</button>
+  <button class="nav-item" data-page="packages" onclick="go('packages')"><span class="ico">▤</span>باقات الحماية</button>
+  <button class="nav-item" data-page="coverage" onclick="go('coverage')"><span class="ico">◇</span>تغطياتي</button>
+  <div class="nav-label">خدماتك</div>
+  <button class="nav-item" data-page="onboarding" onclick="go('onboarding')"><span class="ico">♙</span>بيانات العميل</button>
+  <button class="nav-item" data-page="documents" onclick="go('documents')"><span class="ico">▧</span>الوثائق والشروط</button>
+  <button class="nav-item" data-page="claims" onclick="go('claims')"><span class="ico">↗</span>المطالبات</button>
+  <button class="nav-item" data-page="notifications" onclick="go('notifications')"><span class="ico">♧</span>الإشعارات</button>
+  <button class="nav-item" data-page="support" onclick="go('support')"><span class="ico">☏</span>الدعم والمساعدة</button>
+  <div class="nav-label">الحساب</div>
+  <button class="nav-item" data-page="settings" onclick="go('settings')"><span class="ico">⚙</span>الإعدادات</button>
+  <button class="nav-item" onclick="logout()"><span class="ico">↪</span>تسجيل الخروج</button>
+  <div class="side-note">ⓘ منصة استكشافية. لا تمثل وثيقة تأمين فعلية أو عرضًا ملزمًا.</div>
+</aside>
+
+<main>
+<!-- الرئيسية -->
+<section class="page active" id="page-home">
+  <div class="hero">
+    <div>
+      <span class="badge" style="background:#ffffff20;color:#d5f2e4">مرحبًا <span id="welcomeName">بك</span></span>
+      <h1>نفهم الخطر، لنستكشف حماية أفضل.</h1>
+      <p>تعرّفي على التأمين البارامتري، واستكشفي مؤشرات الطقس وباقات الحماية الافتراضية.</p>
+      <button class="btn" style="background:white;color:var(--deep)" onclick="go('hazards')">استكشاف المخاطر ←</button>
+    </div>
+    <div class="hero-symbol">⌁</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><span class="stat-icon">⌖</span><strong>13</strong><small>منطقة إدارية بالمملكة</small></div>
+    <div class="stat"><span class="stat-icon">☁</span><strong>6+</strong><small>فئات مخاطر للاستكشاف</small></div>
+    <div class="stat"><span class="stat-icon">▤</span><strong>3</strong><small>باقات افتراضية</small></div>
+    <div class="stat"><span class="stat-icon">⌁</span><strong>24/7</strong><small>استكشاف المنصة</small></div>
+  </div>
+  <div class="section-head"><h2>ابدئي من هنا</h2><span class="muted small">اختاري الخدمة</span></div>
+  <div class="grid-3">
+    <button class="tile" onclick="go('regions')"><div class="tile-icon">⌖</div><h3>اختيار المنطقة</h3><p>استكشفي المناطق الإدارية في المملكة.</p><span class="arrow">عرض المناطق ←</span></button>
+    <button class="tile" onclick="go('hazards')"><div class="tile-icon">☁</div><h3>تحديد الخطر</h3><p>تعرّفي على مؤشرات الأمطار والحرارة والرياح وغيرها.</p><span class="arrow">عرض المخاطر ←</span></button>
+    <button class="tile" onclick="go('packages')"><div class="tile-icon">▤</div><h3>باقات الحماية</h3><p>قارني التغطيات الافتراضية وشروطها.</p><span class="arrow">مقارنة الباقات ←</span></button>
+  </div>
+  <div class="section-head"><h2>كيف يعمل التأمين البارامتري؟</h2></div>
+  <div class="grid-3">
+    <div class="card"><div class="tile-icon">01</div><h3>تحديد المؤشر</h3><p>مثل كمية الأمطار أو سرعة الرياح، وفق تعريف الوثيقة.</p></div>
+    <div class="card"><div class="tile-icon">02</div><h3>مقارنة العتبة</h3><p>تتم مقارنة المؤشر المسجل بحد محدد مسبقًا في العقد.</p></div>
+    <div class="card"><div class="tile-icon">03</div><h3>تقييم الاستحقاق</h3><p>يُحدد الاستحقاق وفق شروط الوثيقة وآلية التحقق المعتمدة.</p></div>
+  </div>
+  <div class="callout warning">مهم: البيانات والأسعار والتغطيات هنا توضيحية فقط. لا توجد تغطية تأمينية فعلية أو مطالبة أو دفعة مالية حقيقية.</div>
+</section>
+
+<!-- المناطق -->
+<section class="page" id="page-regions">
+  <div class="page-heading"><div><span class="eyebrow">التغطية الجغرافية</span><h1>مناطق المملكة</h1><p>اختاري المنطقة التي ترغبين في استكشاف مخاطرها.</p></div><span class="badge">13 منطقة إدارية</span></div>
+  <div class="field"><label for="regionSearch">ابحثي عن منطقة</label><input id="regionSearch" placeholder="مثال: تبوك، الرياض..." oninput="filterRegions()"></div>
+  <div class="grid-3" id="regionsGrid"></div>
+  <div class="callout">وجود المنطقة في القائمة لا يعني توافر منتج تأميني فيها. يلزم التحقق من البيانات والمنتج المرخص وتوافر التغطية.</div>
+</section>
+
+<!-- المخاطر -->
+<section class="page" id="page-hazards">
+  <div class="page-heading"><div><span class="eyebrow">تحليل المخاطر</span><h1>المخاطر المناخية والطبيعية</h1><p>استكشفي أنواع المخاطر والمؤشرات المحتملة لكل منها.</p></div></div>
+  <div class="grid-3">
+    <button class="tile" onclick="selectHazard('الأمطار الغزيرة والسيول','☔','كمية الأمطار بالملليمتر خلال فترة زمنية محددة.')"><div class="tile-icon">☔</div><h3>الأمطار الغزيرة والسيول</h3><p>مؤشر محتمل: كمية الأمطار ومدة الهطول.</p><span class="arrow">التفاصيل ←</span></button>
+    <button class="tile" onclick="selectHazard('الرياح الشديدة','🌬️','سرعة الرياح وهباتها خلال مدة محددة.')"><div class="tile-icon">🌬️</div><h3>الرياح الشديدة</h3><p>مؤشر محتمل: سرعة الرياح وهباتها.</p><span class="arrow">التفاصيل ←</span></button>
+    <button class="tile" onclick="selectHazard('العواصف الترابية','🌫️','سرعة الرياح ومدى الرؤية أو مؤشر الغبار المتاح.')"><div class="tile-icon">🌫️</div><h3>العواصف الترابية</h3><p>مؤشر محتمل: الغبار والرؤية وسرعة الرياح.</p><span class="arrow">التفاصيل ←</span></button>
+    <button class="tile" onclick="selectHazard('الحرارة الشديدة','☀️','درجة الحرارة القصوى ومدة تجاوز العتبة.')"><div class="tile-icon">☀️</div><h3>الحرارة الشديدة</h3><p>مؤشر محتمل: درجات الحرارة القصوى.</p><span class="arrow">التفاصيل ←</span></button>
+    <button class="tile" onclick="selectHazard('البرد والصقيع','❄️','درجة الحرارة الدنيا ومدة استمرار البرودة.')"><div class="tile-icon">❄️</div><h3>البرد والصقيع</h3><p>مؤشر محتمل: درجة الحرارة الدنيا.</p><span class="arrow">التفاصيل ←</span></button>
+    <button class="tile" onclick="selectHazard('الجفاف','🌵','مؤشرات هطول الأمطار والعجز المطري خلال فترة.')"><div class="tile-icon">🌵</div><h3>الجفاف</h3><p>مؤشر محتمل: العجز المطري ومؤشرات الجفاف.</p><span class="arrow">التفاصيل ←</span></button>
+    <button class="tile" onclick="selectHazard('البَرَد','🧊','عدد مرات حدوث البرد أو حجم الحبات وفق البيانات المتاحة.')"><div class="tile-icon">🧊</div><h3>البَرَد</h3><p>مؤشر محتمل: رصد حوادث البرد وحجمها.</p><span class="arrow">التفاصيل ←</span></button>
+    <button class="tile" onclick="selectHazard('الحرائق','🔥','مؤشرات الطقس أو مؤشر خطر الحريق الذي تحدده الوثيقة.')"><div class="tile-icon">🔥</div><h3>حرائق الغطاء النباتي</h3><p>مؤشر محتمل: مؤشر خطر الحريق والظروف الجوية.</p><span class="arrow">التفاصيل ←</span></button>
+    <button class="tile" onclick="selectHazard('الزلازل والانهيارات','⛰️','يتطلب مؤشرًا فنيًا موثوقًا وتعريفًا واضحًا للحدث.')"><div class="tile-icon">⛰️</div><h3>الزلازل والانهيارات</h3><p>مخاطر طبيعية تتطلب دراسة مستقلة للمؤشر.</p><span class="arrow">التفاصيل ←</span></button>
+  </div>
+  <div class="section-head"><h2>تفاصيل الخطر المختار</h2></div>
+  <div class="card" id="hazardDetails"><p>اختاري أي خطر أعلاه لعرض المؤشر المحتمل.</p></div>
+</section>
+
+<!-- الباقات -->
+<section class="page" id="page-packages">
+  <div class="page-heading"><div><span class="eyebrow">خيارات توضيحية</span><h1>باقات الحماية</h1><p>قارني النماذج الافتراضية قبل الانتقال إلى تفاصيل الشروط.</p></div><span class="badge badge-demo">ليست عروض أسعار فعلية</span></div>
+  <div class="grid-3">
+    <div class="card package">
+      <span class="badge">أساسية</span><h2 style="margin-top:15px">حماية البداية</h2><p>نموذج تغطية مبسط لمؤشر واحد.</p>
+      <div class="price">تجريبي <small>السعر غير محدد</small></div>
+      <ul class="clean"><li>اختيار خطر واحد</li><li>مؤشر وعتبة محددان بالعقد</li><li>ملخص للشروط والاستثناءات</li></ul>
+      <button class="btn btn-outline btn-block" onclick="choosePackage('حماية البداية')">استكشاف الباقة</button>
+    </div>
+    <div class="card package featured">
+      <span class="badge">متوازنة</span><h2 style="margin-top:15px">الحماية المتوازنة</h2><p>نموذج يجمع أكثر من عنصر وفق شروط محددة.</p>
+      <div class="price">تجريبي <small>السعر غير محدد</small></div>
+      <ul class="clean"><li>خيارات مخاطر متعددة حسب المنتج</li><li>مؤشرات وعتبات محددة مسبقًا</li><li>مراجعة نطاق التغطية</li></ul>
+      <button class="btn btn-primary btn-block" onclick="choosePackage('الحماية المتوازنة')">استكشاف الباقة</button>
+    </div>
+    <div class="card package">
+      <span class="badge">للمنشآت</span><h2 style="margin-top:15px">حماية الأعمال</h2><p>نموذج استكشافي لاحتياجات المنشآت.</p>
+      <div class="price">تجريبي <small>السعر غير محدد</small></div>
+      <ul class="clean"><li>بيانات المنشأة والأصل</li><li>تقييم متطلبات المستندات</li><li>مراجعة نطاق المخاطر</li></ul>
+      <button class="btn btn-outline btn-block" onclick="choosePackage('حماية الأعمال')">استكشاف الباقة</button>
+    </div>
+  </div>
+  <div class="callout warning">لا تمثل هذه الباقات منتجات تأمينية معتمدة. لا توجد أقساط أو مبالغ تعويض حقيقية، ويجب اعتماد السعر والمنافع والاستثناءات من جهة تأمين مرخصة قبل تقديم أي عرض.</div>
+</section>
+
+<!-- بيانات العميل -->
+<section class="page" id="page-onboarding">
+  <div class="page-heading"><div><span class="eyebrow">ملف العميل</span><h1>بيانات العميل</h1><p>نموذج تجريبي لمعرفة المعلومات المطلوبة عند طلب تغطية.</p></div></div>
+  <div class="card">
+    <div class="steps"><span class="step active">1. البيانات</span><span class="step">2. الخطر</span><span class="step">3. المراجعة</span></div>
+    <form id="customerForm">
+      <div class="grid-2">
+        <div class="field"><label for="customerType">نوع العميل</label><select id="customerType"><option>فرد</option><option>منشأة</option></select></div>
+        <div class="field"><label for="customerFullName">الاسم أو اسم المنشأة</label><input id="customerFullName" required placeholder="الاسم الكامل"></div>
+        <div class="field"><label for="customerEmail">البريد الإلكتروني</label><input id="customerEmail" type="email" required placeholder="name@example.com"></div>
+        <div class="field"><label for="customerRegion">المنطقة</label><select id="customerRegion" required></select></div>
+        <div class="field"><label for="assetType">نوع الأصل</label><select id="assetType"><option>منزل</option><option>مزرعة</option><option>منشأة تجارية</option><option>مستودع</option><option>أصل آخر</option></select></div>
+        <div class="field"><label for="customerHazard">الخطر المطلوب دراسته</label><select id="customerHazard"><option>الأمطار الغزيرة والسيول</option><option>الرياح الشديدة</option><option>العواصف الترابية</option><option>الحرارة الشديدة</option><option>البرد والصقيع</option><option>الجفاف</option><option>البَرَد</option><option>حرائق الغطاء النباتي</option><option>الزلازل والانهيارات</option></select></div>
       </div>
-    </section>
+      <div class="field"><label for="assetDescription">وصف الأصل أو الاحتياج</label><textarea id="assetDescription" placeholder="اكتبي وصفًا عامًا دون معلومات حساسة"></textarea></div>
+      <label class="checkline"><input type="checkbox" required><span>أوافق على استخدام هذه البيانات داخل هذا النموذج التجريبي فقط.</span></label>
+      <button class="btn btn-primary" type="submit">حفظ تجريبي للبيانات</button>
+    </form>
+    <div id="customerResult" class="callout hidden"></div>
+  </div>
+  <div class="callout warning">لا تدخلي رقم الهوية أو بيانات بنكية أو معلومات شخصية حساسة. هذا النموذج لا يحفظ البيانات على خادم ولا ينشئ طلب تأمين فعليًا.</div>
+</section>
 
-    <section class="section" id="about">
-      <div class="card">
-        <h2 id="aboutTitle">عن مرصد رسكورا</h2>
-        <p id="aboutDesc">يهدف المشروع إلى دراسة العلاقة بين المؤشرات المناخية وحدود التعويض، مع مراعاة حماية المستفيد وتكلفة التأمين ومخاطر عدم تطابق المؤشر مع الضرر الفعلي.</p>
-      </div>
-    </section>
-  </main>
+<!-- الوثائق والشروط -->
+<section class="page" id="page-documents">
+  <div class="page-heading"><div><span class="eyebrow">الشفافية والالتزام</span><h1>الوثائق والشروط</h1><p>اقرئي التفاصيل قبل اتخاذ أي قرار تأميني.</p></div></div>
+  <div class="grid-2">
+    <div class="card"><div class="tile-icon">▤</div><h3>ملخص وثيقة التأمين</h3><p>يجب أن توضح الوثيقة الفعلية الأطراف المؤمن لهم، والأصل المؤمن عليه، والخطر المغطى، ومدة التغطية، والمؤشر المعتمد، ومصدر البيانات، والعتبة، وآلية التعويض.</p></div>
+    <div class="card"><div class="tile-icon">✓</div><h3>شروط الاستحقاق</h3><p>يُحدد الاستحقاق وفق تحقق المؤشر المتفق عليه، والفترة والموقع المحددين، وآلية التحقق، وبقية شروط الوثيقة واستثناءاتها.</p></div>
+    <div class="card"><div class="tile-icon">!</div><h3>الاستثناءات والقيود</h3><p>يجب ذكر المخاطر غير المغطاة، والقيود الجغرافية والزمنية، وحدود المنافع، والاستثناءات، وأي شروط إضافية بوضوح قبل التعاقد.</p></div>
+    <div class="card"><div class="tile-icon">⌁</div><h3>مخاطر عدم تطابق المؤشر</h3><p>قد يحدث ضرر فعلي دون بلوغ العتبة المتفق عليها، أو يتحقق المؤشر دون أن يعكس الضرر الفعلي. يُعرف ذلك بمخاطر الأساس.</p></div>
+  </div>
+  <div class="section-head"><h2>سياسة الاستخدام</h2></div>
+  <div class="card">
+    <h3>1. طبيعة المنصة</h3><p>مرصد رسكورا نموذج أولي للتعريف بالتأمين البارامتري واستكشاف مؤشرات المخاطر. لا يمثل وسيطًا أو شركة تأمين ولا يقدم عرضًا ملزمًا.</p>
+    <h3>2. دقة البيانات</h3><p>المعلومات المعروضة توضيحية ما لم يذكر مصدر موثوق وتاريخ البيانات بوضوح. لا يعتمد عليها وحدها في قرارات مالية أو تأمينية.</p>
+    <h3>3. التغطية والتعويض</h3><p>لا تنشأ تغطية فعلية بمجرد اختيار باقة أو إدخال بيانات. يتطلب التأمين الحقيقي وثيقة معتمدة وشروطًا واضحة وإجراءات التعاقد النظامية.</p>
+    <h3>4. الاستخدام المسؤول</h3><p>يُمنع استخدام المنصة لتقديم معلومات مضللة أو الادعاء بوجود تأمين أو تعويض لم يتم اعتماده.</p>
+  </div>
+  <div class="section-head"><h2>سياسة الخصوصية</h2></div>
+  <div class="card">
+    <h3>البيانات المدخلة</h3><p>النموذج الحالي يعمل في المتصفح، ولا يرسل بيانات العميل إلى خادم أو قاعدة بيانات. قد تبقى البيانات ظاهرة مؤقتًا في الصفحة أثناء استخدامها.</p>
+    <h3>البيانات الحساسة</h3><p>لا تدخلي أرقام الهوية أو الحسابات البنكية أو كلمات المرور الحقيقية أو المستندات السرية في هذا النموذج.</p>
+    <h3>قبل الإطلاق الفعلي</h3><p>يجب إعداد سياسة خصوصية قانونية توضح أغراض المعالجة، والأساس النظامي، ومدة الاحتفاظ، والمشاركة، وحقوق أصحاب البيانات، ووسيلة التواصل، وفق الأنظمة السعودية ذات الصلة.</p>
+  </div>
+  <div class="section-head"><h2>مستندات قد تُطلب في منتج حقيقي</h2></div>
+  <div class="card">
+    <ul class="clean"><li>بيانات العميل والتحقق من الهوية عند الحاجة.</li><li>إثبات ملكية الأصل أو المصلحة التأمينية بحسب المنتج.</li><li>عنوان الأصل وموقعه وبياناته الأساسية.</li><li>بيانات المنشأة وتفويض ممثلها إذا كان العميل منشأة.</li><li>موافقات وإفصاحات ومستندات إضافية حسب نوع التغطية.</li></ul>
+    <div class="callout warning">هذه أمثلة عامة وليست قائمة إلزامية موحدة. المتطلبات الفعلية تحددها شركة التأمين والمنتج والأنظمة المعمول بها. لا ترفعي مستندات حقيقية هنا.</div>
+  </div>
+</section>
 
-  <footer id="footerText">مرصد رسكورا © 2026 — نموذج أولي تجريبي</footer>
+<!-- تغطياتي -->
+<section class="page" id="page-coverage">
+  <div class="page-heading"><div><span class="eyebrow">ملفك</span><h1>تغطياتي</h1><p>تابعي اختياراتك داخل النموذج التجريبي.</p></div><button class="btn btn-primary" onclick="go('packages')">استكشاف الباقات +</button></div>
+  <div class="card" id="coverageContent"><div class="tile-icon">▤</div><h3>لا توجد تغطيات تجريبية مختارة</h3><p>اختاري باقة من صفحة باقات الحماية لاستعراض تفاصيلها هنا.</p><button class="btn btn-outline" onclick="go('packages')">عرض الباقات</button></div>
+</section>
 
-  <script>
-    let english = false;
+<!-- المطالبات -->
+<section class="page" id="page-claims">
+  <div class="page-heading"><div><span class="eyebrow">متابعة الطلبات</span><h1>المطالبات</h1><p>تعرّفي على الخطوات العامة للمطالبة في نموذج التأمين البارامتري.</p></div></div>
+  <div class="callout warning">لا يمكن تقديم مطالبة فعلية من هذه الصفحة. يلزم وجود وثيقة حقيقية وقناة مطالبات رسمية لدى شركة التأمين.</div>
+  <div class="grid-3">
+    <div class="card"><div class="tile-icon">01</div><h3>تحديد الحدث</h3><p>تحديد الموقع والفترة الزمنية والخطر ذي الصلة.</p></div>
+    <div class="card"><div class="tile-icon">02</div><h3>التحقق من المؤشر</h3><p>مراجعة مصدر البيانات وآلية قياس المؤشر المتفق عليها في الوثيقة.</p></div>
+    <div class="card"><div class="tile-icon">03</div><h3>مراجعة الاستحقاق</h3><p>تطبيق شروط الوثيقة والتحقق من الاستثناءات والمبلغ المستحق إن وجد.</p></div>
+  </div>
+  <div class="section-head"><h2>تجربة محاكاة المؤشر</h2></div>
+  <div class="card">
+    <p>مثال رياضي للتوضيح فقط، وليس لتحديد تعويض مستحق.</p>
+    <div class="grid-2">
+      <div class="field"><label for="rainfall">كمية الأمطار الافتراضية (ملم)</label><input id="rainfall" type="number" min="0" value="75"></div>
+      <div class="field"><label for="trigger">العتبة الافتراضية (ملم)</label><select id="trigger"><option value="60">60 ملم</option><option value="70">70 ملم</option><option value="75" selected>75 ملم</option><option value="80">80 ملم</option><option value="85">85 ملم</option><option value="90">90 ملم</option></select></div>
+    </div>
+    <button class="btn btn-primary" onclick="simulate()">مقارنة المؤشر</button>
+    <div id="simulationResult" class="callout hidden" aria-live="polite"></div>
+  </div>
+</section>
 
-    function calculate() {
-      const rainfall = Number(document.getElementById('rainfall').value);
-      const trigger = Number(document.getElementById('trigger').value);
-      const result = document.getElementById('result');
+<!-- الإشعارات -->
+<section class="page" id="page-notifications">
+  <div class="page-heading"><div><span class="eyebrow">ابقَي على اطلاع</span><h1>الإشعارات</h1><p>رسائل توضيحية داخل النموذج.</p></div></div>
+  <div class="card">
+    <div class="notice"><div class="notice-icon">⌁</div><div><strong>مرحبًا بك في مرصد رسكورا</strong><p class="small">استكشفي المنصة التجريبية ومؤشرات المخاطر.</p><span class="muted small">رسالة ترحيبية</span></div></div>
+    <div class="notice"><div class="notice-icon">▤</div><div><strong>راجعي شروط الباقة</strong><p class="small">في أي منتج حقيقي، اقرئي حدود التغطية والاستثناءات قبل التعاقد.</p><span class="muted small">تذكير توعوي</span></div></div>
+    <div class="notice"><div class="notice-icon">☁</div><div><strong>المؤشر ليس قياسًا كاملًا للضرر</strong><p class="small">قد تنشأ مخاطر أساس عندما لا يعكس المؤشر الضرر الفعلي.</p><span class="muted small">معلومة تعليمية</span></div></div>
+  </div>
+</section>
 
-      if (document.getElementById('rainfall').value === '' || rainfall < 0) {
-        result.textContent = english ? 'Enter a valid rainfall value.' : 'أدخلي كمية أمطار صحيحة.';
-        return;
-      }
+<!-- الدعم -->
+<section class="page" id="page-support">
+  <div class="page-heading"><div><span class="eyebrow">نحن هنا للمساعدة</span><h1>الدعم والمساعدة</h1><p>أسئلة شائعة حول التأمين البارامتري والمنصة.</p></div></div>
+  <div class="card">
+    <h3>ما التأمين البارامتري؟</h3><p>تغطية تعتمد على تحقق مؤشر محدد مسبقًا، مثل كمية الأمطار أو سرعة الرياح، وفق شروط الوثيقة.</p>
+    <h3>هل الباقات المعروضة متاحة للشراء؟</h3><p>لا، هي أمثلة تصميمية فقط وليست عروضًا تأمينية فعلية.</p>
+    <h3>هل توجد دفعة أو تعويض حقيقي؟</h3><p>لا، لا توجد خدمة دفع أو صرف تعويض في هذه النسخة.</p>
+    <h3>هل جميع الأخطار قابلة للتأمين؟</h3><p>ليس بالضرورة؛ يعتمد ذلك على المنتج المعتمد، وتقييم الخطر، والبيانات المتاحة، وشروط الجهة المؤمنة.</p>
+  </div>
+  <div class="section-head"><h2>أرسلي ملاحظة تجريبية</h2></div>
+  <div class="card">
+    <form id="supportForm">
+      <div class="field"><label for="supportTopic">موضوع الرسالة</label><select id="supportTopic"><option>استفسار عن المنصة</option><option>المخاطر والمؤشرات</option><option>الباقات والوثائق</option><option>ملاحظة أو اقتراح</option></select></div>
+      <div class="field"><label for="supportMessage">الرسالة</label><textarea id="supportMessage" required placeholder="اكتبي استفسارك دون معلومات حساسة"></textarea></div>
+      <button class="btn btn-primary" type="submit">عرض الرسالة التجريبية</button>
+    </form>
+  </div>
+</section>
 
-      if (rainfall >= trigger) {
-        result.textContent = english
-          ? 'Simulation: the trigger was reached. A payout may apply under the policy terms.'
-          : 'المحاكاة: تحقق حد التعويض، وقد ينطبق التعويض وفق شروط الوثيقة.';
-      } else {
-        result.textContent = english
-          ? 'Simulation: the trigger was not reached.'
-          : 'المحاكاة: لم يتحقق حد التعويض.';
-      }
-    }
+<!-- الإعدادات -->
+<section class="page" id="page-settings">
+  <div class="page-heading"><div><span class="eyebrow">تفضيلاتك</span><h1>الإعدادات</h1><p>خصّصي تجربة استخدام النموذج.</p></div></div>
+  <div class="card">
+    <h3>الحساب التجريبي</h3>
+    <div class="field"><label for="settingsName">الاسم المعروض</label><input id="settingsName" placeholder="اسم المستخدم"></div>
+    <button class="btn btn-primary" onclick="saveName()">تحديث الاسم</button>
+    <hr style="border:0;border-top:1px solid var(--border);margin:25px 0">
+    <h3>اللغة</h3><p>التبديل يغيّر اتجاه الواجهة والعبارات الأساسية المتاحة.</p>
+    <button class="btn btn-outline" onclick="toggleLang()">تغيير اللغة / Change language</button>
+    <hr style="border:0;border-top:1px solid var(--border);margin:25px 0">
+    <h3>الخصوصية</h3><p>تسجيل الدخول هنا تجريبي، ولا يوجد نظام حسابات حقيقي.</p>
+    <button class="btn btn-outline" onclick="logout()">تسجيل الخروج</button>
+  </div>
+</section>
 
-    function toggleLanguage() {
-      english = !english;
-      document.documentElement.lang = english ? 'en' : 'ar';
-      document.documentElement.dir = english ? 'ltr' : 'rtl';
+<div class="footer">مرصد رسكورا © — نموذج أولي توضيحي | لا يمثل عرضًا أو وثيقة تأمين فعلية.</div>
+</main>
+</div>
 
-      const translations = {
-        heroTitle: ['مرصد رسكورا', 'MARSAD RISKORA'],
-        heroDesc: [
-          'منصة ذكية لتحليل مخاطر المناخ ومساعدة المختصين على دراسة حدود التعويض في التأمين البارامتري باستخدام البيانات والتحليل الرياضي.',
-          'A prototype platform for climate risk analysis and mathematical evaluation of parametric insurance triggers.'
-        ],
-        startBtn: ['ابدئي الاستكشاف ←', 'Explore the platform →'],
-        analysisTitle: ['لوحة تحليل المخاطر', 'Risk Analysis'],
-        rainTitle: ['🌧️ مخاطر الأمطار', '🌧️ Rainfall Risk'],
-        rainDesc: ['دراسة مستويات الأمطار واختبار حدودها كمؤشر محتمل للتعويض.', 'Study rainfall levels and test potential payout triggers.'],
-        windTitle: ['💨 مخاطر الرياح', '💨 Wind Risk'],
-        windDesc: ['تحليل سرعة الرياح لتقييم المخاطر المناخية المحتملة.', 'Analyze wind speed to assess potential climate risks.'],
-        heatTitle: ['🌡️ درجات الحرارة', '🌡️ Temperature Risk'],
-        heatDesc: ['دراسة درجات الحرارة القصوى وتأثيرها المحتمل على الممتلكات.', 'Study extreme temperatures and their potential impact on property.'],
-        calcTitle: ['حاسبة التعويض التجريبية', 'Payout Simulator'],
-        calcDesc: ['أدخلي كمية الأمطار وحد التعويض لمعرفة نتيجة المحاكاة.', 'Enter rainfall and a trigger threshold to simulate the result.'],
-        rainLabel: ['كمية الأمطار (ملم)', 'Rainfall (mm)'],
-        triggerLabel: ['حد التعويض (ملم)', 'Payout trigger (mm)'],
-        calcBtn: ['احسبي النتيجة', 'Calculate result'],
-        aboutTitle: ['عن مرصد رسكورا', 'About MARSAD RISKORA'],
-        aboutDesc: ['يهدف المشروع إلى دراسة العلاقة بين المؤشرات المناخية وحدود التعويض، مع مراعاة حماية المستفيد وتكلفة التأمين ومخاطر عدم تطابق المؤشر مع الضرر الفعلي.', 'The project studies climate indices and payout triggers while considering customer protection, insurance cost, and basis risk.'],
-        footerText: ['مرصد رسكورا © 2026 — نموذج أولي تجريبي', 'MARSAD RISKORA © 2026 — Experimental prototype']
-      };
+<nav class="mobile-nav">
+  <button class="active" data-page="home" onclick="go('home')"><span>⌂</span>الرئيسية</button>
+  <button data-page="regions" onclick="go('regions')"><span>⌖</span>المناطق</button>
+  <button data-page="hazards" onclick="go('hazards')"><span>☁</span>المخاطر</button>
+  <button data-page="packages" onclick="go('packages')"><span>▤</span>الباقات</button>
+  <button data-page="coverage" onclick="go('coverage')"><span>◇</span>تغطياتي</button>
+</nav>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
-      for (const id in translations) {
-        document.getElementById(id).textContent = translations[id][english ? 1 : 0];
-      }
-      document.getElementById('langBtn').textContent = english ? 'العربية' : 'English';
-      document.getElementById('result').textContent = english ? 'Result appears here' : 'النتيجة تظهر هنا';
-      document.getElementById('notice').textContent = english
-        ? 'Educational simulation using demo data. Not an insurance offer or actual payout decision.'
-        : 'هذه محاكاة تعليمية ببيانات تجريبية، وليست عرض تأمين أو قرار تعويض فعلي.';
-    }
-  </script>
+<script>
+const regions=[
+"الرياض","مكة المكرمة","المدينة المنورة","القصيم","المنطقة الشرقية",
+"عسير","تبوك","حائل","الحدود الشمالية","جازان","نجران","الباحة","الجوف"
+];
+const regionIcons=["🏙️","🕋","🕌","🌴","🌊","⛰️","🏜️","🌾","❄️","🌿","🏞️","🌳","🌵"];
+let selectedRegion="الرياض";
+let selectedPackage=null;
+let currentLang="ar";
+let userName="زائر";
+
+function toast(message){
+ const el=document.getElementById("toast");
+ el.textContent=message;el.classList.remove("hidden");
+ clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.add("hidden"),3200);
+}
+function go(id){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ const page=document.getElementById("page-"+id);
+ if(!page)return;
+ page.classList.add("active");
+ document.querySelectorAll("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===id));
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function logout(){
+ document.getElementById("app").classList.add("hidden");
+ document.getElementById("loginScreen").classList.remove("hidden");
+ document.querySelectorAll(".mobile-nav button").forEach(b=>b.classList.remove("active"));
+}
+document.getElementById("loginForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ userName=document.getElementById("loginName").value.trim()||"زائر";
+ document.getElementById("welcomeName").textContent=userName;
+ document.getElementById("avatar").textContent=userName[0];
+ document.getElementById("settingsName").value=userName;
+ document.getElementById("loginScreen").classList.add("hidden");
+ document.getElementById("app").classList.remove("hidden");
+ go("home");
+ toast("أهلًا بك في النموذج التجريبي يا "+userName);
+});
+function buildRegions(){
+ const grid=document.getElementById("regionsGrid");
+ grid.innerHTML=regions.map((r,i)=>`
+ <button class="tile" onclick="pickRegion('${r}')">
+ <div class="tile-icon">${regionIcons[i]}</div><h3>${r}</h3>
+ <p>منطقة إدارية في المملكة العربية السعودية.</p><span class="arrow">استكشاف المنطقة ←</span>
+ </button>`).join("");
+ const options=regions.map(r=>`<option>${r}</option>`).join("");
+ document.getElementById("customerRegion").innerHTML=options;
+}
+function filterRegions(){
+ const q=document.getElementById("regionSearch").value.trim().toLowerCase();
+ document.querySelectorAll("#regionsGrid .tile").forEach(tile=>{
+ tile.classList.toggle("hidden",!tile.textContent.toLowerCase().includes(q));
+ });
+}
+function pickRegion(region){
+ selectedRegion=region;
+ document.getElementById("customerRegion").value=region;
+ toast("تم اختيار "+region+" للاستكشاف");
+ go("hazards");
+}
+function selectHazard(name,icon,indicator){
+ document.getElementById("hazardDetails").innerHTML=`
+ <div class="tile-icon">${icon}</div><span class="badge">مؤشر محتمل</span>
+ <h2 style="margin-top:12px">${name}</h2>
+ <p>${indicator}</p>
+ <div class="callout">يلزم تحديد مصدر بيانات موثوق، وفترة القياس، والموقع الجغرافي، وطريقة التحقق، والعتبة المتفق عليها في أي منتج فعلي.</div>
+ <button class="btn btn-primary" onclick="go('packages')">استكشاف الباقات التوضيحية ←</button>`;
+}
+function choosePackage(name){
+ selectedPackage=name;
+ document.getElementById("coverageContent").innerHTML=`
+ <span class="badge badge-demo">اختيار تجريبي فقط</span>
+ <h2 style="margin-top:15px">${name}</h2>
+ <p>لا يوجد سعر أو عقد أو تغطية فعلية مرتبطة بهذا الاختيار.</p>
+ <div class="callout">المنطقة المختارة للاستكشاف: ${selectedRegion}</div>
+ <button class="btn btn-primary" onclick="go('documents')">قراءة الوثائق والشروط</button>
+ <button class="btn btn-outline" onclick="go('onboarding')" style="margin-right:6px">بيانات العميل</button>`;
+ toast("تم اختيار الباقة في النموذج فقط");
+ go("coverage");
+}
+document.getElementById("customerForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const name=document.getElementById("customerFullName").value.trim();
+ const region=document.getElementById("customerRegion").value;
+ const hazard=document.getElementById("customerHazard").value;
+ selectedRegion=region;
+ const out=document.getElementById("customerResult");
+ out.textContent=`تمت مراجعة النموذج محليًا فقط. الاسم: ${name}، المنطقة: ${region}، الخطر: ${hazard}. لم تُرسل البيانات ولم يُنشأ طلب حقيقي.`;
+ out.classList.remove("hidden");
+ toast("تمت المحاكاة داخل الصفحة فقط");
+});
+document.getElementById("supportForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const topic=document.getElementById("supportTopic").value;
+ document.getElementById("supportMessage").value="";
+ toast("رسالتك التجريبية: "+topic+" — لم يتم إرسالها إلى جهة خارجية");
+});
+function simulate(){
+ const rain=Number(document.getElementById("rainfall").value);
+ const trigger=Number(document.getElementById("trigger").value);
+ const result=document.getElementById("simulationResult");
+ if(!Number.isFinite(rain)||rain<0){
+  result.textContent="أدخلي كمية أمطار افتراضية صحيحة.";
+ }else{
+  result.textContent=rain>=trigger
+  ?`في هذا المثال فقط: المؤشر الافتراضي (${rain} ملم) بلغ العتبة (${trigger} ملم) أو تجاوزها. هذا لا يثبت حدوث ضرر أو استحقاق تعويض.`
+  :`في هذا المثال فقط: المؤشر الافتراضي (${rain} ملم) أقل من العتبة (${trigger} ملم). لا يمكن استنتاج استحقاق حقيقي من المحاكاة.`;
+ }
+ result.classList.remove("hidden");
+}
+function saveName(){
+ const value=document.getElementById("settingsName").value.trim();
+ if(!value){toast("اكتبي الاسم أولًا");return}
+ userName=value;
+ document.getElementById("welcomeName").textContent=userName;
+ document.getElementById("avatar").textContent=userName[0];
+ toast("تم تحديث الاسم داخل الصفحة فقط");
+}
+function toggleLang(){
+ currentLang=currentLang==="ar"?"en":"ar";
+ document.documentElement.lang=currentLang;
+ document.documentElement.dir=currentLang==="ar"?"rtl":"ltr";
+ document.body.classList.toggle("lang-en",currentLang==="en");
+ document.getElementById("langButton").textContent=currentLang==="ar"?"EN":"عربي";
+ toast(currentLang==="en"?"English direction enabled; some content remains Arabic.":"تمت إعادة اتجاه العربية.");
+}
+buildRegions();
+</script>
 </body>
 </html>

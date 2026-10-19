@@ -329,3 +329,45 @@ body.lang-en .page-back-button { direction: ltr; }
 body.theme-dark .page-back-button, body.theme-dark .language-setting select, body.theme-dark .language-panel select {
   background: #172b3a; color: #e3f1fb; border-color: #304a5e;
 }
+
+/* V11 fixes: remove confusing section numbers, local back buttons, functional language selector */
+.heading .number { display:none !important; }
+.page-back-button {
+  display:inline-flex; align-items:center; gap:8px; margin:0 0 16px;
+  padding:8px 14px; border:1px solid #d5e2ed; border-radius:12px;
+  background:transparent; color:#245b82; font:inherit; font-weight:700; cursor:pointer;
+}
+.page-back-button .back-arrow { font-size:19px; }
+#home > .page-back-button { display:none !important; }
+.language-card { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+.language-card select { min-width:140px; padding:10px 14px; border:1px solid #d5e2ed; border-radius:12px; background:white; color:#21435c; font:inherit; }
+body.lang-en { direction:ltr; }
+body.lang-en .top, body.lang-en main, body.lang-en .mobile-nav { direction:ltr; }
+body.lang-en .heading, body.lang-en .panel, body.lang-en .hero-copy { text-align:left; }
+body.lang-en .stepper { direction:ltr; }
+body.lang-en .page-back-button { direction:ltr; }
+body.theme-dark .language-card select { background:#172b3a; color:#e3f1fb; border-color:#304a5e; }
+
+/* V12: consistent outline iconography across all hazard and asset cards */
+.risk-line-icon {
+  width: 30px !important; height: 30px !important; display: block;
+  fill: none !important; stroke: currentColor !important; stroke-width: 1.7;
+  stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto;
+}
+.risk-card .icon, .hazard-card .icon, .risk-option .icon, .risk-icon,
+.asset-type-card .icon, .asset-icon {
+  color: #236ca6 !important;
+  background: #eaf3fa !important;
+  border-radius: 14px;
+}
+.risk-card svg, .hazard-card svg, .risk-option svg, .risk-icon svg,
+.asset-type-card svg, .asset-icon svg {
+  color: #236ca6 !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.7;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.risk-card, .hazard-card, .risk-option, .asset-type-card {
+  align-items: center;
+}

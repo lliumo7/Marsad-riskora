@@ -142,89 +142,101 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
 })();
 
 
-// Arabic/English language switch + in-app back navigation.
-(function setupLanguageAndBack(){
-  const select = document.getElementById('languageSelect');
-  const back = document.getElementById('pageBackButton');
+
+
+// Reliable page navigation, page-local back button, and Arabic/English UI.
+(function riskoraLanguageAndNavigation(){
+  const languageSelect = document.getElementById('languageSelect');
+  const pages = [...document.querySelectorAll('main .page')];
+  let previousPage = 'home';
+  const pageStack = ['home'];
+
   const translations = {
-    "الرئيسية":"Home", "أصولي":"My Assets", "تغطية":"Coverage", "تغطياتي":"My Coverage",
-    "طلباتي":"My Requests", "الإعدادات":"Settings", "الإشعارات":"Notifications",
-    "معلومات عن رسكاورا":"About Riskora", "عن رسكاورا":"About Riskora",
-    "سياسة الاستخدام":"Usage Policy", "المساعدة":"Help", "تواصل معنا":"Contact Us",
-    "مساعد رسكورا":"Riskora Assistant", "إضافة أصل":"Add Asset", "أضف أصلًا":"Add an Asset",
-    "المخاطر المناخية":"Climate Risks", "أمطار غزيرة وفيضانات":"Heavy Rain & Floods",
-    "رياح قوية":"Strong Winds", "موجات حر":"Heat Waves", "عواصف رعدية":"Thunderstorms",
-    "عواصف ترابية":"Dust Storms", "اختر المنطقة":"Choose Region", "المنطقة":"Region",
-    "الباقات":"Packages", "اختر الباقة":"Choose Package", "الدفع":"Payment",
-    "حفظ":"Save", "إلغاء":"Cancel", "رجوع":"Back", "التالي":"Next",
-    "تسجيل الدخول":"Sign In", "الاسم":"Name", "كلمة المرور":"Password",
-    "أهلًا بك من جديد":"Welcome Back", "اكتب اسم المستخدم":"Enter your username",
-    "اكتب كلمة المرور":"Enter your password", "مظهر التطبيق":"Appearance",
-    "فاتح":"Light", "داكن":"Dark", "اللغة":"Language", "العربية":"Arabic",
-    "المستندات":"Documents", "رفع مستند":"Upload Document", "رفع صورة":"Upload Image",
-    "لا توجد بيانات":"No data available", "عرض التفاصيل":"View Details",
-    "قبول الطلب":"Approve Request", "قيد المراجعة":"Under Review", "مقبول":"Approved"
+    'الرئيسية':'Home','أصولي':'My Assets','تغطية':'Coverage','طلب تغطية':'Coverage Request',
+    'طلباتي ووثائقي':'My Requests & Policies','طلباتي':'My Requests','المؤشرات':'Indicators',
+    'بيانات النموذج':'Model Data','الإشعارات':'Notifications','الإعدادات':'Settings',
+    'عن مرصد رسكورا':'About Mirsad Riskora','سياسة الاستخدام':'Usage Policy','تواصل معنا':'Contact Us',
+    'رجوع':'Back','السابق':'Previous','التالي':'Next','إلغاء':'Cancel','حفظ':'Save',
+    'إضافة الأصل':'Add Asset','أضف الأصل المراد تأمينه':'Add the asset to insure',
+    'اختيار نوع الأصل وإضافة موقعه وصوره':'Choose asset type, location and photos',
+    'الاسم':'Name','كلمة المرور':'Password','تسجيل الدخول':'Sign In',
+    'مظهر التطبيق':'App Appearance','اللغة':'Language','لغة واجهة التطبيق':'App language',
+    'الوضع الفاتح والداكن':'Light and dark mode','العربية':'Arabic',
+    'الإشعارات':'Notifications','الخصوصية والأمان':'Privacy & Security',
+    'المساعدة':'Help','مساعد رسكورا':'Riskora Assistant','عن مرصد رسكورا':'About Mirsad Riskora',
+    'الأمطار والسيول':'Rain & Floods','الأمطار الغزيرة والسيول':'Heavy Rain & Floods',
+    'الرياح الشديدة':'Strong Winds','موجات الحرارة':'Heat Waves','العواصف الرعدية':'Thunderstorms',
+    'العواصف الترابية':'Dust Storms','اختر الخطر':'Choose Risk','اختيار الباقة':'Choose Package',
+    'طلب التغطية':'Coverage Request','حالة الطلب':'Request Status','حفظ الأصل والمتابعة ←':'Save Asset & Continue →',
+    'إرسال الطلب للمراجعة ←':'Submit for Review →','ابدأ طلب التغطية ←':'Start Coverage Request →',
+    'رحلتك في 4 خطوات واضحة':'Your journey in 4 clear steps','سجّل الأصل':'Register Asset',
+    'اختر الخطر':'Choose Risk','انتظر المراجعة':'Await Review','راجع العرض':'Review Offer',
+    'بدون دفع في البداية':'No payment at the start','معلومات مهمة قبل تجربة المنصة':'Important information before using the prototype',
+    'الوضع الفاتح':'Light','داكن':'Dark','فاتح':'Light','اختر المنطقة':'Choose Region',
+    'المنطقة':'Region','اسم الأصل':'Asset Name','العنوان أو وصف الموقع':'Address or Location Description',
+    'صور الأصل الحالية':'Current Asset Photos','إرسال الملاحظة':'Send Feedback'
   };
-  function setLanguage(lang){
+  const originals = new WeakMap();
+  function applyLanguage(lang){
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'en' ? 'ltr' : 'rtl';
     document.body.classList.toggle('lang-en', lang === 'en');
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    let node;
-    while((node = walker.nextNode())){
-      const original = node.nodeValue.trim();
-      if(!original) continue;
-      if(!node.parentElement || node.parentElement.closest('script,style,option[data-no-translate],.no-translate')) continue;
-      if(!node.dataset) continue;
-      if(!node.__arOriginal) node.__arOriginal = original;
-      const ar = node.__arOriginal;
-      if(lang === 'en'){
-        const match = Object.keys(translations).sort((a,b)=>b.length-a.length).find(k=>ar === k || ar.startsWith(k));
-        if(match) node.nodeValue = ar.replace(match, translations[match]);
-      } else {
-        node.nodeValue = ar;
-      }
+    let n;
+    while((n=walker.nextNode())){
+      if(!n.nodeValue.trim() || n.parentElement.closest('script,style,select,option,input,textarea,.no-translate')) continue;
+      if(!originals.has(n)) originals.set(n,n.nodeValue);
+      const original = originals.get(n);
+      if(lang === 'ar'){ n.nodeValue = original; continue; }
+      let value = original;
+      const trimmed = value.trim();
+      const key = Object.keys(translations).sort((a,b)=>b.length-a.length).find(k=>trimmed===k);
+      if(key) value = value.replace(trimmed, translations[key]);
+      n.nodeValue = value;
     }
-    document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{
-      if(!el.dataset.arPlaceholder) el.dataset.arPlaceholder = el.placeholder;
-      if(lang === 'en' && translations[el.dataset.arPlaceholder]) el.placeholder = translations[el.dataset.arPlaceholder];
-      if(lang === 'ar') el.placeholder = el.dataset.arPlaceholder;
-    });
-    if(select) select.value = lang;
-    localStorage.setItem('riskora_language', lang);
-    if(back){
-      back.querySelector('.back-label').textContent = lang === 'en' ? 'Back' : 'رجوع';
-      back.setAttribute('aria-label', lang === 'en' ? 'Back' : 'رجوع');
-      back.querySelector('.back-arrow').textContent = lang === 'en' ? '→' : '←';
-    }
+    document.querySelectorAll('[data-page-back] .back-label').forEach(el=>el.textContent = lang==='en'?'Back':'رجوع');
+    document.querySelectorAll('[data-page-back] .back-arrow').forEach(el=>el.textContent = lang==='en'?'←':'→');
+    document.querySelectorAll('[data-page-back]').forEach(el=>el.setAttribute('aria-label',lang==='en'?'Back':'رجوع'));
+    if(languageSelect) languageSelect.value=lang;
+    try { localStorage.setItem('riskora_language',lang); } catch(e){}
   }
-  if(select) select.addEventListener('change', ()=>setLanguage(select.value));
-  const saved = localStorage.getItem('riskora_language') || 'ar';
-  setLanguage(saved);
+  if(languageSelect) languageSelect.addEventListener('change',()=>applyLanguage(languageSelect.value));
+  let saved='ar'; try { saved=localStorage.getItem('riskora_language')||'ar'; } catch(e){}
+  applyLanguage(saved);
 
-  function activePage(){
-    return document.querySelector('main section:not([hidden]), main .page.active, main [data-page].active') ||
-           document.querySelector('main section.active');
+  function activePageId(){
+    return document.querySelector('main .page.active')?.id || 'home';
   }
-  if(back) back.addEventListener('click', ()=>{
-    if(history.length > 1 && document.referrer && new URL(document.referrer).origin === location.origin){
-      history.back(); return;
-    }
-    const activeNav = document.querySelector('.mobile-nav button.active');
-    const home = document.querySelector('[data-page="home"], #home, [data-nav="home"]');
-    if(home && activeNav && !activeNav.matches('[data-page="home"],[data-nav="home"]')) home.click();
-    else {
-      const sections = [...document.querySelectorAll('main section')];
-      const current = sections.find(s=>s.classList.contains('active') || !s.hidden);
-      if(current && current.id !== 'home') {
-        current.classList.remove('active'); current.hidden = true;
-        const homePage = document.querySelector('#home, [data-page="home"]');
-        if(homePage){homePage.hidden=false;homePage.classList.add('active');}
-      }
-    }
+  document.querySelectorAll('[data-page]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const id=btn.dataset.page;
+      const current=activePageId();
+      if(id && id!==current){ previousPage=current; pageStack.push(id); }
+    });
   });
-  // Add a history entry when an in-app navigation item is selected so device back works naturally.
-  document.querySelectorAll('.mobile-nav button, [data-nav], [data-page-link]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{ try { history.pushState({riskoraPage:btn.dataset.page || btn.dataset.nav || btn.textContent.trim()}, '', '#'+(btn.dataset.page || btn.dataset.nav || 'page')); } catch(e){} });
+  document.querySelectorAll('[data-go]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const id=btn.dataset.go;
+      const current=activePageId();
+      if(id && id!==current){ previousPage=current; pageStack.push(id); }
+    });
+  });
+  document.querySelectorAll('[data-page-back]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const current=activePageId();
+      while(pageStack.length && pageStack[pageStack.length-1]===current) pageStack.pop();
+      let target=pageStack.pop() || (current==='settings'?'home':previousPage) || 'home';
+      const navButton=document.querySelector('[data-page="'+target+'"]');
+      if(navButton) navButton.click();
+      else {
+        const goButton=document.querySelector('[data-go="'+target+'"]');
+        if(goButton) goButton.click();
+        else document.querySelector('[data-page="home"]')?.click();
+      }
+    });
+  });
+  window.addEventListener('popstate',()=>{
+    const target=pageStack.pop() || 'home';
+    document.querySelector('[data-page="'+target+'"]')?.click();
   });
 })();

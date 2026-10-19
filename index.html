@@ -23,6 +23,7 @@
 </section>
 
 <header class="top">
+<button id="pageBackButton" class="page-back-button" type="button" aria-label="رجوع"><span class="back-arrow">←</span><span class="back-label">رجوع</span></button>
   <div class="brand"><span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><span><b>Marsad Riskora</b><small>مرصد رسكورا · التأمين البارامتري</small></span></div>
   <nav id="nav" aria-label="التنقل الرئيسي">
     <button data-page="home" class="nav-item active"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg></span><span>الرئيسية</span></button>
@@ -111,6 +112,15 @@
   </div>
  </div>
  <div class="panel about-shortcut"><b>تحتاج مساعدة؟</b><span>افتح مساعد رسكورا من الزر أسفل الشاشة.</span><button class="btn outline" data-go="contact">تواصل معنا</button><button class="btn outline" data-go="about">عن مرصد رسكورا</button></div>
+
+        <div class="setting-row language-setting">
+          <label for="languageSelect"><b>اللغة / Language</b></label>
+          <select id="languageSelect" aria-label="Language">
+            <option value="ar">العربية</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        
 </section>
 </main><button id="chatLauncher" class="chat-launcher" aria-label="مساعد رسكورا"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H8l-4 4zM8 9h8M8 13h5"/></svg><span>مساعد رسكورا</span></button>
 <div id="chatWidget" class="chat-widget" hidden><div class="chat-head"><span class="chat-avatar"><svg viewBox="0 0 24 24"><path d="M12 3a7 7 0 0 0-7 7v4a3 3 0 0 0 3 3h1v-6H8a4 4 0 0 0-2 .5M12 3a7 7 0 0 1 7 7v4a3 3 0 0 1-3 3h-1v-6h1a4 4 0 0 1 2 .5M9 20h6"/></svg></span><div><b>مساعد رسكورا</b><small>مساعد تجريبي داخل الموقع</small></div><button id="chatClose" aria-label="إغلاق">×</button></div><div id="chatMessages" class="chat-messages"><div class="bot-message">أهلًا! أقدر أشرح لك خطوات الطلب، المؤشر البارامتري، الباقات، والبيانات التجريبية. اختاري سؤالًا:</div><div class="chat-quick"><button data-chat="ما هو التأمين البارامتري؟">ما هو التأمين البارامتري؟</button><button data-chat="كيف أطلب التغطية؟">كيف أطلب التغطية؟</button><button data-chat="هل الدفع حقيقي؟">هل الدفع حقيقي؟</button><button data-chat="من أين جاءت البيانات؟">مصدر البيانات</button></div></div><form id="chatForm" class="chat-form"><input id="chatInput" placeholder="اكتب سؤالك..." autocomplete="off"><button type="submit" aria-label="إرسال">➤</button></form></div>

@@ -140,3 +140,91 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
     if (welcome) welcome.textContent = username;
   });
 })();
+
+
+// Arabic/English language switch + in-app back navigation.
+(function setupLanguageAndBack(){
+  const select = document.getElementById('languageSelect');
+  const back = document.getElementById('pageBackButton');
+  const translations = {
+    "الرئيسية":"Home", "أصولي":"My Assets", "تغطية":"Coverage", "تغطياتي":"My Coverage",
+    "طلباتي":"My Requests", "الإعدادات":"Settings", "الإشعارات":"Notifications",
+    "معلومات عن رسكاورا":"About Riskora", "عن رسكاورا":"About Riskora",
+    "سياسة الاستخدام":"Usage Policy", "المساعدة":"Help", "تواصل معنا":"Contact Us",
+    "مساعد رسكورا":"Riskora Assistant", "إضافة أصل":"Add Asset", "أضف أصلًا":"Add an Asset",
+    "المخاطر المناخية":"Climate Risks", "أمطار غزيرة وفيضانات":"Heavy Rain & Floods",
+    "رياح قوية":"Strong Winds", "موجات حر":"Heat Waves", "عواصف رعدية":"Thunderstorms",
+    "عواصف ترابية":"Dust Storms", "اختر المنطقة":"Choose Region", "المنطقة":"Region",
+    "الباقات":"Packages", "اختر الباقة":"Choose Package", "الدفع":"Payment",
+    "حفظ":"Save", "إلغاء":"Cancel", "رجوع":"Back", "التالي":"Next",
+    "تسجيل الدخول":"Sign In", "الاسم":"Name", "كلمة المرور":"Password",
+    "أهلًا بك من جديد":"Welcome Back", "اكتب اسم المستخدم":"Enter your username",
+    "اكتب كلمة المرور":"Enter your password", "مظهر التطبيق":"Appearance",
+    "فاتح":"Light", "داكن":"Dark", "اللغة":"Language", "العربية":"Arabic",
+    "المستندات":"Documents", "رفع مستند":"Upload Document", "رفع صورة":"Upload Image",
+    "لا توجد بيانات":"No data available", "عرض التفاصيل":"View Details",
+    "قبول الطلب":"Approve Request", "قيد المراجعة":"Under Review", "مقبول":"Approved"
+  };
+  function setLanguage(lang){
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'en' ? 'ltr' : 'rtl';
+    document.body.classList.toggle('lang-en', lang === 'en');
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while((node = walker.nextNode())){
+      const original = node.nodeValue.trim();
+      if(!original) continue;
+      if(!node.parentElement || node.parentElement.closest('script,style,option[data-no-translate],.no-translate')) continue;
+      if(!node.dataset) continue;
+      if(!node.__arOriginal) node.__arOriginal = original;
+      const ar = node.__arOriginal;
+      if(lang === 'en'){
+        const match = Object.keys(translations).sort((a,b)=>b.length-a.length).find(k=>ar === k || ar.startsWith(k));
+        if(match) node.nodeValue = ar.replace(match, translations[match]);
+      } else {
+        node.nodeValue = ar;
+      }
+    }
+    document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{
+      if(!el.dataset.arPlaceholder) el.dataset.arPlaceholder = el.placeholder;
+      if(lang === 'en' && translations[el.dataset.arPlaceholder]) el.placeholder = translations[el.dataset.arPlaceholder];
+      if(lang === 'ar') el.placeholder = el.dataset.arPlaceholder;
+    });
+    if(select) select.value = lang;
+    localStorage.setItem('riskora_language', lang);
+    if(back){
+      back.querySelector('.back-label').textContent = lang === 'en' ? 'Back' : 'رجوع';
+      back.setAttribute('aria-label', lang === 'en' ? 'Back' : 'رجوع');
+      back.querySelector('.back-arrow').textContent = lang === 'en' ? '→' : '←';
+    }
+  }
+  if(select) select.addEventListener('change', ()=>setLanguage(select.value));
+  const saved = localStorage.getItem('riskora_language') || 'ar';
+  setLanguage(saved);
+
+  function activePage(){
+    return document.querySelector('main section:not([hidden]), main .page.active, main [data-page].active') ||
+           document.querySelector('main section.active');
+  }
+  if(back) back.addEventListener('click', ()=>{
+    if(history.length > 1 && document.referrer && new URL(document.referrer).origin === location.origin){
+      history.back(); return;
+    }
+    const activeNav = document.querySelector('.mobile-nav button.active');
+    const home = document.querySelector('[data-page="home"], #home, [data-nav="home"]');
+    if(home && activeNav && !activeNav.matches('[data-page="home"],[data-nav="home"]')) home.click();
+    else {
+      const sections = [...document.querySelectorAll('main section')];
+      const current = sections.find(s=>s.classList.contains('active') || !s.hidden);
+      if(current && current.id !== 'home') {
+        current.classList.remove('active'); current.hidden = true;
+        const homePage = document.querySelector('#home, [data-page="home"]');
+        if(homePage){homePage.hidden=false;homePage.classList.add('active');}
+      }
+    }
+  });
+  // Add a history entry when an in-app navigation item is selected so device back works naturally.
+  document.querySelectorAll('.mobile-nav button, [data-nav], [data-page-link]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ try { history.pushState({riskoraPage:btn.dataset.page || btn.dataset.nav || btn.textContent.trim()}, '', '#'+(btn.dataset.page || btn.dataset.nav || 'page')); } catch(e){} });
+  });
+})();

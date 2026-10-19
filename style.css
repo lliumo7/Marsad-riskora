@@ -310,3 +310,22 @@ body.theme-dark .login-card { background: #1a2d3d; border-color: #2a465b; }
 body.theme-dark .login-card h1, body.theme-dark .login-form label { color: #e4f1fa; }
 body.theme-dark .login-description, body.theme-dark .login-note { color: #9fb5c6; }
 body.theme-dark .login-form input { background: #142535; border-color: #30495d; color: #eaf4fb; }
+
+/* Language and page-back controls */
+.language-setting select, .language-panel select {
+  min-height: 42px; border: 1px solid #d5e2ed; border-radius: 12px;
+  padding: 0 12px; background: #fff; color: #21435c; font: inherit;
+}
+.page-back-button {
+  display: inline-flex; align-items: center; gap: 8px; border: 1px solid #d9e6f0;
+  background: #fff; color: #245b82; border-radius: 12px; padding: 9px 13px;
+  font: inherit; font-weight: 700; cursor: pointer; margin: 8px 0 14px;
+}
+.page-back-button .back-arrow { font-size: 20px; line-height: 1; }
+body.lang-en { direction: ltr; }
+body.lang-en main, body.lang-en .panel, body.lang-en .card { text-align: left; }
+body.lang-en .mobile-nav { direction: ltr; }
+body.lang-en .page-back-button { direction: ltr; }
+body.theme-dark .page-back-button, body.theme-dark .language-setting select, body.theme-dark .language-panel select {
+  background: #172b3a; color: #e3f1fb; border-color: #304a5e;
+}

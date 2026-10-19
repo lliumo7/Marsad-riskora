@@ -371,3 +371,17 @@ body.theme-dark .language-card select { background:#172b3a; color:#e3f1fb; borde
 .risk-card, .hazard-card, .risk-option, .asset-type-card {
   align-items: center;
 }
+
+/* Final fixes: hazard icons match the blue outlined home-page icons */
+.haz-option .haz-icon { color:#256fa8 !important; background:#eaf3fa !important; }
+.haz-option .haz-icon svg, .haz-option svg {
+  width:30px; height:30px; display:block; fill:none !important;
+  stroke:#256fa8 !important; stroke-width:1.7 !important;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+.haz-option .haz-icon svg path, .haz-option .haz-icon svg circle,
+.haz-option .haz-icon svg line, .haz-option .haz-icon svg polyline {
+  fill:none !important; stroke:currentColor !important;
+}
+#indicatorGlyph svg { width:36px; height:36px; fill:none !important; stroke:currentColor; stroke-width:1.7; }
+#indicatorGlyph { color:#fff; }

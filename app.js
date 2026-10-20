@@ -95,7 +95,7 @@ document.querySelectorAll('.haz-option input').forEach(input => input.addEventLi
   syncIndicator();
 }));
 $('#otherHazardText')?.addEventListener('input', () => { if(document.querySelector('.haz-option[data-risk="other"] input').checked) syncIndicator(); });
-function syncRequests(){syncAsset();$('#listAsset').textContent=assetName;$('#claimRow').hidden=!window.claimSent}$('#claimDemo').addEventListener('click',()=>{window.claimSent=true;syncRequests();toast('تم إرسال طلب التعويض التجريبي للمراجعة.');go('requests')});$$('[data-tab]').forEach(b=>b.addEventListener('click',()=>{$$('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));$('#myrequests').hidden=b.dataset.tab!=='myrequests';$('#mydocs').hidden=b.dataset.tab!=='mydocs'}));
+function syncRequests(){syncAsset();$('#listAsset').textContent=assetName;$('#docAsset').textContent=assetName;$('#docPackage').textContent=selectedPackage;$('#claimRow').hidden=!window.claimSent;const total=2+(window.claimSent?1:0);$('#requestCount').textContent=total;$('#pendingCount').textContent=(accepted?0:1)+(window.claimSent?1:0);$('#completeCount').textContent=accepted?1:0}$('#claimDemo').addEventListener('click',()=>{window.claimSent=true;syncRequests();toast('تم إرسال طلب التعويض التجريبي للمراجعة.');go('requests')});$$('[data-tab]').forEach(b=>b.addEventListener('click',()=>{$$('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));$('#myrequests').hidden=b.dataset.tab!=='myrequests';$('#mydocs').hidden=b.dataset.tab!=='mydocs'}));
 
 function getSavedDemoName(){
  try { return (localStorage.getItem('riskora_demo_name') || sessionStorage.getItem('riskora_demo_name') || localStorage.getItem('riskora_user_name') || sessionStorage.getItem('riskora_user_name') || '').trim(); }

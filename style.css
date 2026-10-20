@@ -421,3 +421,9 @@ body.theme-dark .side-drawer{background:#102438;border-color:#2a4258}body.theme-
 .contact-result.success{background:#eaf7ef;color:#276b49}
 .contact-result.error{background:#fff0f0;color:#9d3030}
 #contactSubmit:disabled{opacity:.7;cursor:wait}
+
+/* Additional natural hazard text field */
+.other-hazard-field{margin:12px 0 16px;padding:14px;border:1px solid var(--border,#dbe6ee);border-radius:14px;background:var(--panel,#fff)}
+.other-hazard-field[hidden]{display:none!important}
+.other-hazard-field input{width:100%;box-sizing:border-box;margin-top:8px;padding:12px 14px;border:1px solid var(--border,#dbe6ee);border-radius:10px;background:var(--surface,#fff);color:inherit;font:inherit}
+.haz-option small{line-height:1.7}

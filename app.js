@@ -84,10 +84,34 @@ document.querySelectorAll('.haz-option input').forEach(input => input.addEventLi
 }));
 function syncRequests(){syncAsset();$('#listAsset').textContent=assetName;$('#claimRow').hidden=!window.claimSent}$('#claimDemo').addEventListener('click',()=>{window.claimSent=true;syncRequests();toast('تم إرسال طلب التعويض التجريبي للمراجعة.');go('requests')});$$('[data-tab]').forEach(b=>b.addEventListener('click',()=>{$$('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));$('#myrequests').hidden=b.dataset.tab!=='myrequests';$('#mydocs').hidden=b.dataset.tab!=='mydocs'}));
 
+function getSavedDemoName(){
+ try { return (localStorage.getItem('riskora_demo_name') || sessionStorage.getItem('riskora_demo_name') || '').trim(); }
+ catch(e){ return (sessionStorage.getItem('riskora_demo_name') || '').trim(); }
+}
+function applyDemoName(name){
+ const clean=(name||'').trim();
+ const welcome=$('#welcomeName');
+ if(welcome) welcome.textContent=clean || 'زائرنا';
+ const profile=$('#profileName');
+ if(profile && document.activeElement!==profile) profile.value=clean;
+ const contactName=$('#contactName');
+ if(contactName && !contactName.value.trim() && clean) contactName.value=clean;
+}
 function syncSettings(){
  const theme=document.body.classList.contains('theme-dark')?'dark':'light';
  $$('[data-theme]').forEach(b=>b.classList.toggle('active',b.dataset.theme===theme));
+ applyDemoName(getSavedDemoName());
 }
+applyDemoName(getSavedDemoName());
+$('#saveProfileName')?.addEventListener('click',()=>{
+ const field=$('#profileName');
+ const name=field.value.trim();
+ if(!name){toast('اكتب الاسم أولًا.');field.focus();return;}
+ try { localStorage.setItem('riskora_demo_name',name); } catch(e) {}
+ try { sessionStorage.setItem('riskora_demo_name',name); } catch(e) {}
+ applyDemoName(name);
+ toast('تم حفظ الاسم وتحديث الترحيب.');
+});
 
 
 // Settings sub-sections and appearance controls
@@ -176,6 +200,8 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
   const app = document.querySelector('body');
   const signedIn = sessionStorage.getItem('riskora_demo_signed_in') === '1';
   if (signedIn) screen.hidden = true;
+  const storedName = (()=>{ try{return localStorage.getItem('riskora_demo_name') || sessionStorage.getItem('riskora_demo_name') || '';}catch(e){return sessionStorage.getItem('riskora_demo_name') || '';}})();
+  if (storedName) { nameField.value = storedName; applyDemoName(storedName); }
   if (toggle) toggle.addEventListener('click', () => {
     const reveal = passwordField.type === 'password';
     passwordField.type = reveal ? 'text' : 'password';
@@ -194,9 +220,9 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
     // This is a UI prototype only; no server-side authentication.
     sessionStorage.setItem('riskora_demo_signed_in', '1');
     sessionStorage.setItem('riskora_demo_name', username);
+    try { localStorage.setItem('riskora_demo_name', username); } catch(e) {}
     screen.hidden = true;
-    const welcome = document.querySelector('[data-user-name], .user-name, #userName');
-    if (welcome) welcome.textContent = username;
+    applyDemoName(username);
   });
 })();
 

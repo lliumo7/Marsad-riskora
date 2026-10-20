@@ -385,3 +385,13 @@ body.theme-dark .language-card select { background:#172b3a; color:#e3f1fb; borde
 }
 #indicatorGlyph svg { width:36px; height:36px; fill:none !important; stroke:currentColor; stroke-width:1.7; }
 #indicatorGlyph { color:#fff; }
+
+
+/* Personalized welcome and demo profile editor */
+.welcome-line{margin:0 0 10px;color:rgba(255,255,255,.9);font-size:14px;font-weight:600}
+.welcome-line strong{font-weight:800;color:#fff}
+.profile-card{align-items:stretch}
+.profile-card input{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #d5e2ed;border-radius:11px;background:#fff;color:#21435c;font:inherit}
+.profile-card input:focus{outline:2px solid rgba(39,125,178,.22);border-color:#287db2}
+.profile-card .btn{justify-self:start;margin-top:8px}
+body.theme-dark .profile-card input{background:#172b3a;color:#e3f1fb;border-color:#304a5e}

@@ -395,3 +395,21 @@ body.theme-dark .language-card select { background:#172b3a; color:#e3f1fb; borde
 .profile-card input:focus{outline:2px solid rgba(39,125,178,.22);border-color:#287db2}
 .profile-card .btn{justify-self:start;margin-top:8px}
 body.theme-dark .profile-card input{background:#172b3a;color:#e3f1fb;border-color:#304a5e}
+
+/* V13: secondary navigation drawer, matching the existing blue/white UI */
+.menu-toggle{width:42px;height:42px;flex:0 0 42px;border:1px solid var(--line);border-radius:12px;background:#f3f9ff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#176bbd;order:0}
+.menu-toggle span{display:block;width:19px;height:2px;border-radius:2px;background:#176bbd}
+.top .brand{order:1}.topright{order:2}
+.drawer-backdrop{position:fixed;inset:0;background:rgba(7,28,52,.38);z-index:120;backdrop-filter:blur(2px)}
+.drawer-backdrop[hidden]{display:none!important}
+.side-drawer{position:fixed;z-index:121;top:0;right:0;bottom:0;width:min(355px,88vw);background:#fff;border-left:1px solid #d7e7f5;box-shadow:-15px 0 45px rgba(11,46,101,.13);transform:translateX(110%);transition:transform .24s ease;display:flex;flex-direction:column;padding:18px 15px calc(22px + env(safe-area-inset-bottom));overflow-y:auto}
+.side-drawer.open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:3px 3px 18px;border-bottom:1px solid #e8f1fa}
+.drawer-brand{display:flex;align-items:center;gap:10px}.drawer-brand>div{display:grid}.drawer-brand b{font-size:15px;color:#103a67}.drawer-brand small{font-size:10px;color:#7c91a8}.drawer-logo{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#188ff0,#0756b3);color:#fff;font-size:23px}
+#drawerClose{width:34px;height:34px;border:1px solid #dceaf7;border-radius:10px;background:#f6fbff;color:#3e6386;font-size:24px;line-height:1}
+.drawer-links{display:grid;gap:6px;padding-top:14px}.drawer-links button{display:flex;align-items:center;gap:11px;width:100%;padding:12px 10px;border:1px solid transparent;border-radius:13px;background:#fff;text-align:right;color:#173d71}.drawer-links button:hover,.drawer-links button:focus-visible{background:#f2f8ff;border-color:#dcecf9;outline:none}.drawer-icon{display:grid;place-items:center;flex:0 0 39px;height:39px;border-radius:12px;background:#eaf5ff;color:#0874d9;font-size:20px;font-weight:700}.drawer-links button>span:nth-child(2){display:grid;gap:2px;flex:1}.drawer-links b{font-size:12px}.drawer-links small{font-size:10px;color:#7188a1;font-weight:400}.drawer-links i{font-style:normal;color:#86a3bf;font-size:22px}.drawer-foot{margin-top:auto;padding:16px 8px 0;border-top:1px solid #e8f1fa;color:#91a3b7;font-size:10px;text-align:center}
+.faq-list details{padding:15px 3px;border-bottom:1px solid #e8f1fa}.faq-list details:last-child{border-bottom:0}.faq-list summary{cursor:pointer;font-size:13px;font-weight:700;color:#173d71}.faq-list details p{font-size:12px;line-height:2;color:#607a98;margin:10px 0 0}
+#otherTopicWrap[hidden]{display:none!important}
+#otherTopicWrap input{width:100%;border:1px solid #d4e4f3;border-radius:10px;padding:12px;background:#fbfdff;color:var(--navy);font-size:12px;margin-top:6px}
+@media(max-width:700px){.top{gap:10px}.menu-toggle{width:38px;height:38px;flex-basis:38px}.top .brand{min-width:0;flex:1}.top .brand b{font-size:12px}.top .brand small{font-size:9px}.topright{margin-right:auto}}
+body.theme-dark .side-drawer{background:#102438;border-color:#2a4258}body.theme-dark .drawer-head,body.theme-dark .drawer-foot{border-color:#2a4258}body.theme-dark .drawer-brand b,body.theme-dark .drawer-links button{color:#e3f1fb}body.theme-dark .drawer-links button{background:#102438}body.theme-dark .drawer-links button:hover{background:#1a344a}body.theme-dark .drawer-links small,body.theme-dark .drawer-brand small{color:#9db4c8}body.theme-dark .drawer-icon{background:#1b3b55;color:#80c5ff}body.theme-dark #drawerClose{background:#1a344a;color:#dcecff;border-color:#304a5e}body.theme-dark .faq-list summary{color:#e3f1fb}body.theme-dark .faq-list details{border-color:#2a4258}

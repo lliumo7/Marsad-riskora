@@ -154,12 +154,23 @@ $('#chatForm')?.addEventListener('submit',e=>{e.preventDefault();const input=$('
 const topicSelect=$('#contactTopic');
 function syncOtherTopic(){const wrap=$('#otherTopicWrap');if(wrap)wrap.hidden=topicSelect?.value!=='أخرى';}
 topicSelect?.addEventListener('change',syncOtherTopic);syncOtherTopic();
-$('#contactForm')?.addEventListener('submit',e=>{
- e.preventDefault();const name=$('#contactName').value.trim();const topic=topicSelect.value==='أخرى'?($('#contactOtherTopic').value.trim()||'أخرى'):topicSelect.value;const msg=$('#contactMessage').value.trim();
- if(!msg){toast('اكتبي رسالتك أولًا.');return;}
- if(topicSelect.value==='أخرى'&&!$('#contactOtherTopic').value.trim()){toast('اكتبي موضوع الرسالة في حقل «أخرى».');$('#contactOtherTopic').focus();return;}
- // Deliberately do not claim delivery: an external Formspree endpoint has not been configured.
- $('#contactResult').hidden=false;$('#contactResult').textContent=`تم التحقق من تعبئة الرسالة${name?' باسم '+name:''} وموضوعها «${topic}»، لكن الإرسال إلى البريد غير مفعّل بعد. يلزم ربط نموذج آمن بخدمة استقبال الرسائل أولًا.`;toast('النموذج جاهز، لكن إرسال البريد يحتاج إعداد الربط.');
+$('#contactForm')?.addEventListener('submit',async e=>{
+ e.preventDefault();
+ const form=e.currentTarget, name=$('#contactName').value.trim(), topic=topicSelect.value==='أخرى'?$('#contactOtherTopic').value.trim():topicSelect.value, msg=$('#contactMessage').value.trim(), result=$('#contactResult'), submit=$('#contactSubmit');
+ if(!msg){toast('اكتبي رسالتك أولًا.');$('#contactMessage').focus();return;}
+ if(topicSelect.value==='أخرى'&&!topic){toast('اكتبي موضوع الرسالة في حقل «أخرى».');$('#contactOtherTopic').focus();return;}
+ const data=new FormData(form);data.set('name',name||'زائر مرصد رسكورا');data.set('topic',topic);data.set('_subject',`رسالة جديدة من مرصد رسكورا: ${topic}`);data.delete('other_topic');
+ if(submit){submit.disabled=true;submit.textContent='جارٍ الإرسال...';}
+ if(result){result.hidden=false;result.className='contact-result';result.textContent='جارٍ إرسال رسالتك...';}
+ try{
+   const response=await fetch('https://formspree.io/f/xoejojnk',{method:'POST',body:data,headers:{'Accept':'application/json'}});
+   if(!response.ok) throw new Error('form submission failed');
+   if(result){result.className='contact-result success';result.textContent='تم إرسال رسالتك بنجاح. شكرًا لتواصلك مع مرصد رسكورا.';}
+   form.reset();syncOtherTopic();toast('تم إرسال رسالتك بنجاح.');
+ }catch(err){
+   if(result){result.className='contact-result error';result.textContent='تعذّر إرسال الرسالة الآن. تحققي من اتصال الإنترنت وحاولي مرة أخرى.';}
+   toast('لم يتم إرسال الرسالة. حاولي مرة أخرى.');
+ }finally{if(submit){submit.disabled=false;submit.textContent='إرسال الرسالة';}}
 });
 // Side drawer interactions
 const drawer=$('#sideDrawer'), backdrop=$('#drawerBackdrop'), menuToggle=$('#menuToggle');

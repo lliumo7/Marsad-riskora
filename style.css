@@ -413,3 +413,11 @@ body.theme-dark .profile-card input{background:#172b3a;color:#e3f1fb;border-colo
 #otherTopicWrap input{width:100%;border:1px solid #d4e4f3;border-radius:10px;padding:12px;background:#fbfdff;color:var(--navy);font-size:12px;margin-top:6px}
 @media(max-width:700px){.top{gap:10px}.menu-toggle{width:38px;height:38px;flex-basis:38px}.top .brand{min-width:0;flex:1}.top .brand b{font-size:12px}.top .brand small{font-size:9px}.topright{margin-right:auto}}
 body.theme-dark .side-drawer{background:#102438;border-color:#2a4258}body.theme-dark .drawer-head,body.theme-dark .drawer-foot{border-color:#2a4258}body.theme-dark .drawer-brand b,body.theme-dark .drawer-links button{color:#e3f1fb}body.theme-dark .drawer-links button{background:#102438}body.theme-dark .drawer-links button:hover{background:#1a344a}body.theme-dark .drawer-links small,body.theme-dark .drawer-brand small{color:#9db4c8}body.theme-dark .drawer-icon{background:#1b3b55;color:#80c5ff}body.theme-dark #drawerClose{background:#1a344a;color:#dcecff;border-color:#304a5e}body.theme-dark .faq-list summary{color:#e3f1fb}body.theme-dark .faq-list details{border-color:#2a4258}
+
+/* Contact form delivery states and support note */
+.contact-support-note{margin-top:4px;padding:13px 15px;border:1px solid var(--app-line,#dbe6ef);border-radius:12px;background:var(--app-bg,#f4f7fa);color:var(--app-ink,#183b57)}
+.contact-support-note b{display:block;font-size:12px;margin-bottom:3px}
+.contact-support-note p{margin:0;font-size:11px;line-height:1.9;color:var(--app-muted,#72859a)}
+.contact-result.success{background:#eaf7ef;color:#276b49}
+.contact-result.error{background:#fff0f0;color:#9d3030}
+#contactSubmit:disabled{opacity:.7;cursor:wait}

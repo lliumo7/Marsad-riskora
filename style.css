@@ -456,3 +456,20 @@ body.theme-dark .side-drawer{background:#102438;border-color:#2a4258}body.theme-
 .risk-detail-intro{width:100%;text-align:right;padding:8px 2px}
 .risk-detail-intro h2{margin-top:14px}
 @media(max-width:680px){.risk-detail-hero{display:block}.risk-detail-intro{padding:4px 0}}
+
+/* Fix risk-details tab visibility and interaction */
+#risk-details .risk-detail-content{
+  display:block!important;
+  position:relative;
+  z-index:2;
+  min-height:180px;
+  height:auto;
+  visibility:visible!important;
+  opacity:1!important;
+  color:#476b91;
+}
+#risk-details .risk-detail-tabs{position:relative;z-index:5}
+#risk-details .risk-detail-tab{pointer-events:auto;position:relative;z-index:6}
+#risk-details .risk-detail-list{display:grid!important}
+#risk-details .risk-detail-list li{visibility:visible!important;opacity:1!important}
+#risk-details .risk-detail-note{position:relative;z-index:1}

@@ -57,15 +57,28 @@ function renderRiskDetails(){
  const customName=($('#otherHazardText')?.value||'').trim();
  $('#riskDetailTitle').textContent=(risk==='other'&&customName)?customName:data.title;
  $('#riskDetailDescription').textContent=data.description;
- $('#riskDetailGlyph').textContent=data.glyph;
- $('#riskDetailArt').className='risk-detail-art '+data.className;
- document.querySelectorAll('[data-risk-tab]').forEach(btn=>{const active=btn.dataset.riskTab===activeRiskDetailTab;btn.classList.toggle('active',active);btn.setAttribute('aria-selected',String(active));});
+ const tabs=document.querySelectorAll('#risk-details [data-risk-tab]');
+ tabs.forEach(btn=>{
+   const active=btn.dataset.riskTab===activeRiskDetailTab;
+   btn.classList.toggle('active',active);
+   btn.setAttribute('aria-selected',String(active));
+ });
  const items=data[activeRiskDetailTab]||data.coverage;
  const heading=activeRiskDetailTab==='coverage'?'التغطيات':activeRiskDetailTab==='conditions'?'الشروط':'ما لك وما عليك';
  const icon=activeRiskDetailTab==='coverage'?'✓':activeRiskDetailTab==='conditions'?'▤':'ⓘ';
- $('#riskDetailContent').innerHTML='<h3>'+heading+'</h3><ul class="risk-detail-list">'+items.map(item=>'<li><span class="risk-detail-list-icon">'+icon+'</span><span>'+item+'</span></li>').join('')+'</ul>';
+ const target=$('#riskDetailContent');
+ target.innerHTML='';
+ const h=document.createElement('h3'); h.textContent=heading; target.appendChild(h);
+ const ul=document.createElement('ul'); ul.className='risk-detail-list';
+ items.forEach(item=>{
+   const li=document.createElement('li');
+   const mark=document.createElement('span'); mark.className='risk-detail-list-icon'; mark.textContent=icon;
+   const text=document.createElement('span'); text.textContent=item;
+   li.append(mark,text); ul.appendChild(li);
+ });
+ target.appendChild(ul);
 }
-document.querySelectorAll('[data-risk-tab]').forEach(btn=>btn.addEventListener('click',()=>{activeRiskDetailTab=btn.dataset.riskTab;renderRiskDetails();}));
+document.querySelectorAll('#risk-details [data-risk-tab]').forEach(btn=>btn.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();activeRiskDetailTab=btn.dataset.riskTab;renderRiskDetails();}));
 function syncIndicator(){
  syncAsset();
  selectedRisk = getSelectedRisk();

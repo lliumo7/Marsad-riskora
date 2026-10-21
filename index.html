@@ -15,10 +15,15 @@
         <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="اكتب كلمة المرور" required>
         <button type="button" id="togglePassword" class="password-toggle" aria-label="إظهار كلمة المرور">إظهار</button>
       </div>
+      <div id="confirmPasswordWrap" hidden>
+        <label for="confirmPassword">تأكيد كلمة المرور</label>
+        <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="أعد كتابة كلمة المرور">
+      </div>
       <p id="loginError" class="login-error" role="alert" hidden></p>
-      <button class="primary login-submit" type="submit">تسجيل الدخول</button>
+      <button id="loginSubmit" class="primary login-submit" type="submit">تسجيل الدخول</button>
     </form>
-    <p class="login-note">نموذج تجريبي — بيانات الدخول محفوظة على هذا الجهاز فقط.</p>
+    <button id="authModeToggle" class="auth-mode-toggle" type="button">ما عندك حساب؟ إنشاء حساب جديد</button>
+    <p class="login-note">حساب تجريبي محفوظ على هذا الجهاز فقط، وليس حسابًا موثقًا أو آمنًا للاستخدام الحقيقي.</p>
   </div>
 </section>
 
@@ -50,6 +55,7 @@
   <button type="button" data-page="about" class="drawer-link"><span class="drawer-icon">ⓘ</span><span><b>عن مرصد رسكورا</b><small>التعرّف على التطبيق ومميزاته</small></span><i>‹</i></button>
   <button type="button" data-page="contact" class="drawer-link"><span class="drawer-icon">✉</span><span><b>تواصل معنا</b><small>ملاحظات ومقترحات لتطوير التطبيق</small></span><i>‹</i></button>
  </div>
+ <button type="button" id="drawerLogout" class="drawer-logout">↪ تسجيل الخروج</button>
  <div class="drawer-foot">مرصد رسكورا · نموذج تجريبي</div>
 </aside>
 <main>
@@ -178,7 +184,7 @@
    <button class="settings-tab" data-settings-tab="privacy"><span class="settings-tab-icon"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><span><b>الخصوصية والأمان</b><small>بياناتك في النموذج التجريبي</small></span></button>
   </div>
   <div class="panel settings-content">
-   <div class="settings-pane active" data-settings-pane="profile"><h2>الملف الشخصي</h2><p class="muted">عدّل الاسم الذي يظهر لك في الترحيب داخل مرصد رسكورا.</p><div class="language-card profile-card"><label for="profileName"><b>الاسم المعروض</b></label><input id="profileName" type="text" maxlength="60" placeholder="اكتب اسمك"><small>سيظهر الاسم في الصفحة الرئيسية ويُحفظ على هذا الجهاز في النموذج التجريبي.</small><button id="saveProfileName" class="btn" type="button">حفظ الاسم</button></div><p class="settings-note">هذه نسخة تجريبية؛ الاسم محفوظ محليًا على هذا الجهاز فقط، وليس حسابًا موثقًا.</p></div>
+   <div class="settings-pane active" data-settings-pane="profile"><h2>الملف الشخصي</h2><p class="muted">عدّل الاسم الذي يظهر لك في الترحيب داخل مرصد رسكورا.</p><div class="language-card profile-card"><label for="profileName"><b>الاسم المعروض</b></label><input id="profileName" type="text" maxlength="60" placeholder="اكتب اسمك"><small>سيظهر الاسم في الصفحة الرئيسية ويُحفظ على هذا الجهاز في النموذج التجريبي.</small><button id="saveProfileName" class="btn" type="button">حفظ الاسم</button><button id="settingsLogout" class="btn logout-button" type="button">تسجيل الخروج</button></div><p class="settings-note">الحساب تجريبي ومحفوظ على هذا الجهاز فقط، ولا يرتبط بخادم أو قاعدة بيانات.</p></div>
    <div class="settings-pane" data-settings-pane="appearance"><h2>مظهر التطبيق</h2><p class="muted">اختر الشكل المريح لك.</p><div class="appearance-choices"><button class="appearance-choice active" data-theme="light"><span class="theme-preview light-preview"></span><b>فاتح</b><small>خلفية بيضاء وزرقاء</small></button><button class="appearance-choice" data-theme="dark"><span class="theme-preview dark-preview"></span><b>داكن</b><small>مناسب للإضاءة المنخفضة</small></button></div></div>
    <div class="settings-pane" data-settings-pane="language"><h2>اللغة</h2><p class="muted">اللغة المتاحة حاليًا في النموذج.</p><div class="language-card"><label for="languageSelect"><b>لغة واجهة التطبيق</b></label><select id="languageSelect" aria-label="Language"><option value="ar">العربية</option><option value="en">English</option></select><small>اختاري لغة العرض.</small></div></div>
    <div class="settings-pane" data-settings-pane="notifications"><h2>الإشعارات</h2><p class="muted">اختر أنواع التنبيهات التي تظهر داخل النموذج.</p><label class="setting-row"><span><b>حالة الطلب</b><small>تحديثات المراجعة والقبول</small></span><input type="checkbox" id="settingNotifyRequests" checked></label><label class="setting-row"><span><b>المؤشرات المناخية</b><small>تنبيهات تجريبية حول حد المؤشر</small></span><input type="checkbox" id="settingNotifyWeather" checked></label><label class="setting-row"><span><b>تحديثات التطبيق</b><small>رسائل عامة داخل المنصة</small></span><input type="checkbox" id="settingNotifyNews"></label><div class="settings-note">لا توجد إشعارات Push أو رسائل SMS فعلية في هذه النسخة.</div></div>

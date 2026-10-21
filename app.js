@@ -278,47 +278,55 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
 });
 
 
-// Demo-only name + password sign-in (no email).
+// Local demo account flow: username + password, no email or server authentication.
 (function setupDemoLogin(){
-  const screen = document.getElementById('loginScreen');
-  const form = document.getElementById('loginForm');
-  if (!screen || !form) return;
-  const nameField = document.getElementById('loginName');
-  const passwordField = document.getElementById('loginPassword');
-  const error = document.getElementById('loginError');
-  const toggle = document.getElementById('togglePassword');
-  const app = document.querySelector('body');
-  const storedName = getSavedDemoName();
-  const signedIn = sessionStorage.getItem('riskora_demo_signed_in') === '1' && !!storedName;
-  if (signedIn) screen.hidden = true;
-  if (storedName) { nameField.value = storedName; applyDemoName(storedName); }
-  if (toggle) toggle.addEventListener('click', () => {
-    const reveal = passwordField.type === 'password';
-    passwordField.type = reveal ? 'text' : 'password';
-    toggle.textContent = reveal ? 'إخفاء' : 'إظهار';
-    toggle.setAttribute('aria-label', reveal ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور');
-  });
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const username = nameField.value.trim();
-    const password = passwordField.value;
-    if (!username || !password) {
-      error.textContent = 'اكتب الاسم وكلمة المرور للمتابعة.';
-      error.hidden = false;
-      return;
+  const screen=document.getElementById('loginScreen'), form=document.getElementById('loginForm');
+  if(!screen||!form)return;
+  const nameField=document.getElementById('loginName'), passwordField=document.getElementById('loginPassword');
+  const confirmWrap=document.getElementById('confirmPasswordWrap'), confirmField=document.getElementById('confirmPassword');
+  const error=document.getElementById('loginError'), modeToggle=document.getElementById('authModeToggle'), submit=document.getElementById('loginSubmit');
+  const toggle=document.getElementById('togglePassword'); let mode='login';
+  const ACCOUNTS_KEY='riskora_demo_accounts_v1';
+  function accounts(){try{return JSON.parse(localStorage.getItem(ACCOUNTS_KEY)||'{}')}catch(e){return {}}}
+  function setError(message){error.textContent=message;error.hidden=!message;}
+  function setMode(next){mode=next;setError('');form.reset();confirmWrap.hidden=mode!=='register';confirmField.required=mode==='register';submit.textContent=mode==='register'?'إنشاء الحساب':'تسجيل الدخول';document.querySelector('#loginScreen h1').textContent=mode==='register'?'إنشاء حساب جديد':'أهلًا بك من جديد';document.querySelector('.login-description').textContent=mode==='register'?'أنشئ حسابًا تجريبيًا باسم مستخدم وكلمة مرور فقط.':'سجّل دخولك لمتابعة أصولك وتغطياتك التأمينية.';modeToggle.textContent=mode==='register'?'عندك حساب؟ تسجيل الدخول':'ما عندك حساب؟ إنشاء حساب جديد';passwordField.autocomplete=mode==='register'?'new-password':'current-password';}
+  async function digest(value){if(window.crypto&&crypto.subtle){const bytes=new TextEncoder().encode(value);const hash=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('')}return 'demo:'+value;}
+  function logout(){sessionStorage.removeItem('riskora_demo_signed_in');screen.hidden=false;setMode('login');passwordField.value='';confirmField.value='';setError('');const drawer=document.getElementById('sideDrawer'),backdrop=document.getElementById('drawerBackdrop');if(drawer){drawer.classList.remove('open');drawer.setAttribute('aria-hidden','true')}if(backdrop)backdrop.hidden=true;document.body.classList.remove('drawer-open');window.scrollTo({top:0,behavior:'smooth'});}
+  window.riskoraDemoLogout=logout;
+  const storedName=getSavedDemoName();
+  if(sessionStorage.getItem('riskora_demo_signed_in')==='1'&&storedName)screen.hidden=true;
+  if(storedName)applyDemoName(storedName);
+  if(toggle)toggle.addEventListener('click',()=>{const reveal=passwordField.type==='password';passwordField.type=reveal?'text':'password';toggle.textContent=reveal?'إخفاء':'إظهار';toggle.setAttribute('aria-label',reveal?'إخفاء كلمة المرور':'إظهار كلمة المرور')});
+  modeToggle.addEventListener('click',()=>setMode(mode==='login'?'register':'login'));
+  form.addEventListener('submit',async event=>{
+    event.preventDefault();setError('');let username=nameField.value.trim();const password=passwordField.value;
+    if(!username||!password){setError('اكتب الاسم وكلمة المرور للمتابعة.');return}
+    if(username.length<2){setError('الاسم لازم يكون حرفين على الأقل.');return}
+    if(password.length<6){setError('كلمة المرور لازم تكون 6 أحرف أو أكثر.');return}
+    const all=accounts(),key=username.toLocaleLowerCase('ar');
+    if(mode==='register'){
+      if(password!==confirmField.value){setError('كلمتا المرور غير متطابقتين.');return}
+      if(all[key]){setError('هذا الاسم مسجل من قبل. اختَر اسمًا آخر أو سجّل الدخول.');return}
+      all[key]={name:username,passwordHash:await digest(password)};
+      try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(all))}catch(e){setError('تعذر حفظ الحساب على هذا الجهاز.');return}
+    }else{
+      if(!all[key]){setError('ما لقينا حساب بهذا الاسم. أنشئ حسابًا جديدًا أولًا.');return}
+      if(all[key].passwordHash!==await digest(password)){setError('كلمة المرور غير صحيحة.');return}
+      username=all[key].name;
     }
-    // This is a UI prototype only; no server-side authentication.
-    sessionStorage.setItem('riskora_demo_signed_in', '1');
-    sessionStorage.setItem('riskora_demo_name', username);
-    sessionStorage.setItem('riskora_user_name', username);
-    try { localStorage.setItem('riskora_demo_name', username); localStorage.setItem('riskora_user_name', username); } catch(e) {}
-    screen.hidden = true;
-    applyDemoName(username);
+    sessionStorage.setItem('riskora_demo_signed_in','1');sessionStorage.setItem('riskora_demo_name',username);sessionStorage.setItem('riskora_user_name',username);
+    try{localStorage.setItem('riskora_demo_name',username);localStorage.setItem('riskora_user_name',username)}catch(e){}
+    screen.hidden=true;applyDemoName(username);setMode('login');
   });
+  document.getElementById('settingsLogout')?.addEventListener('click',()=>{if(confirm('هل تريد تسجيل الخروج؟'))logout()});
+  document.getElementById('drawerLogout')?.addEventListener('click',()=>{if(confirm('هل تريد تسجيل الخروج؟'))logout()});
+  document.addEventListener('click',event=>{
+    const protectedTarget=event.target.closest('[data-page], [data-go]');
+    if(!protectedTarget||screen.hidden)return;
+    if(protectedTarget.id==='drawerLogout'||protectedTarget.id==='settingsLogout')return;
+    event.preventDefault();event.stopImmediatePropagation();setError('سجّل الدخول أولًا للمتابعة.');
+  },true);
 })();
-
-
-
 
 // Reliable page navigation, page-local back button, and Arabic/English UI.
 (function riskoraLanguageAndNavigation(){

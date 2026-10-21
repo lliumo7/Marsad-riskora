@@ -480,3 +480,16 @@ body.theme-dark .side-drawer{background:#102438;border-color:#2a4258}body.theme-
 .logout-button { margin-top:10px; background:#fff7f7 !important; color:#ad3030 !important; border:1px solid #f1c8c8 !important; }
 body.theme-dark .auth-mode-toggle { color:#8ac9f2; }
 body.theme-dark .drawer-logout, body.theme-dark .logout-button { background:#352526 !important; border-color:#704448 !important; color:#ffb8b8 !important; }
+
+/* Unified icon system and clearly visible logout action */
+.drawer-logo svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.drawer-icon{font-size:0!important}
+.drawer-icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.drawer-links i{font-size:0!important;width:8px;height:8px;border-right:1.7px solid currentColor;border-top:1.7px solid currentColor;transform:rotate(45deg);margin-left:4px}
+.drawer-logout{display:flex!important;align-items:center;justify-content:center;gap:9px;width:100%!important;flex-shrink:0;margin:16px 0 12px!important;padding:13px 16px!important;border:1px solid #dc2626!important;border-radius:12px!important;background:#dc2626!important;color:#fff!important;font:inherit;font-weight:800;cursor:pointer;box-shadow:0 5px 12px rgba(220,38,38,.16)}
+.drawer-logout svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.drawer-logout:hover,.drawer-logout:focus-visible{background:#b91c1c!important;border-color:#b91c1c!important;outline:3px solid rgba(220,38,38,.18)}
+.logout-button{background:#dc2626!important;color:#fff!important;border:1px solid #dc2626!important}
+body.theme-dark .drawer-logout,body.theme-dark .logout-button{background:#dc2626!important;border-color:#dc2626!important;color:#fff!important}
+.side-drawer>.drawer-logout{margin-top:auto!important}
+.drawer-foot{margin-top:0!important}

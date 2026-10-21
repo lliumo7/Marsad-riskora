@@ -74,8 +74,8 @@ function renderRiskDetails(){
    btn.setAttribute('aria-selected',String(active));
  });
  const items=data[activeRiskDetailTab]||data.coverage;
- const heading=activeRiskDetailTab==='coverage'?'المنافع المشمولة':activeRiskDetailTab==='conditions'?'الشروط والأحكام':'المنافع والمسؤوليات';
- const icon=activeRiskDetailTab==='coverage'?'✓':activeRiskDetailTab==='conditions'?'▤':'ⓘ';
+ const heading=activeRiskDetailTab==='coverage'?'ما الذي قد تشمل التغطية؟':activeRiskDetailTab==='conditions'?'الشروط اللازمة لاستحقاق التعويض':'المنافع والمسؤوليات';
+ const icon=activeRiskDetailTab==='coverage'?'✓':activeRiskDetailTab==='conditions'?'✓':'ⓘ';
  const target=$('#riskDetailContent');
  target.innerHTML='';
  const h=document.createElement('h3'); h.textContent=heading; target.appendChild(h);

@@ -449,3 +449,10 @@ body.theme-dark .side-drawer{background:#102438;border-color:#2a4258}body.theme-
 .risk-detail-list-icon{flex:0 0 30px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#e0f0ff;color:#0874c9;font-weight:800}
 .risk-detail-note{display:flex;align-items:flex-start;gap:10px;margin-top:16px;padding:14px 16px;border-radius:14px;background:#edf6ff;color:#587a9d;line-height:1.8;font-size:13px}.risk-detail-note>span{font-size:20px;color:#1677c8;font-weight:700}.risk-detail-note p{margin:0}
 @media(max-width:680px){.risk-detail-hero{grid-template-columns:1fr;gap:16px}.risk-detail-art{min-height:170px}.risk-detail-art span{font-size:70px}.risk-detail-tabs{gap:3px}.risk-detail-tab{font-size:13px;padding:12px 4px}.risk-detail-panel .actions{flex-direction:column}.risk-detail-panel .actions .btn{width:100%}}
+
+/* Revised risk details: no side image or decorative artwork */
+.risk-detail-hero{display:block;margin-bottom:24px}
+.risk-detail-art{display:none!important}
+.risk-detail-intro{width:100%;text-align:right;padding:8px 2px}
+.risk-detail-intro h2{margin-top:14px}
+@media(max-width:680px){.risk-detail-hero{display:block}.risk-detail-intro{padding:4px 0}}

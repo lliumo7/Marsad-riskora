@@ -522,3 +522,11 @@ body.theme-dark .drawer-logout,body.theme-dark .logout-button{background:#dc2626
 @media(max-width:600px){.amend-options{grid-template-columns:1fr}.amend-form-actions{grid-template-columns:1fr}}
 
 .status.rejected-status{background:#fee2e2;color:#b42318;border:1px solid #fecaca}
+
+
+/* Improved English-language layout */
+body.lang-en { direction: ltr; }
+body.lang-en main, body.lang-en .page { text-align: left; }
+body.lang-en .field-label, body.lang-en label { text-align: left; }
+body.lang-en input, body.lang-en textarea, body.lang-en select { text-align: left; }
+body.lang-en .back-arrow { transform: none; }

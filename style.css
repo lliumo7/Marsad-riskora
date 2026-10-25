@@ -520,3 +520,6 @@ body.theme-dark .drawer-logout,body.theme-dark .logout-button{background:#dc2626
 /* Quotation amendment flow */
 .amend-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.amend-options label{display:flex;align-items:center;gap:9px;border:1px solid #dceaf6;border-radius:10px;padding:12px;background:#f9fcff;font-size:12px;cursor:pointer}.amend-options input{accent-color:#0874d9}.amend-form-actions{grid-template-columns:1fr 1fr}.quote-amend-confirm{text-align:center;padding:26px 18px;margin-top:16px}.quote-amend-confirm h3{margin:10px 0}.quote-amend-confirm p{max-width:520px;margin:12px auto 18px;line-height:1.8;color:var(--muted);font-size:12px}.amend-confirm-icon{width:54px;height:54px;display:grid;place-items:center;margin:0 auto 10px;border-radius:50%;background:#e4f8ed;color:#16804e;font-size:30px;font-weight:bold}.quote-status-message{line-height:1.7}
 @media(max-width:600px){.amend-options{grid-template-columns:1fr}.amend-form-actions{grid-template-columns:1fr}}
+
+/* Rejected customer requests are visibly closed */
+.status.rejected{background:#fee2e2!important;color:#b91c1c!important;border:1px solid #fecaca!important}

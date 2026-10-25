@@ -29,17 +29,50 @@ const WORKFLOW_KEY='riskora_workflow_v1'; let workflow={requests:[],documents:[]
  const selected=(req?.risks||[]).map(r=>({key:r.key,label:r.key==='other'?(req.otherRisk||r.label||'خطر طبيعي آخر'):r.label}));
  const summary=document.querySelector('#packageRiskSummary');
  if(!summary)return;
- if(!selected.length){summary.innerHTML='<b>الأخطار المختارة</b><span class="package-risk-empty">لم تُسجّل أخطار لهذا الطلب بعد. ارجعي لصفحة اختيار الخطر وحددي الأخطار المطلوبة.</span>';return;}
+ if(!selected.length){
+  summary.innerHTML='<b>الأخطار المختارة</b><span class="package-risk-empty">لم تُسجّل أخطار لهذا الطلب بعد. ارجعي لصفحة اختيار الخطر وحددي الأخطار المطلوبة.</span>';
+  return;
+ }
  summary.innerHTML='<b>الأخطار المحددة لهذا الطلب</b><div class="package-risk-chips">'+selected.map(r=>'<span class="package-risk-chip">'+escapeText(r.label)+'</span>').join('')+'</div>';
- const labels=selected.map(r=>r.label).join('، ');
- const basic=document.querySelector('.package[data-package="الأساسية"] ul');
- const balanced=document.querySelector('.package[data-package="المتوازنة"] ul');
- const business=document.querySelector('.package[data-package="الأعمال"] ul');
- if(basic?.children[1])basic.children[1].textContent='تنبيهات بالمخاطر المرتبطة بـ: '+labels;
- if(balanced?.children[1])balanced.children[1].textContent='متابعة مؤشرات الطقس المرتبطة بـ: '+labels;
- if(business?.children[1])business.children[1].textContent='متابعة مؤشرات الأخطار في موقع المنشأة: '+labels;
-}
-$('#approveDemo').addEventListener('click',()=>{accepted=true;const req=currentReq();if(req){req.status='accepted';req.updatedAt=new Date().toISOString();saveWorkflow()}syncRequests();toast('تمت محاكاة قبول الأصل. الباقات أصبحت متاحة.');showPage('packages')});$$('.selectPackage').forEach(b=>b.addEventListener('click',()=>{const card=b.closest('.package');selectedPackage=card.dataset.package;$$('.package').forEach(p=>{p.classList.toggle('selected',p===card);p.classList.toggle('featured',p===card)});$$('.selectPackage').forEach(btn=>{btn.textContent=btn.closest('.package')===card?'✓ تم اختيار الباقة':'اختيار الباقة';btn.classList.toggle('outline',btn.closest('.package')!==card)});const req=currentReq();if(req){req.package=selectedPackage;req.status='offer';saveWorkflow()}toast('تم اختيار '+selectedPackage)}));const prices={'الأساسية':180,'المتوازنة':320,'الأعمال':590},benefits={'الأساسية':'2,500','المتوازنة':'5,000','الأعمال':'10,000'};$('#continueOffer').addEventListener('click',()=>{syncOffer();go('offer')});function syncOffer(){syncAsset();$('#offerAsset').textContent=assetName;$('#offerRegion').textContent=region;$('#offerPackage').textContent=selectedPackage;$('#offerPrice').textContent=prices[selectedPackage]+' ريال';$('#offerBenefit').textContent=benefits[selectedPackage]+' ريال';if($('#paySummaryPrice'))$('#paySummaryPrice').textContent=prices[selectedPackage]+' ريال';if($('#paySummaryTotal'))$('#paySummaryTotal').textContent=prices[selectedPackage]+' ريال'}$('#payDemo').addEventListener('click',()=>{if(!$('#terms').checked){toast('يرجى الموافقة على الشروط التوضيحية أولًا.');return}paid=true;const req=currentReq();if(req){req.status='issued';req.package=selectedPackage;req.price=prices[selectedPackage];req.policyId='POL-DEMO-'+req.id.slice(-6);req.issuedAt=new Date().toISOString();workflow.documents=workflow.documents.filter(d=>d.requestId!==req.id);workflow.documents.push({requestId:req.id,id:req.policyId,assetName:req.assetName,assetType:req.assetType,region:req.region,package:selectedPackage,price:prices[selectedPackage],risks:req.risks||[],status:'demo',issuedAt:req.issuedAt});saveWorkflow()}toast('تم إصدار وثيقة تجريبية وحفظها في وثائقي — لا توجد عملية مالية فعلية.');syncRequests();syncPolicy();showPage('policy')});function syncPolicy(){const req=currentReq();if(req){assetName=req.assetName||assetName;region=req.region||region;selectedPackage=req.package||selectedPackage}$('#policyAsset').textContent=assetName;$('#policyPackage').textContent=selectedPackage;$('#policyPrice').textContent=(prices[selectedPackage]||0)+' ريال'}
+ const riskCopy={
+  rain:{metric:'كمية الأمطار وشدة الهطول وتجمّع المياه والسيول',alert:'تنبيهات عند ارتفاع الهطول أو احتمال تجمع المياه والسيول'},
+  wind:{metric:'سرعة الرياح وشدتها في موقع الأصل',alert:'تنبيهات للرياح القوية واحتمال تطاير الأجسام أو تضرر الأسقف'},
+  heat:{metric:'درجات الحرارة القصوى وفترات الحر الشديد',alert:'تنبيهات عند ارتفاع الحرارة وإرشادات وقائية لتقليل آثارها'},
+  storm:{metric:'مؤشرات العواصف الرعدية والبرق والصواعق والرياح المصاحبة',alert:'تنبيهات وقائية عند رصد ظروف مرتبطة بالعواصف الرعدية'},
+  dust:{metric:'شدة العواصف الترابية والغبار وانخفاض مستوى الرؤية',alert:'تنبيهات عند اشتداد الغبار وانخفاض الرؤية وإرشادات السلامة'},
+  other:{metric:'مؤشرات الخطر الطبيعي المحدد: '+(req.otherRisk||'خطر طبيعي آخر'),alert:'تنبيهات مرتبطة بالخطر المحدد بعد مراجعته وتحديد مؤشر مناسب له'}
+ };
+ const details=selected.map(r=>riskCopy[r.key]||riskCopy.other);
+ const metrics=[...new Set(details.map(x=>x.metric))].join('؛ ');
+ const alerts=[...new Set(details.map(x=>x.alert))].join('؛ ');
+ const packages=[
+  {selector:'.package[data-package="الأساسية"] ul',items:[
+   'تغطية '+selected.map(r=>r.label).join(' و')+' وفق شروط الوثيقة',
+   alerts,
+   'متابعة حالة طلب التعويض',
+   'خصم تجديد مقترح 2% عند استيفاء الشروط'
+  ]},
+  {selector:'.package[data-package="المتوازنة"] ul',items:[
+   'تغطية '+selected.map(r=>r.label).join(' و')+' وفق شروط الوثيقة',
+   'متابعة المؤشرات المرتبطة بالأخطار المختارة: '+metrics,
+   'تنبيهات وقائية وإرشادات للحد من الخسائر المرتبطة بهذه الأخطار',
+   'متابعة المطالبات ورفع الأدلة المطلوبة',
+   'خصم تجديد مقترح 3% عند استيفاء الشروط'
+  ]},
+  {selector:'.package[data-package="الأعمال"] ul',items:[
+   'خيارات تغطية أوسع للأصول والمنشآت حسب الأخطار المختارة: '+selected.map(r=>r.label).join('، '),
+   'متابعة المؤشرات المرتبطة بالأخطار في موقع المنشأة: '+metrics,
+   'تنبيهات وقائية مخصصة للأخطار المختارة: '+alerts,
+   'متابعة المطالبات ورفع الأدلة المطلوبة',
+   'خصم تجديد مقترح 10% عند استيفاء الشروط'
+  ]}
+ ];
+ packages.forEach(p=>{
+  const ul=document.querySelector(p.selector);
+  if(!ul)return;
+  ul.innerHTML=p.items.map(item=>'<li>'+escapeText(item)+'</li>').join('');
+ });
+}$('#approveDemo').addEventListener('click',()=>{accepted=true;const req=currentReq();if(req){req.status='accepted';req.updatedAt=new Date().toISOString();saveWorkflow()}syncRequests();toast('تمت محاكاة قبول الأصل. الباقات أصبحت متاحة.');showPage('packages')});$$('.selectPackage').forEach(b=>b.addEventListener('click',()=>{const card=b.closest('.package');selectedPackage=card.dataset.package;$$('.package').forEach(p=>{p.classList.toggle('selected',p===card);p.classList.toggle('featured',p===card)});$$('.selectPackage').forEach(btn=>{btn.textContent=btn.closest('.package')===card?'✓ تم اختيار الباقة':'اختيار الباقة';btn.classList.toggle('outline',btn.closest('.package')!==card)});const req=currentReq();if(req){req.package=selectedPackage;req.status='offer';saveWorkflow()}toast('تم اختيار '+selectedPackage)}));const prices={'الأساسية':180,'المتوازنة':320,'الأعمال':590},benefits={'الأساسية':'2,500','المتوازنة':'5,000','الأعمال':'10,000'};$('#continueOffer').addEventListener('click',()=>{syncOffer();go('offer')});function syncOffer(){syncAsset();$('#offerAsset').textContent=assetName;$('#offerRegion').textContent=region;$('#offerPackage').textContent=selectedPackage;$('#offerPrice').textContent=prices[selectedPackage]+' ريال';$('#offerBenefit').textContent=benefits[selectedPackage]+' ريال';if($('#paySummaryPrice'))$('#paySummaryPrice').textContent=prices[selectedPackage]+' ريال';if($('#paySummaryTotal'))$('#paySummaryTotal').textContent=prices[selectedPackage]+' ريال'}$('#payDemo').addEventListener('click',()=>{if(!$('#terms').checked){toast('يرجى الموافقة على الشروط التوضيحية أولًا.');return}paid=true;const req=currentReq();if(req){req.status='issued';req.package=selectedPackage;req.price=prices[selectedPackage];req.policyId='POL-DEMO-'+req.id.slice(-6);req.issuedAt=new Date().toISOString();workflow.documents=workflow.documents.filter(d=>d.requestId!==req.id);workflow.documents.push({requestId:req.id,id:req.policyId,assetName:req.assetName,assetType:req.assetType,region:req.region,package:selectedPackage,price:prices[selectedPackage],risks:req.risks||[],status:'demo',issuedAt:req.issuedAt});saveWorkflow()}toast('تم إصدار وثيقة تجريبية وحفظها في وثائقي — لا توجد عملية مالية فعلية.');syncRequests();syncPolicy();showPage('policy')});function syncPolicy(){const req=currentReq();if(req){assetName=req.assetName||assetName;region=req.region||region;selectedPackage=req.package||selectedPackage}$('#policyAsset').textContent=assetName;$('#policyPackage').textContent=selectedPackage;$('#policyPrice').textContent=(prices[selectedPackage]||0)+' ريال'}
 let selectedRisk = 'rain';
 const riskConfig = {
  rain: {label:'كمية الهطول المطري', unit:'ملم', field:'rain', threshold:70, source:'ملف Excel تجريبي', glyph:'rain'},

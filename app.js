@@ -41,20 +41,20 @@ const nameField=$('#assetName'),addressField=$('#address'),regionField=$('#regio
 $$('.type').forEach(x=>x.classList.toggle('selected',x.dataset.type==='منزل'));document.querySelectorAll('.haz-option input').forEach(x=>x.checked=x.closest('.haz-option')?.dataset.risk==='rain');
 if($('#hazNotes'))$('#hazNotes').value='';if($('#otherHazardText'))$('#otherHazardText').value='';if($('#otherHazardField'))$('#otherHazardField').hidden=true;
 }if((id==='packages'||id==='offer'||id==='policy'||id==='indicator'||id==='claim')&&!accepted){toast('تظهر هذه المرحلة بعد قبول الأصل في رحلة الطلب.');if(requestSent)showPage('review');else showPage('asset');return}showPage(id)}function showPage(id){if(id==='packages'){const r=currentReq();if(r&&['pending','accepted'].includes(r.status)){r.status='accepted';accepted=true;r.updatedAt=new Date().toISOString();saveWorkflow();syncRequests()}}if(id==='home'||id==='settings')applyDemoName(getSavedDemoName());$$('.page').forEach(p=>p.classList.toggle('active',p.id===id));$$('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id||(id==='hazard'&&b.dataset.page==='hazard')||(['review','packages','offer'].includes(id)&&b.dataset.page==='hazard')));window.scrollTo({top:0,behavior:'smooth'});if(id==='hazard')syncAsset();if(id==='risk-details')renderRiskDetails();if(id==='offer')syncOffer();if(id==='policy')syncPolicy();if(id==='indicator')syncIndicator();if(id==='requests')syncRequests();if(id==='data')renderWeatherData();if(id==='settings')syncSettings()}function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.classList.remove('show'),3000)}document.addEventListener('click',e=>{const goBtn=e.target.closest('[data-go]');if(goBtn)go(goBtn.dataset.go);const nav=e.target.closest('[data-page]');if(nav)go(nav.dataset.page)});$$('.type').forEach(b=>b.addEventListener('click',()=>{$$('.type').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedType=b.dataset.type}));function syncAsset(){assetName=$('#assetName').value.trim()||`أصل ${selectedType} في ${$('#region').value}`;region=$('#region').value;$('#summaryAsset').textContent=assetName;$('#summaryRegion').textContent=region}$('#saveAsset').addEventListener('click',()=>{syncAsset();if(!$('#address').value.trim()){toast('أضيفي وصف الموقع أو العنوان قبل المتابعة.');$('#address').focus();return}let draft=currentReq(); if(!draft || draft.status!=='draft'){draft={id:'REQ-2026-'+String(Date.now()).slice(-6),assetName,assetType:selectedType,region,address:$('#address').value.trim(),status:'draft',createdAt:new Date().toISOString(),risks:[]};workflow.requests.push(draft);workflow.currentId=draft.id;saveWorkflow()}else{draft.assetName=assetName;draft.assetType=selectedType;draft.region=region;draft.address=$('#address').value.trim();saveWorkflow()} toast('تم حفظ بيانات الأصل. أكملي تحديد الأخطار لإرسال الطلب.');go('hazard')});$('#submitRequest').addEventListener('click',()=>{syncAsset();if(document.querySelector('.haz-option[data-risk="other"] input').checked && !$('#otherHazardText').value.trim()){toast('اكتبي الخطر الطبيعي الذي ترغبين في تغطيته.');$('#otherHazardText').focus();return}showPage('risk-details')});function submitCoverageRequest(){syncAsset();requestSent=true;let req=currentReq();if(!req){req={id:'REQ-2026-'+String(Date.now()).slice(-6),createdAt:new Date().toISOString()};workflow.requests.push(req);workflow.currentId=req.id}req.assetName=assetName;req.assetType=selectedType;req.region=region;req.address=$('#address').value.trim();req.risks=[...document.querySelectorAll('.haz-option input:checked')].map(x=>({key:x.closest('.haz-option').dataset.risk,label:x.closest('.haz-option').querySelector('b').textContent}));req.otherRisk=$('#otherHazardText').value.trim();req.notes=$('#hazNotes').value.trim();req.status='pending';req.updatedAt=new Date().toISOString();accepted=false;paid=false;saveWorkflow();$('#requestId').textContent=req.id;syncRequests();showPage('review');toast('تم إنشاء الطلب وحفظه في طلباتي.')}$('#continueRiskDetails').addEventListener('click',submitCoverageRequest);$('#approveDemo').addEventListener('click',()=>{accepted=true;const req=currentReq();if(req){req.status='accepted';req.updatedAt=new Date().toISOString();saveWorkflow()}syncRequests();toast('تمت محاكاة قبول الأصل. الباقات أصبحت متاحة.');showPage('packages')});$$('.selectPackage').forEach(b=>b.addEventListener('click',()=>{const card=b.closest('.package');selectedPackage=card.dataset.package;$$('.package').forEach(p=>{p.classList.toggle('selected',p===card);p.classList.toggle('featured',p===card)});$$('.selectPackage').forEach(btn=>{btn.textContent=btn.closest('.package')===card?'✓ تم اختيار الباقة':'اختيار الباقة';btn.classList.toggle('outline',btn.closest('.package')!==card)});const req=currentReq();if(req){req.package=selectedPackage;req.status='offer';saveWorkflow()}toast('تم اختيار '+selectedPackage)}));const prices={'الأساسية':180,'المتوازنة':320,'الأعمال':590},benefits={'الأساسية':'2,500','المتوازنة':'5,000','الأعمال':'10,000'};$('#continueOffer').addEventListener('click',()=>{syncOffer();go('offer')});
-function money(n){return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(n)+' ريال'}
+function money(n){const en=document.documentElement.lang==='en';return new Intl.NumberFormat(en?'en-US':'ar-SA',{maximumFractionDigits:2}).format(n)+(en?' SAR':' ريال')}
 function syncOffer(){
  const req=currentReq()||{}; syncAsset();
  const pkg=req.package||selectedPackage; selectedPackage=pkg;
  const prices={'الأساسية':180,'المتوازنة':320,'الأعمال':590}, benefits={'الأساسية':2500,'المتوازنة':5000,'الأعمال':10000};
  const price=prices[pkg]||prices['المتوازنة'], vat=Math.round(price*.15*100)/100, total=price+vat;
  const today=new Date(); if(!req.offerCreatedAt){req.offerCreatedAt=today.toISOString();req.offerExpiresAt=new Date(today.getTime()+14*24*60*60*1000).toISOString();saveWorkflow()} const issuedAt=new Date(req.offerCreatedAt), expiry=new Date(req.offerExpiresAt||issuedAt.getTime()+14*24*60*60*1000);
- const fmt=d=>d.toLocaleDateString('ar-SA',{year:'numeric',month:'long',day:'numeric'});
+ const fmt=d=>d.toLocaleDateString(document.documentElement.lang==='en'?'en-GB':'ar-SA',{year:'numeric',month:'long',day:'numeric'});
  const put=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v||'غير متوفر'};
- put('offerNumber',req.id||'سيُحدد عند إنشاء الطلب');put('offerDate',fmt(issuedAt));put('offerExpiryDate','ينتهي في '+fmt(expiry));put('offerCustomer',getSavedDemoName()||'العميل');put('offerAsset',req.assetName||assetName);put('offerRegion',req.region||region);put('offerAddress',req.address||'غير مضاف');put('offerAssetType',req.assetType||selectedType);put('offerPackage',pkg);put('offerBenefit',money(benefits[pkg]||benefits['المتوازنة']));put('offerPrice',money(price));put('offerVat',money(vat)+' (15% توضيحية)');put('offerTotal',money(total));put('paySummaryPrice',money(price));put('paySummaryVat',money(vat));put('paySummaryTotal',money(total));
+ put('offerNumber',req.id||'سيُحدد عند إنشاء الطلب');put('offerDate',fmt(issuedAt));put('offerExpiryDate',(document.documentElement.lang==='en'?'Expires on ':'ينتهي في ')+fmt(expiry));put('offerCustomer',getSavedDemoName()||'العميل');put('offerAsset',req.assetName||assetName);put('offerRegion',req.region||region);put('offerAddress',req.address||'غير مضاف');put('offerAssetType',req.assetType||selectedType);put('offerPackage',pkg);put('offerBenefit',money(benefits[pkg]||benefits['المتوازنة']));put('offerPrice',money(price));put('offerVat',money(vat)+' (15% توضيحية)');put('offerTotal',money(total));put('paySummaryPrice',money(price));put('paySummaryVat',money(vat));put('paySummaryTotal',money(total));
  const expiryEl=document.getElementById('offerExpiryDate'); if(expiryEl)expiryEl.dataset.expires=expiry.toISOString();
- const riskBox=document.getElementById('quoteRiskTables'); if(riskBox){const risks=Array.isArray(req.risks)?req.risks:[];const labels={rain:'الأمطار الغزيرة والسيول',wind:'الرياح الشديدة',heat:'موجات الحرارة',storm:'العواصف الرعدية',dust:'العواصف الترابية',hail:'البَرَد',frost:'الصقيع',other:req.otherRisk||'خطر آخر'};
- const cfgs=window.riskoraRiskConfig||null;
- riskBox.innerHTML=risks.length?risks.map(r=>{const key=r.key||'other';const cfg=(typeof riskConfig!=='undefined'&&riskConfig[key])?riskConfig[key]:null;const trigger=cfg?`${cfg.threshold} ${cfg.unit}`:'يُحدد بعد مراجعة الخطر';const measure=cfg?cfg.label:'مؤشر الخطر';return `<article class="quote-risk-card"><h4>${labels[key]||r.label||'خطر مختار'}</h4><table class="quote-table"><thead><tr><th>المؤشر</th><th>حد التفعيل التجريبي</th><th>حد المنفعة للباقة</th><th>ملاحظات</th></tr></thead><tbody><tr><td>${measure}</td><td>${trigger}</td><td>${money(benefits[pkg]||5000)}</td><td>حد توضيحي للباقة وليس مبلغ تعويض معتمدًا لكل حادث</td></tr></tbody></table><p class="quote-note">مصدر المؤشر الحالي تجريبي داخل النموذج. يحتاج حد التعويض وقواعد القياس إلى اعتماد نهائي قبل أي استخدام فعلي.</p></article>`}).join(''):'<div class="quote-risk-card"><p>لا توجد أخطار محفوظة في الطلب الحالي. ارجعي إلى تفاصيل الخطر وأكملي الاختيار.</p></div>';
+ const riskBox=document.getElementById('quoteRiskTables'); if(riskBox){const risks=Array.isArray(req.risks)?req.risks:[];const en=document.documentElement.lang==='en';
+ const labels=en?{rain:'Heavy Rainfall & Flooding',wind:'Severe Winds',heat:'Heatwaves',storm:'Thunderstorms',dust:'Dust Storms',hail:'Hail',frost:'Frost',other:req.otherRisk||'Other Risk'}:{rain:'الأمطار الغزيرة والسيول',wind:'الرياح الشديدة',heat:'موجات الحرارة',storm:'العواصف الرعدية',dust:'العواصف الترابية',hail:'البَرَد',frost:'الصقيع',other:req.otherRisk||'خطر آخر'};
+ riskBox.innerHTML=risks.length?risks.map(r=>{const key=r.key||'other';const cfg=(typeof riskConfig!=='undefined'&&riskConfig[key])?riskConfig[key]:null;const trigger=cfg?`${cfg.threshold} ${cfg.unit}`:(en?'To be confirmed after risk review':'يُحدد بعد مراجعة الخطر');const measure=cfg?(en?({'مؤشر هطول الأمطار':'Rainfall Index','مؤشر سرعة الرياح':'Wind Speed Index','مؤشر درجة الحرارة':'Temperature Index'}[cfg.label]||cfg.label):cfg.label):(en?'Risk Index':'مؤشر الخطر');return `<article class="quote-risk-card"><h4>${labels[key]||r.label||(en?'Selected Risk':'خطر مختار')}</h4><table class="quote-table"><thead><tr><th>${en?'Index':'المؤشر'}</th><th>${en?'Demo Trigger Threshold':'حد التفعيل التجريبي'}</th><th>${en?'Package Benefit Limit':'حد المنفعة للباقة'}</th><th>${en?'Notes':'ملاحظات'}</th></tr></thead><tbody><tr><td>${measure}</td><td>${trigger}</td><td>${money(benefits[pkg]||5000)}</td><td>${en?'Illustrative package limit, not an approved payout for each event':'حد توضيحي للباقة وليس مبلغ تعويض معتمدًا لكل حادث'}</td></tr></tbody></table><p class="quote-note">${en?'The index source is simulated in this prototype. Compensation limits and measurement rules require final approval before real-world use.':'مصدر المؤشر الحالي تجريبي داخل النموذج. يحتاج حد التعويض وقواعد القياس إلى اعتماد نهائي قبل أي استخدام فعلي.'}</p></article>`}).join(''):`<div class="quote-risk-card"><p>${en?'No risks are saved in this request. Return to risk details and complete your selection.':'لا توجد أخطار محفوظة في الطلب الحالي. ارجعي إلى تفاصيل الخطر وأكملي الاختيار.'}</p></div>`;
  }
  const reqStatus=req.status||'offer';const badge=document.getElementById('quoteStatusBadge');if(badge)badge.textContent=({offer:'عرض مبدئي',amendment_pending:'طلب تعديل قيد المراجعة',rejected_by_client:'مرفوض من العميل',expired:'منتهي الصلاحية',signed:'موقّع — بانتظار الدفع',issued:'صدرت وثيقة تجريبية'})[reqStatus]||'عرض مبدئي';const amendPanel=document.getElementById('quoteAmendPanel'),amendConfirmation=document.getElementById('quoteAmendConfirmation'),pendingNotice=document.getElementById('quoteAmendPendingNotice');if(reqStatus==='amendment_pending'){if(amendPanel)amendPanel.hidden=true;if(amendConfirmation)amendConfirmation.hidden=false;if(pendingNotice)pendingNotice.hidden=false}else{if(amendConfirmation)amendConfirmation.hidden=true;if(pendingNotice)pendingNotice.hidden=true}
  const expired=Date.now()>expiry.getTime(); if(expired && req.status!=='issued' && req.status!=='rejected_by_client'){req.status='expired';saveWorkflow()} const accept=document.getElementById('quoteAccept'),amend=document.getElementById('quoteAmend'),reject=document.getElementById('quoteReject');if(accept)accept.disabled=expired||['rejected_by_client','amendment_pending','issued'].includes(reqStatus);if(amend)amend.disabled=['rejected_by_client','issued'].includes(reqStatus);if(reject)reject.disabled=['rejected_by_client','issued'].includes(reqStatus);
@@ -875,6 +875,101 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
     "اختر المنطقة": "Select Region",
     "إرسال الطلب للمراجعة ←": "Submit for Review →",
     "طلباتي ووثائقي": "My Requests & Policies",
+    "الأصل المؤمن عليه": "Insured Asset",
+    "وصف الموقع": "Location Description",
+    "نوع الأصل": "Asset Type",
+    "مدة التغطية المقترحة": "Proposed Coverage Period",
+    "12 شهرًا — نموذج تجريبي": "12 months — demo only",
+    "تفاصيل الأخطار المختارة والتغطية": "Selected Risks & Coverage Details",
+    "العواصف الرعدية": "Thunderstorms",
+    "المؤشر": "Index",
+    "حد التفعيل التجريبي": "Demo Trigger Threshold",
+    "حد المنفعة للباقة": "Package Benefit Limit",
+    "ملاحظات": "Notes",
+    "حد توضيحي للباقة وليس مبلغ تعويض معتمدًا لكل حادث": "Illustrative package limit, not an approved payout for each event",
+    "مصدر المؤشر الحالي تجريبي داخل النموذج. يحتاج حد التعويض وقواعد القياس إلى اعتماد نهائي قبل أي استخدام فعلي.": "The index source is simulated in this prototype. Compensation limits and measurement rules require final approval before real-world use.",
+    "لا توجد أخطار محفوظة في الطلب الحالي. ارجعي إلى تفاصيل الخطر وأكملي الاختيار.": "No risks are saved in this request. Return to risk details and complete your selection.",
+    "عرض مبدئي": "Preliminary Quotation",
+    "ينتهي في": "Expires on",
+    "غير مضاف": "Not provided",
+    "الأساسية": "Basic",
+    "المتوازنة": "Balanced",
+    "الأعمال": "Business",
+    "جاري": "In Progress",
+    "مكتمل": "Complete",
+    "قيد المراجعة": "Under Review",
+    "مرفوض من العميل": "Declined by Customer",
+    "تم رفض العرض وإغلاقه": "Quotation declined and closed",
+    "بانتظار إكمال العرض": "Awaiting Quotation Completion",
+    "صدرت وثيقة تجريبية": "Demo Policy Issued",
+    "طلب تعديل قيد المراجعة": "Amendment Request Under Review",
+    "موقّع — بانتظار الدفع": "Signed — Awaiting Payment",
+    "المنطقة": "Region",
+    "جدة": "Jeddah",
+    "جازان": "Jazan",
+    "الرياض": "Riyadh",
+    "القصيم": "Al-Qassim",
+    "مكة المكرمة": "Makkah",
+    "المدينة المنورة": "Madinah",
+    "المنطقة الشرقية": "Eastern Province",
+    "تبوك": "Tabuk",
+    "حائل": "Hail",
+    "الجوف": "Al-Jouf",
+    "عسير": "Asir",
+    "نجران": "Najran",
+    "الباحة": "Al-Baha",
+    "منزل": "Home",
+    "متجر": "Shop",
+    "مزرعة": "Farm",
+    "منشأة صناعية": "Industrial Facility",
+    "مبنى تجاري": "Commercial Building",
+    "ريال": "SAR",
+    "يُحدد بعد مراجعة الخطر": "To be confirmed after risk review",
+    "مؤشر الخطر": "Risk Index",
+    "المطر": "Rainfall",
+    "سرعة الرياح": "Wind Speed",
+    "درجة الحرارة": "Temperature",
+    "البَرَد": "Hail",
+    "الصقيع": "Frost",
+    "خطر آخر": "Other Risk",
+    "خطر مختار": "Selected Risk",
+    "تاريخ إصدار العرض": "Quotation Issue Date",
+    "اسم العميل": "Customer Name",
+    "اسم الأصل": "Asset Name",
+    "رقم الطلب / العرض": "Request / Quotation Number",
+    "حد المنفعة التوضيحي للباقة": "Illustrative Package Benefit Limit",
+    "السعر قبل الضريبة": "Price Before Tax",
+    "ضريبة القيمة المضافة": "Value Added Tax (VAT)",
+    "الإجمالي": "Total",
+    "الإجمالي التوضيحي": "Illustrative Total",
+    "عرض السعر التأميني": "Insurance Quotation",
+    "بيانات العرض والعميل": "Quotation & Customer Details",
+    "صلاحية العرض وحالته": "Quotation Validity & Status",
+    "الشروط العامة": "General Terms",
+    "الاستثناءات العامة": "General Exclusions",
+    "طلب تعديل عرض السعر": "Request a Quotation Amendment",
+    "تفاصيل الطلب": "Request Details",
+    "إرسال طلب التعديل": "Submit Amendment Request",
+    "رفض العرض": "Decline Quotation",
+    "قبول العرض والانتقال للتوقيع": "Accept Quotation & Continue to Signature",
+    "تنزيل / طباعة PDF": "Download / Print PDF",
+    "تأكيد القبول والتوقيع التجريبي": "Confirm Acceptance & Demo Signature",
+    "الاسم الكامل": "Full Name",
+    "طلباتي": "My Requests",
+    "وثائقي": "My Policies",
+    "عرض التفاصيل ←": "View Details →",
+    "عرض التفاصيل": "View Details",
+    "عرض طلباتي": "View My Requests",
+    "محاكاة قبول الأصل ←": "Simulate Asset Approval →",
+    "طلب تغطية": "Coverage Request",
+    "تم استلام الطلب": "Request Received",
+    "التحقق من بيانات الأصل والأهلية": "Verifying asset details and eligibility",
+    "قبول الطلب أو طلب معلومات إضافية أو رفضه": "Approve the request, request more information, or decline it",
+    "تظهر الباقات بعد قبول الأصل": "Packages appear after asset approval",
+    "يُحدّث حسب بيانات الحساب": "Updated from account details",
+    "العميل": "Customer",
+    "البيانات والمرفقات": "Data & Attachments",
+    "اختر نوع الأصل": "Select Asset Type",
   };
   const originals = new WeakMap();
   function applyLanguage(lang){
@@ -900,6 +995,31 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
     if(languageSelect) languageSelect.value=lang;
     try { localStorage.setItem('riskora_language',lang); } catch(e){}
   }
+  function translateAdded(root){
+    if(document.documentElement.lang!=='en') return;
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+    let node;
+    while((node=walker.nextNode())){
+      if(!node.nodeValue.trim() || node.parentElement.closest('script,style,select,option,input,textarea,.no-translate')) continue;
+      if(!originals.has(node)) originals.set(node,node.nodeValue);
+      const original=originals.get(node), trimmed=original.trim();
+      const key=Object.keys(translations).sort((a,b)=>b.length-a.length).find(k=>trimmed===k);
+      if(key) node.nodeValue=original.replace(trimmed,translations[key]);
+    }
+  }
+  const languageObserver=new MutationObserver(records=>{
+    for(const record of records) for(const added of record.addedNodes){
+      if(added.nodeType===Node.TEXT_NODE){
+        if(!originals.has(added)) originals.set(added,added.nodeValue);
+        if(document.documentElement.lang==='en'){
+          const trimmed=originals.get(added).trim();
+          const key=Object.keys(translations).sort((a,b)=>b.length-a.length).find(k=>trimmed===k);
+          if(key) added.nodeValue=originals.get(added).replace(trimmed,translations[key]);
+        }
+      } else if(added.nodeType===Node.ELEMENT_NODE) translateAdded(added);
+    }
+  });
+  languageObserver.observe(document.body,{childList:true,subtree:true});
   if(languageSelect) languageSelect.addEventListener('change',()=>applyLanguage(languageSelect.value));
   let saved='ar'; try { saved=localStorage.getItem('riskora_language')||'ar'; } catch(e){}
   applyLanguage(saved);

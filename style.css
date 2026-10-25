@@ -530,3 +530,12 @@ body.lang-en main, body.lang-en .page { text-align: left; }
 body.lang-en .field-label, body.lang-en label { text-align: left; }
 body.lang-en input, body.lang-en textarea, body.lang-en select { text-align: left; }
 body.lang-en .back-arrow { transform: none; }
+
+/* Consistent locale direction and readable English tables/forms */
+html[lang="en"], html[lang="en"] body { direction:ltr; }
+body.lang-en { direction:ltr; text-align:left; }
+body.lang-en .page, body.lang-en main, body.lang-en .card, body.lang-en .section-card { direction:ltr; text-align:left; }
+body.lang-en table, body.lang-en .quote-table { direction:ltr; }
+body.lang-en th, body.lang-en td, body.lang-en input, body.lang-en textarea, body.lang-en select { text-align:left; }
+body.lang-en .quote-risk-card, body.lang-en .quote-note { direction:ltr; text-align:left; }
+body.lang-en .field-row, body.lang-en .form-grid { direction:ltr; }

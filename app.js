@@ -156,12 +156,24 @@ function renderRiskDetails(){
 }
 document.querySelectorAll('#risk-details [data-risk-tab]').forEach(btn=>btn.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();activeRiskDetailTab=btn.dataset.riskTab;renderRiskDetails();}));
 function syncIndicator(){
+ // Restore the exact saved request before calculating its indicator; never reuse another request's form state.
+ const savedReq=currentReq();
+ if(savedReq){
+   assetName=savedReq.assetName||assetName; region=savedReq.region||region; city=savedReq.city||city; selectedType=savedReq.assetType||selectedType;
+   if($('#assetName')) $('#assetName').value=savedReq.assetName||'';
+   if($('#region')) { $('#region').value=savedReq.region||'الرياض'; syncCityOptions(savedReq.city||''); }
+   if($('#city') && savedReq.city) $('#city').value=savedReq.city;
+   if($('#address')) $('#address').value=savedReq.address||'';
+   const savedRisk=(savedReq.risks||[])[0];
+   if(savedRisk){ document.querySelectorAll('.haz-option input').forEach(input=>{ input.checked=(input.closest('.haz-option')?.dataset.risk===savedRisk.key); }); selectedRisk=savedRisk.key||'rain'; }
+   if($('#otherHazardText')) $('#otherHazardText').value=savedReq.otherRisk||'';
+ }
  syncAsset();
- selectedRisk = getSelectedRisk();
+ selectedRisk = savedReq?.risks?.[0]?.key || getSelectedRisk();
  const customRisk = selectedRisk === 'other';
- const customName = ($('#otherHazardText')?.value || '').trim();
+ const customName = (savedReq?.otherRisk || $('#otherHazardText')?.value || '').trim();
  const cfg = riskConfig[selectedRisk];
- const regionName = region || $('#region')?.value || 'الرياض';
+ const regionName = (savedReq?.region || region || $('#region')?.value || 'الرياض');
  const factor = regionFactors[regionName] || 1.0;
  const row = weatherDataset[weatherDataset.length - 1];
  const value = customRisk ? '—' : Math.round(row[cfg.field] * factor);

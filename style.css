@@ -529,3 +529,10 @@ body.theme-dark .drawer-logout,body.theme-dark .logout-button{background:#dc2626
 
 /* Tools for managing demo requests and documents */
 .record-tools{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px;align-items:center}.record-tools button{font-size:12px;padding:9px 13px}.record-select{display:inline-flex;align-items:flex-start;padding:4px;margin-inline-end:4px}.record-select input{width:17px;height:17px;accent-color:#0874d9;cursor:pointer}.record-actions{display:flex;flex-wrap:wrap;gap:7px;align-items:center}.record-actions .btn{font-size:11px;padding:8px 11px}.danger-action{color:#b42318!important;border-color:#f2b8b5!important}.request-row .record-select{align-self:center}.document-card>.record-select{float:right;margin:0 0 6px 8px}.document-card .record-actions{margin-top:12px}.empty-docs-note{padding:18px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);text-align:center;font-size:12px}@media(max-width:600px){.record-tools{gap:6px}.record-tools button{flex:1 1 auto}.record-actions .btn{flex:1 1 auto}}
+
+/* Dedicated archive tab */
+.requests-tabs{flex-wrap:wrap}
+.requests-tabs [data-tab="myarchive"]{border:1px solid #cbd9d5;background:#f4f8f6;color:#285f50}
+.requests-tabs [data-tab="myarchive"].active{background:#176b56;color:#fff;border-color:#176b56}
+.archive-intro{margin:16px 0;padding:16px 18px;border:1px solid #cbded6;border-radius:16px;background:#f2f8f5;color:#244d40}
+.archive-intro p{margin:6px 0 0;color:#526b62}

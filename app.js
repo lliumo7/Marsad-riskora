@@ -229,7 +229,17 @@ function syncRequests(){
  const r=currentReq();if(r){$('#requestId').textContent=r.id;assetName=r.assetName||assetName;region=r.region||region;$('#docAsset').textContent=assetName;$('#docPackage').textContent=r.package||selectedPackage;}
 }
 function escapeText(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-$('#claimDemo').addEventListener('click',()=>{window.claimSent=true;syncRequests();toast('تم إرسال طلب التعويض التجريبي للمراجعة.');go('requests')});$$('[data-tab]').forEach(b=>b.addEventListener('click',()=>{$$('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));$('#myrequests').hidden=b.dataset.tab!=='myrequests';$('#mydocs').hidden=b.dataset.tab!=='mydocs'}));
+$('#claimDemo').addEventListener('click',()=>{window.claimSent=true;syncRequests();toast('تم إرسال طلب التعويض التجريبي للمراجعة.');go('requests')});$$('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
+ const tab=b.dataset.tab;
+ $$('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));
+ const archive=tab==='myarchive', docs=tab==='mydocs';
+ showArchivedRequests=archive; showArchivedDocs=archive;
+ $('#myrequests').hidden=docs;
+ $('#mydocs').hidden=tab==='myrequests';
+ $('#archiveIntro').hidden=!archive;
+ if(archive){$('#myrequests').hidden=false;$('#mydocs').hidden=false;}
+ syncRequests();
+}));
 
 function getSavedDemoName(){
  try { return (sessionStorage.getItem('riskora_demo_signed_in')==='1' ? (sessionStorage.getItem('riskora_demo_name') || sessionStorage.getItem('riskora_user_name') || '') : '').trim(); }
@@ -515,6 +525,6 @@ $('#toggleArchivedRequests')?.addEventListener('click',()=>{showArchivedRequests
 $('#toggleArchivedDocs')?.addEventListener('click',()=>{showArchivedDocs=!showArchivedDocs;$('#toggleArchivedDocs').textContent=showArchivedDocs?'عرض الوثائق النشطة':'عرض الوثائق المؤرشفة';syncRequests();});
 $$('[data-tab]').forEach(b=>b.addEventListener('click',()=>{const docsTab=b.dataset.tab==='mydocs';$('#toggleArchivedRequests').hidden=docsTab;$('#toggleArchivedDocs').hidden=!docsTab;$('#selectAllRecords').textContent='تحديد الكل';}));
 $('#selectAllRecords')?.addEventListener('click',()=>{const panel=$('#mydocs').hidden?$('#myrequests'):$('#mydocs');const checks=[...panel.querySelectorAll('.record-check')];const all=checks.length>0&&checks.every(c=>c.checked);checks.forEach(c=>c.checked=!all);$('#selectAllRecords').textContent=all?'تحديد الكل':'إلغاء التحديد';});
-$('#bulkArchiveRecords')?.addEventListener('click',()=>{const panel=$('#mydocs').hidden?$('#myrequests'):$('#mydocs');const checks=[...panel.querySelectorAll('.record-check:checked')];if(!checks.length){toast('حددي عنصرًا واحدًا على الأقل.');return;}checks.forEach(c=>{const item=c.dataset.recordType==='doc'?workflow.documents.find(x=>x.requestId===c.value):workflow.requests.find(x=>x.id===c.value);if(item)item.archived=!showArchivedRequests&&!showArchivedDocs;});saveWorkflow();syncRequests();toast('تم تحديث أرشفة العناصر المحددة.');});
+$('#bulkArchiveRecords')?.addEventListener('click',()=>{const panel=$('#mydocs').hidden?$('#myrequests'):$('#mydocs');const checks=[...panel.querySelectorAll('.record-check:checked')];if(!checks.length){toast('حددي عنصرًا واحدًا على الأقل.');return;}checks.forEach(c=>{const item=c.dataset.recordType==='doc'?workflow.documents.find(x=>x.requestId===c.value):workflow.requests.find(x=>x.id===c.value);if(item)item.archived=!(c.dataset.recordType==='doc'?showArchivedDocs:showArchivedRequests);});saveWorkflow();syncRequests();toast('تم تحديث أرشفة العناصر المحددة.');});
 $('#bulkDeleteRecords')?.addEventListener('click',()=>{const panel=$('#mydocs').hidden?$('#myrequests'):$('#mydocs');const checks=[...panel.querySelectorAll('.record-check:checked')];if(!checks.length){toast('حددي عنصرًا واحدًا على الأقل.');return;}if(!confirm('تأكيد حذف العناصر المحددة نهائيًا؟ لا يمكن التراجع عن الحذف.'))return;checks.forEach(c=>{if(c.dataset.recordType==='doc'){workflow.documents=workflow.documents.filter(x=>x.requestId!==c.value);}else{workflow.requests=workflow.requests.filter(x=>x.id!==c.value);workflow.documents=workflow.documents.filter(x=>x.requestId!==c.value);}});saveWorkflow();syncRequests();toast('تم حذف العناصر المحددة.');});
 $('#clearDemoData')?.addEventListener('click',()=>{if(!confirm('سيتم حذف جميع الطلبات والوثائق التجريبية المحفوظة لهذا الحساب على هذا الجهاز. هل تريدين المتابعة؟'))return;workflow=emptyWorkflow();saveWorkflow();requestSent=false;accepted=false;paid=false;showArchivedRequests=false;showArchivedDocs=false;syncRequests();toast('تم مسح البيانات التجريبية لهذا الحساب.');});

@@ -11,15 +11,32 @@ const weatherDataset = [
  {year:2024,rain:125,wind:68,temp:47,damage:true,loss:47000,asset:250000},
  {year:2025,rain:61,wind:38,temp:44,damage:false,loss:0,asset:250000}
 ];
+function getRiskContext(){
+ const req=currentReq();
+ const savedRisk=req?.risks?.[0]?.key;
+ const key=(savedRisk&&riskConfig[savedRisk])?savedRisk:(selectedRisk||getSelectedRisk()||'rain');
+ return {req,key,cfg:riskConfig[key]||riskConfig.rain};
+}
 function renderWeatherData(){
+ const context=getRiskContext(), cfg=context.cfg, key=context.key;
  const filter=$('#dataYearFilter')?.value||'all';
  const rows=weatherDataset.filter(r=>filter==='all'||String(r.year)===filter);
  const tbody=$('#weatherRows');
  if(!tbody)return;
- tbody.innerHTML=rows.map(r=>`<tr><td>${r.year}</td><td>${r.rain}</td><td>${r.wind}</td><td>${r.temp}</td><td><span class="data-pill ${r.damage?'yes':'no'}">${r.damage?'نعم':'لا'}</span></td><td>${r.loss.toLocaleString('en-US')}</td><td>${r.asset.toLocaleString('en-US')}</td></tr>`).join('');
+ const field=cfg.field, unit=cfg.unit;
+ const metricHeader=$('#dataMetricHeader'); if(metricHeader) metricHeader.textContent=cfg.label+' ('+unit+')';
+ const avgLabel=$('#dataAverageLabel'); if(avgLabel) avgLabel.textContent=key==='rain'?'متوسط الأمطار':key==='wind'?'متوسط سرعة الرياح':key==='heat'?'متوسط الحرارة':'متوسط '+cfg.label;
+ const avgUnit=$('#dataAverageUnit'); if(avgUnit) avgUnit.textContent=unit+' — متوسط سنوي تجريبي';
+ const avg=(weatherDataset.reduce((s,r)=>s+r[field],0)/weatherDataset.length).toFixed(1);
+ $('#dataRainAvg').textContent=avg;
+ const hazardThreshold=cfg.threshold;
+ tbody.innerHTML=rows.map(r=>`<tr><td>${r.year}</td><td>${r[field]}</td><td>${unit}</td><td><span class="data-pill ${r[field]>=hazardThreshold?'yes':'no'}">${r[field]>=hazardThreshold?'بلغ الحد':'دون الحد'}</span></td><td>${r.damage?'نعم':'لا'}</td><td>${r.loss.toLocaleString('en-US')}</td><td>${r.asset.toLocaleString('en-US')}</td></tr>`).join('');
  $('#dataYears').textContent=weatherDataset.length;
  $('#dataDamageYears').textContent=weatherDataset.filter(r=>r.damage).length;
- $('#dataRainAvg').textContent=(weatherDataset.reduce((s,r)=>s+r.rain,0)/weatherDataset.length).toFixed(1);
+ const title=$('#dataRiskTitle'); if(title) title.textContent='بيانات الخطر: '+(context.req?.risks?.[0]?.label||({rain:'الأمطار والسيول',wind:'الرياح الشديدة',heat:'موجات الحرارة',storm:'العواصف الرعدية',dust:'العواصف الترابية'}[key]||'الخطر المحدد'));
+ const sub=$('#dataRiskDescription'); if(sub) sub.textContent=`يعرض هذا الجدول مؤشر «${cfg.label}» وحد التفعيل ${cfg.threshold} ${unit} للطلب الحالي. البيانات محاكاة تعليمية وليست قياسات فعلية خاصة بالمنطقة.`;
+ const selectedRegion=context.req?.region||region||'الرياض';
+ const regionLabel=$('#dataSelectedRegion'); if(regionLabel) regionLabel.textContent=selectedRegion;
 }
 $('#dataYearFilter')?.addEventListener('change',renderWeatherData);
 
@@ -156,24 +173,24 @@ function renderRiskDetails(){
 }
 document.querySelectorAll('#risk-details [data-risk-tab]').forEach(btn=>btn.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();activeRiskDetailTab=btn.dataset.riskTab;renderRiskDetails();}));
 function syncIndicator(){
- // Restore the exact saved request before calculating its indicator; never reuse another request's form state.
  const savedReq=currentReq();
  if(savedReq){
-   assetName=savedReq.assetName||assetName; region=savedReq.region||region; city=savedReq.city||city; selectedType=savedReq.assetType||selectedType;
-   if($('#assetName')) $('#assetName').value=savedReq.assetName||'';
-   if($('#region')) { $('#region').value=savedReq.region||'الرياض'; syncCityOptions(savedReq.city||''); }
-   if($('#city') && savedReq.city) $('#city').value=savedReq.city;
-   if($('#address')) $('#address').value=savedReq.address||'';
-   const savedRisk=(savedReq.risks||[])[0];
-   if(savedRisk){ document.querySelectorAll('.haz-option input').forEach(input=>{ input.checked=(input.closest('.haz-option')?.dataset.risk===savedRisk.key); }); selectedRisk=savedRisk.key||'rain'; }
-   if($('#otherHazardText')) $('#otherHazardText').value=savedReq.otherRisk||'';
+  assetName=savedReq.assetName||assetName; region=savedReq.region||region; city=savedReq.city||city; selectedType=savedReq.assetType||selectedType;
+  if($('#assetName')) $('#assetName').value=savedReq.assetName||'';
+  if($('#region')) $('#region').value=savedReq.region||'الرياض';
+  if($('#address')) $('#address').value=savedReq.address||'';
+  if(Array.isArray(savedReq.risks)&&savedReq.risks.length){
+   document.querySelectorAll('.haz-option input').forEach(input=>{input.checked=input.closest('.haz-option')?.dataset.risk===savedReq.risks[0].key;});
+   selectedRisk=savedReq.risks[0].key||'rain';
+   if($('#otherHazardText')&&savedReq.otherRisk) $('#otherHazardText').value=savedReq.otherRisk;
+  }
  }
  syncAsset();
- selectedRisk = savedReq?.risks?.[0]?.key || getSelectedRisk();
+ selectedRisk = (savedReq?.risks?.[0]?.key && (riskConfig[savedReq.risks[0].key]||savedReq.risks[0].key==='other')) ? savedReq.risks[0].key : getSelectedRisk();
  const customRisk = selectedRisk === 'other';
  const customName = (savedReq?.otherRisk || $('#otherHazardText')?.value || '').trim();
  const cfg = riskConfig[selectedRisk];
- const regionName = (savedReq?.region || region || $('#region')?.value || 'الرياض');
+ const regionName = savedReq?.region || region || $('#region')?.value || 'الرياض';
  const factor = regionFactors[regionName] || 1.0;
  const row = weatherDataset[weatherDataset.length - 1];
  const value = customRisk ? '—' : Math.round(row[cfg.field] * factor);

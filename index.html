@@ -134,17 +134,22 @@
 <div id="archiveIntro" class="archive-intro" hidden><b>الأرشيف</b><p>هنا تظهر الطلبات والوثائق التي أرشفتِها. يمكنكِ استرجاعها أو حذفها نهائيًا.</p></div><div class="actions"><button class="btn" data-go="asset" data-new-request="true">＋ إضافة أصل جديد</button></div></section>
 
 <section id="data" class="page">
-  <button class="page-back-button" type="button" data-page-back aria-label="رجوع"><span class="back-arrow">←</span><span class="back-label">رجوع</span></button><div class="heading"><div><h1>بيانات النموذج</h1><p>بيانات تجريبية لاختبار تحليل الخطر وحدود التعويض</p></div></div>
+  <button class="page-back-button" type="button" data-page-back aria-label="رجوع"><span class="back-arrow">←</span><span class="back-label">رجوع</span></button>
+  <div class="heading"><div><h1>بيانات النموذج</h1><p>عرض بيانات المؤشر المرتبط بطلب التغطية الحالي</p></div></div>
   <div class="panel">
-    <div class="data-alert"><b>تنبيه:</b> هذه القيم محاكاة تعليمية وليست سجلات أرصاد رسمية، ولا تمثل منطقة محددة في المملكة.</div>
+    <div class="data-alert"><b>تنبيه:</b> هذه بيانات محاكاة تعليمية وليست سجلات أرصاد رسمية، ولا تمثل قياسات فعلية خاصة بالمنطقة.</div>
+    <div class="data-risk-summary">
+      <div><small>الخطر المرتبط بالطلب</small><h2 id="dataRiskTitle">بيانات الخطر المحدد</h2><p id="dataRiskDescription">تتغير البيانات حسب المؤشر المرتبط بالطلب.</p></div>
+      <div class="data-region-chip">المنطقة: <b id="dataSelectedRegion">—</b></div>
+    </div>
     <div class="data-stats">
       <div class="data-stat"><small>سنوات البيانات</small><strong id="dataYears">9</strong><span>2017–2025</span></div>
       <div class="data-stat"><small>سنوات سُجل فيها ضرر</small><strong id="dataDamageYears">4</strong><span>ضمن العينة التجريبية</span></div>
-      <div class="data-stat"><small>متوسط الأمطار</small><strong id="dataRainAvg">80.2</strong><span>ملم في السنة</span></div>
+      <div class="data-stat"><small id="dataAverageLabel">متوسط المؤشر</small><strong id="dataRainAvg">80.2</strong><span id="dataAverageUnit">متوسط سنوي تجريبي</span></div>
       <div class="data-stat"><small>قيمة الأصل المفترضة</small><strong>250,000</strong><span>ريال</span></div>
     </div>
-    <div class="data-toolbar"><div><h2>السجل السنوي</h2><p class="muted">يمكنك مقارنة المطر والرياح والحرارة مع حدوث الضرر وقيمته.</p></div><label>فلترة السنوات <select id="dataYearFilter"><option value="all">كل السنوات</option><option>2017</option><option>2018</option><option>2019</option><option>2020</option><option>2021</option><option>2022</option><option>2023</option><option>2024</option><option>2025</option></select></label></div>
-    <div class="table-scroll"><table class="weather-table"><thead><tr><th>السنة</th><th>الأمطار (ملم)</th><th>سرعة الرياح</th><th>العظمى (°م)</th><th>حدوث ضرر</th><th>قيمة الضرر (ريال)</th><th>قيمة الأصل (ريال)</th></tr></thead><tbody id="weatherRows"></tbody></table></div>
+    <div class="data-toolbar"><div><h2>السجل السنوي للمؤشر</h2><p class="muted">قيمة المؤشر وحد التفعيل وحالة تحقق الحد لكل سنة، مع بيانات الضرر التجريبية.</p></div><label>فلترة السنوات <select id="dataYearFilter"><option value="all">كل السنوات</option><option>2017</option><option>2018</option><option>2019</option><option>2020</option><option>2021</option><option>2022</option><option>2023</option><option>2024</option><option>2025</option></select></label></div>
+    <div class="table-scroll"><table class="weather-table"><thead><tr><th>السنة</th><th id="dataMetricHeader">المؤشر</th><th>الوحدة</th><th>حالة حد التفعيل</th><th>حدوث ضرر</th><th>قيمة الضرر (ريال)</th><th>قيمة الأصل (ريال)</th></tr></thead><tbody id="weatherRows"></tbody></table></div>
     <div class="actions"><button class="btn outline" data-go="indicator">متابعة المؤشرات</button><a class="btn" href="data/Marsad_Riskora_Weather_Data.xlsx" download>تحميل ملف البيانات Excel ↓</a></div>
   </div>
 </section>

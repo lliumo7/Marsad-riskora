@@ -79,3 +79,9 @@
 
 
 Latest combined update: restores the complete quotation page and preserves the dynamic single-hazard package descriptions, package prices, and renewal discount rates. Please upload index.html, app.js, style.css, and README.md together.
+
+
+## تحديث ربط المؤشرات وبيانات النموذج
+- صفحة المؤشرات تقرأ الخطر والمنطقة والأصل من الطلب الحالي المحفوظ عند توفره.
+- صفحة بيانات النموذج تعرض عمود المؤشر وحد التفعيل المناسبين للخطر المرتبط بالطلب (أمطار/رياح/حرارة/عواصف رعدية/عواصف ترابية).
+- القيم المعروضة محاكاة تعليمية؛ لا تمثل سجلات مناخية رسمية أو بيانات فعلية خاصة بالمنطقة.

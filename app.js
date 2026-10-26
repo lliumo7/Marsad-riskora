@@ -208,17 +208,6 @@ document.querySelectorAll('.haz-option input').forEach(input => input.addEventLi
 }));
 $('#otherHazardText')?.addEventListener('input', () => { if(document.querySelector('.haz-option[data-risk="other"] input').checked) syncIndicator(); });
 function syncRequests(){
- // Rebuild/synchronize demo documents from every issued request so the Documents tab never stays stale.
- workflow.documents=Array.isArray(workflow.documents)?workflow.documents:[];
- for(const r of (workflow.requests||[])){
-  if(r.status!=='issued')continue;
-  const policyId=r.policyId||('POL-DEMO-'+String(r.id||'').slice(-6));
-  r.policyId=policyId;
-  let d=workflow.documents.find(x=>x.requestId===r.id);
-  const fresh={requestId:r.id,id:policyId,assetName:r.assetName||'أصل مؤمن عليه',assetType:r.assetType||'غير محدد',region:r.region||'',package:r.package||'المتوازنة',price:r.price||prices[r.package||'المتوازنة']||320,total:r.total||((r.price||prices[r.package||'المتوازنة']||320)*1.15),risks:r.risks||[],city:r.city||'',address:r.address||'',assetPhotos:r.assetPhotos||[],status:'demo',issuedAt:r.issuedAt||new Date().toISOString()};
-  if(d)Object.assign(d,fresh);else workflow.documents.push(fresh);
- }
- saveWorkflow();
  const reqs=workflow.requests||[],docs=workflow.documents||[];
  $('#requestCount').textContent=reqs.length;
  $('#pendingCount').textContent=reqs.filter(r=>['draft','pending','more','offer','offer_review'].includes(r.status)).length;

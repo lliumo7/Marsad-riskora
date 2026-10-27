@@ -616,3 +616,71 @@ body.theme-dark .page .alert * { color: inherit; }
 body.lang-en { direction: ltr; }
 body.lang-en .top, body.lang-en .drawer, body.lang-en .bottom-nav { direction: ltr; }
 body.lang-en .page { direction: ltr; }
+
+
+/* Final focused repair: calm, consistent dark surfaces and readable contrast. */
+body.theme-dark {
+  color-scheme: dark;
+  --app-bg:#101923; --surface:#192734; --app-ink:#e6edf4;
+  --app-muted:#a8b8c7; --app-line:#344554; --app-blue:#65b8f3;
+  --app-blue-soft:#20394c; background:#101923 !important; color:#e6edf4 !important;
+}
+body.theme-dark main, body.theme-dark .page { background:transparent !important; color:#e6edf4 !important; }
+body.theme-dark .page h1, body.theme-dark .page h2, body.theme-dark .page h3,
+body.theme-dark .page h4, body.theme-dark .page p, body.theme-dark .page label,
+body.theme-dark .page small, body.theme-dark .page span, body.theme-dark .page strong,
+body.theme-dark .page b, body.theme-dark .page .muted, body.theme-dark .page .field-label,
+body.theme-dark .page .setting-row, body.theme-dark .page .setting-row b,
+body.theme-dark .page .setting-row small { color:inherit; }
+/* All cards use one dark surface; no sudden bright-white blocks in dark mode. */
+body.theme-dark .page .panel, body.theme-dark .page .quick,
+body.theme-dark .page .risk-card, body.theme-dark .page .risk-art,
+body.theme-dark .page .package, body.theme-dark .page .list-panel,
+body.theme-dark .page .journey-card, body.theme-dark .page .settings-panel,
+body.theme-dark .page .settings-menu, body.theme-dark .page .settings-content,
+body.theme-dark .page .settings-tab, body.theme-dark .page .appearance-choice,
+body.theme-dark .page .stat-card, body.theme-dark .page .info-card,
+body.theme-dark .page .data-card, body.theme-dark .page .detail-card,
+body.theme-dark .page .white-card, body.theme-dark .page .summary-card,
+body.theme-dark .page .offer-card, body.theme-dark .page .policy-card,
+body.theme-dark .page .compensation-card, body.theme-dark .page .metric-card,
+body.theme-dark .page .notice-card, body.theme-dark .page .coverage-tabs,
+body.theme-dark .page .coverage-content, body.theme-dark .page .table-card,
+body.theme-dark .page .claim-result, body.theme-dark .page .claim-fact,
+body.theme-dark .page .payment-summary, body.theme-dark .page .pay-method,
+body.theme-dark .page .pay-choice, body.theme-dark .page .weather-table,
+body.theme-dark .page .table-scroll, body.theme-dark .page .data-card,
+body.theme-dark .page .contact-support-note, body.theme-dark .page .drawer-links button {
+  background-color:#192734 !important; color:#e6edf4 !important; border-color:#344554 !important;
+}
+body.theme-dark .page .hero, body.theme-dark .page .hero * { color:#f5f9fc; }
+body.theme-dark .page .hero { background:linear-gradient(115deg,#123650,#174f73 68%,#28678e) !important; }
+body.theme-dark .page .quick i, body.theme-dark .page .heading-icon,
+body.theme-dark .page .journey-steps>div>span, body.theme-dark .page .drawer-icon {
+  background:#203b50 !important; color:#8dccf7 !important;
+}
+body.theme-dark .page input, body.theme-dark .page textarea,
+body.theme-dark .page select, body.theme-dark .page option,
+body.theme-dark .page .language-card select {
+  background:#111f2b !important; color:#f0f5f9 !important; border-color:#43586a !important;
+}
+body.theme-dark .page input::placeholder, body.theme-dark .page textarea::placeholder { color:#a9bac8 !important; opacity:1; }
+body.theme-dark .page table th { background:#20394c !important; color:#eaf3fa !important; }
+body.theme-dark .page table td { background:#192734 !important; color:#dfe8ef !important; border-color:#344554 !important; }
+body.theme-dark .page .notice, body.theme-dark .page .warning, body.theme-dark .page .alert {
+  background:#3a3324 !important; color:#f3dfae !important; border-color:#665637 !important;
+}
+body.theme-dark .page .notice *, body.theme-dark .page .warning *, body.theme-dark .page .alert * { color:inherit !important; }
+body.theme-dark .page .btn, body.theme-dark .page button { color:inherit; }
+body.theme-dark .page .btn.primary, body.theme-dark .page button.primary,
+body.theme-dark .page .btn.blue { background:#176da5 !important; color:#fff !important; border-color:#176da5 !important; }
+body.theme-dark .page a { color:#8dccf7 !important; }
+body.theme-dark .bottom-nav, body.theme-dark .mobile-nav { background:#142330f5 !important; border-color:#344554 !important; }
+body.theme-dark .bottom-nav button, body.theme-dark .mobile-nav button { color:#aabccc !important; }
+body.theme-dark .bottom-nav button.active, body.theme-dark .mobile-nav button.active { background:#20394c !important; color:#e6f4ff !important; }
+body.theme-dark .side-drawer { background:#142330 !important; color:#e6edf4 !important; border-color:#344554 !important; }
+body.theme-dark .drawer-links button { color:#e6edf4 !important; }
+/* Keep icons and directional glyphs stable when switching language. */
+body.lang-en svg { transform:none !important; }
+body.lang-en .nav-icon, body.lang-en .avatar, body.lang-en .quick i,
+body.lang-en .type i, body.lang-en .heading-icon { direction:ltr; }

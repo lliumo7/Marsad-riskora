@@ -567,7 +567,29 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
     'حالة الطلب':'Request Status','قيد المراجعة':'Under Review','مقبول':'Accepted','مرفوض':'Rejected',
     'مسودة':'Draft','صادر':'Issued','مكتمل':'Completed','غير متاح':'Unavailable',
     'تسجيل الخروج':'Sign Out','الأسئلة الشائعة':'Frequently Asked Questions',
-    'سياسة الخصوصية':'Privacy Policy','مكافأة التجديد':'Renewal Reward'
+    'سياسة الخصوصية':'Privacy Policy','مكافأة التجديد':'Renewal Reward',
+    'المساعد الذكي':'AI Assistant','اسأل عن التأمين واستخدام المنصة':'Ask about insurance and using the platform',
+    'إجابات عن الطلبات والمؤشرات':'Answers about requests and indicators','قواعد استخدام النموذج':'Prototype usage rules',
+    'البيانات والمرفقات':'Data and attachments','التعرف على التطبيق ومميزاته':'Learn about the app and its features',
+    'ملاحظات ومقترحات لتطوير التطبيق':'Feedback and suggestions','خصم مقترح عند تجديد التغطية':'Suggested discount when renewing coverage',
+    'القائمة والخدمات':'Menu and Services','مرصد رسكورا · نموذج تجريبي':'Mirsad Riskora · Demo Prototype',
+    'أضف الأصل المراد تأمينه':'Add the asset you want to insure','أدخل بيانات الأصل الذي ترغب في حمايته':'Enter the details of the asset you want to protect',
+    'اختر المنطقة':'Select Region','المدينة':'City','نوع الأصل':'Asset Type','منزل':'House','متجر':'Shop',
+    'مزرعة':'Farm','منشأة صناعية':'Industrial Facility','مبنى تجاري':'Commercial Building','أخرى':'Other',
+    'العنوان أو وصف الموقع':'Address or location description','مثال: منزلي في الرياض':'Example: My home in Riyadh',
+    'المنطقة المختارة':'Selected Region','المدينة المختارة':'Selected City','الأصل المؤمن عليه':'Insured Asset',
+    'عرض السعر التأميني':'Insurance Quote','بيانات العرض والعميل':'Quote and Customer Details',
+    'رقم الطلب / العرض':'Request / Quote Number','اسم العميل':'Customer Name','وصف الموقع':'Location Description',
+    'مدة التغطية المقترحة':'Proposed Coverage Period','تفاصيل الأخطار المختارة والتغطية':'Selected Risks and Coverage Details',
+    'ما الذي قد تشمله التغطية؟':'What May Be Covered?','خسائر محددة مرتبطة بالحرارة إذا نصت الباقة عليها.':'Specified heat-related losses if included in the package.',
+    'الأضرار التي ينطبق عليها مؤشر الحرارة المتفق عليه.':'Damage meeting the agreed heat index.',
+    'الأصول أو الأنشطة المشمولة فقط ضمن حدود العرض.':'Only assets or activities included within the quote limits.',
+    'تنبيه:':'Notice:','متابعة ←':'Continue →','العودة لاختيار الخطر':'Back to Risk Selection',
+    'عرض السعر المبدئي':'Preliminary Quote','حالة الوثيقة':'Policy Status','صلاحية العرض':'Quote Validity',
+    'ينتهي في':'Expires on','الأصل في':'Asset in','ريال':'SAR','ملم':'mm','درجة مئوية':'°C',
+    'سجّل الأصل أولاً':'Register your asset first','ثم اختر الخطر':'Then choose a risk',
+    'الأساسية':'Basic','المتوازنة':'Balanced','الأعمال':'Business','بدون دفع في البداية':'No upfront payment',
+    'سجّل الأصل':'Register Asset','اختر الخطر':'Choose Risk','انتظر المراجعة':'Await Review','راجع العرض':'Review Offer'
   };
   const originals = new WeakMap();
   function applyLanguage(lang){
@@ -587,6 +609,7 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
       for (const key of keys) {
         if (value.includes(key)) value = value.split(key).join(translations[key]);
       }
+      value = value.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
       n.nodeValue = value;
     }
     const attrOriginals = window.__riskoraLanguageAttrOriginals || (window.__riskoraLanguageAttrOriginals = new WeakMap());
@@ -604,6 +627,7 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
             if (translated.includes(key)) translated = translated.split(key).join(translations[key]);
           }
         }
+        translated = translated.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
         el.setAttribute(attr,translated);
       }
     });
@@ -615,6 +639,7 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
           if (val.includes(key)) val = val.split(key).join(translations[key]);
         }
       }
+      val = val.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
       el.textContent = val;
     });
     document.querySelectorAll('[data-page-back] .back-label').forEach(el=>el.textContent = lang==='en'?'Back':'رجوع');
@@ -626,6 +651,19 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
   if(languageSelect) languageSelect.addEventListener('change',()=>applyLanguage(languageSelect.value));
   let saved='ar'; try { saved=localStorage.getItem('riskora_language')||'ar'; } catch(e){}
   applyLanguage(saved);
+  // Re-apply the selected language to content rendered later (drawer, quote, policy, request views).
+  let languageRefreshQueued = false;
+  const languageObserver = new MutationObserver(records => {
+    if (!records.some(record => [...record.addedNodes].some(node => node.nodeType === Node.ELEMENT_NODE))) return;
+    if (languageRefreshQueued) return;
+    languageRefreshQueued = true;
+    queueMicrotask(() => {
+      languageRefreshQueued = false;
+      const currentLang = document.documentElement.lang === 'en' ? 'en' : 'ar';
+      applyLanguage(currentLang);
+    });
+  });
+  languageObserver.observe(document.body, { childList:true, subtree:true });
 
   function activePageId(){
     return document.querySelector('main .page.active')?.id || 'home';

@@ -42,8 +42,7 @@ $('#dataYearFilter')?.addEventListener('change',renderWeatherData);
 
 let selectedType='منزل',selectedPackage='المتوازنة',assetName='منزلي في الرياض',region='الرياض',city='الرياض',requestSent=false,accepted=false,paid=false;
 const regionCities={'الرياض':['الرياض','الخرج','الدرعية','الدوادمي','المجمعة','الزلفي','شقراء','وادي الدواسر'],'مكة المكرمة':['مكة المكرمة','جدة','الطائف','رابغ','القنفذة','الليث'],'المدينة المنورة':['المدينة المنورة','ينبع','العلا','مهد الذهب'],'القصيم':['بريدة','عنيزة','الرس','البكيرية','المذنب','البدائع'],'المنطقة الشرقية':['الدمام','الخبر','الظهران','الأحساء','الجبيل','القطيف','حفر الباطن'],'عسير':['أبها','خميس مشيط','بيشة','محايل عسير','النماص'],'تبوك':['تبوك','الوجه','ضباء','أملج','تيماء'],'حائل':['حائل','بقعاء','الغزالة'],'الحدود الشمالية':['عرعر','رفحاء','طريف','العويقيلة'],'جازان':['جازان','صبيا','أبو عريش','صامطة','بيش'],'نجران':['نجران','شرورة','حبونا'],'الباحة':['الباحة','بلجرشي','المندق'],'الجوف':['سكاكا','القريات','دومة الجندل','طبرجل']};
-function syncCityOptions(preferred){const sel=$('#city');const regionSel=$('#region');if(!sel||!regionSel)return;const selectedRegion=regionSel.value;const cities=regionCities[selectedRegion]||[selectedRegion];const lang=document.documentElement.lang||'ar';sel.replaceChildren(...cities.map(c=>{const option=document.createElement('option');option.value=c;option.textContent=(lang==='en'?(riskoraLocationEnglish[c]||c):c);return option;}));sel.value=(preferred&&cities.includes(preferred))?preferred:cities[0]||'';city=sel.value;}
-const riskoraLocationEnglish={'الرياض':'Riyadh','مكة المكرمة':'Makkah','المدينة المنورة':'Madinah','القصيم':'Al Qassim','المنطقة الشرقية':'Eastern Province','عسير':'Asir','تبوك':'Tabuk','حائل':'Hail','الحدود الشمالية':'Northern Borders','جازان':'Jazan','نجران':'Najran','الباحة':'Al Bahah','الجوف':'Al Jouf','الخرج':'Al Kharj','الدرعية':'Diriyah','الدوادمي':'Ad Dawadmi','المجمعة':'Al Majmaah','الزلفي':'Az Zulfi','شقراء':'Shaqra','وادي الدواسر':'Wadi ad-Dawasir','جدة':'Jeddah','الطائف':'Taif','رابغ':'Rabigh','القنفذة':'Al Qunfudhah','الليث':'Al Lith','ينبع':'Yanbu','العلا':'AlUla','مهد الذهب':'Mahd adh-Dhahab','بريدة':'Buraidah','عنيزة':'Unaizah','الرس':'Ar Rass','البكيرية':'Al Bukayriyah','المذنب':'Al Mithnab','البدائع':'Al Badayea','الدمام':'Dammam','الخبر':'Al Khobar','الظهران':'Dhahran','الأحساء':'Al Ahsa','الجبيل':'Jubail','القطيف':'Qatif','حفر الباطن':'Hafar Al Batin','أبها':'Abha','خميس مشيط':'Khamis Mushait','بيشة':'Bisha','محايل عسير':'Muhayil Asir','النماص':'An Namas','الوجه':'Al Wajh','ضباء':'Duba','أملج':'Umluj','تيماء':'Tayma','بقعاء':'Baqaa','الغزالة':'Al Ghazalah','عرعر':'Arar','رفحاء':'Rafha','طريف':'Turaif','العويقيلة':'Al Uwayqilah','صبيا':'Sabya','أبو عريش':'Abu Arish','صامطة':'Samtah','بيش':'Baish','شرورة':'Sharurah','حبونا':'Hubuna','بلجرشي':'Baljurashi','المندق':'Al Mandaq','سكاكا':'Sakaka','القريات':'Al Qurayyat','دومة الجندل':'Dumat Al Jandal','طبرجل':'Tabarjal'};
+function syncCityOptions(preferred){const sel=$('#city');const regionSel=$('#region');if(!sel||!regionSel)return;const selectedRegion=regionSel.value;const cities=regionCities[selectedRegion]||[selectedRegion];sel.replaceChildren(...cities.map(c=>{const option=document.createElement('option');option.value=c;option.textContent=c;return option;}));sel.value=(preferred&&cities.includes(preferred))?preferred:cities[0]||'';city=sel.value;}
 const WORKFLOW_KEY_PREFIX='riskora_workflow_user_v1:';
 function activeAccountName(){try{return (sessionStorage.getItem('riskora_demo_signed_in')==='1'?(sessionStorage.getItem('riskora_demo_name')||sessionStorage.getItem('riskora_user_name')||''):'').trim()}catch(e){return ''}}
 function accountWorkflowKey(name=activeAccountName()){return WORKFLOW_KEY_PREFIX+(name?name.toLocaleLowerCase('ar'):'signed-out')}
@@ -372,12 +371,9 @@ document.addEventListener('click',e=>{
  const themeBtn=e.target.closest('[data-theme]');
  if(themeBtn){
   document.body.classList.toggle('theme-dark',themeBtn.dataset.theme==='dark');
-  try{localStorage.setItem('riskora_theme',themeBtn.dataset.theme)}catch(e){}
   $$('[data-theme]').forEach(b=>b.classList.toggle('active',b===themeBtn));
  }
 });
-
-try{if(localStorage.getItem('riskora_theme')==='dark')document.body.classList.add('theme-dark')}catch(e){}
 
 // In-app help assistant. This is a local FAQ helper, not a live AI service.
 const helpAnswers=[
@@ -542,10 +538,7 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
     'بدون دفع في البداية':'No payment at the start','معلومات مهمة قبل تجربة المنصة':'Important information before using the prototype',
     'الوضع الفاتح':'Light','داكن':'Dark','فاتح':'Light','اختر المنطقة':'Choose Region',
     'المنطقة':'Region','اسم الأصل':'Asset Name','العنوان أو وصف الموقع':'Address or Location Description',
-    'صور الأصل الحالية':'Current Asset Photos','إرسال الملاحظة':'Send Feedback',
-    'منزل':'House','متجر':'Shop','مزرعة':'Farm','منشأة صناعية':'Industrial Facility','مبنى تجاري':'Commercial Building','أخرى':'Other',
-    'مكة المكرمة':'Makkah','المدينة المنورة':'Madinah','القصيم':'Al Qassim','المنطقة الشرقية':'Eastern Province','عسير':'Asir','تبوك':'Tabuk','حائل':'Hail','الحدود الشمالية':'Northern Borders','جازان':'Jazan','نجران':'Najran','الباحة':'Al Bahah','الجوف':'Al Jouf','الرياض':'Riyadh',
-    'الخرج':'Al Kharj','الدرعية':'Diriyah','الدوادمي':'Ad Dawadmi','المجمعة':'Al Majmaah','الزلفي':'Az Zulfi','شقراء':'Shaqra','وادي الدواسر':'Wadi ad-Dawasir','جدة':'Jeddah','الطائف':'Taif','رابغ':'Rabigh','القنفذة':'Al Qunfudhah','الليث':'Al Lith','ينبع':'Yanbu','العلا':'AlUla','مهد الذهب':'Mahd adh-Dhahab','بريدة':'Buraidah','عنيزة':'Unaizah','الرس':'Ar Rass','البكيرية':'Al Bukayriyah','المذنب':'Al Mithnab','البدائع':'Al Badayea','الدمام':'Dammam','الخبر':'Al Khobar','الظهران':'Dhahran','الأحساء':'Al Ahsa','الجبيل':'Jubail','القطيف':'Qatif','حفر الباطن':'Hafar Al Batin','أبها':'Abha','خميس مشيط':'Khamis Mushait','بيشة':'Bisha','محايل عسير':'Muhayil Asir','النماص':'An Namas','الوجه':'Al Wajh','ضباء':'Duba','أملج':'Umluj','تيماء':'Tayma','بقعاء':'Baqaa','الغزالة':'Al Ghazalah','عرعر':'Arar','رفحاء':'Rafha','طريف':'Turaif','العويقيلة':'Al Uwayqilah','صبيا':'Sabya','أبو عريش':'Abu Arish','صامطة':'Samtah','بيش':'Baish','شرورة':'Sharurah','حبونا':'Hubuna','بلجرشي':'Baljurashi','المندق':'Al Mandaq','سكاكا':'Sakaka','القريات':'Al Qurayyat','دومة الجندل':'Dumat Al Jandal','طبرجل':'Tabarjal'
+    'صور الأصل الحالية':'Current Asset Photos','إرسال الملاحظة':'Send Feedback'
   };
   const originals = new WeakMap();
   function applyLanguage(lang){
@@ -565,20 +558,6 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
       if(key) value = value.replace(trimmed, translations[key]);
       n.nodeValue = value;
     }
-    // Translate native select options explicitly (the text walker intentionally skips them).
-    document.querySelectorAll('select option').forEach(option=>{
-      if(!originals.has(option)) originals.set(option,option.textContent);
-      const original=originals.get(option).trim();
-      option.textContent=lang==='en'?(translations[original]||riskoraLocationEnglish[original]||original):original;
-    });
-    document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{
-      if(!originals.has(el)) originals.set(el,el.getAttribute('placeholder'));
-      const original=originals.get(el);
-      const map={'مثال: منزلي في الرياض':'Example: My home in Riyadh','الحي، الشارع، أو وصف يساعد في تحديد الموقع':'District, street, or location description','اكتب اسم المستخدم':'Enter username','اكتب كلمة المرور':'Enter password','أعد كتابة كلمة المرور':'Re-enter password'};
-      el.setAttribute('placeholder',lang==='en'?(map[original]||original):original);
-    });
-    // Keep dependent city options in the currently selected language without changing their stored values.
-    if(typeof syncCityOptions==='function' && document.getElementById('region')) syncCityOptions(document.getElementById('city')?.value||'');
     document.querySelectorAll('[data-page-back] .back-label').forEach(el=>el.textContent = lang==='en'?'Back':'رجوع');
     document.querySelectorAll('[data-page-back] .back-arrow').forEach(el=>el.textContent = lang==='en'?'←':'→');
     document.querySelectorAll('[data-page-back]').forEach(el=>el.setAttribute('aria-label',lang==='en'?'Back':'رجوع'));

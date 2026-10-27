@@ -49,12 +49,29 @@ function accountWorkflowKey(name=activeAccountName()){return WORKFLOW_KEY_PREFIX
 function emptyWorkflow(){return {requests:[],documents:[],currentId:null}}
 let workflow=emptyWorkflow();
 let showArchivedRequests=false, showArchivedDocs=false;
-function loadWorkflow(){try{workflow=JSON.parse(localStorage.getItem(accountWorkflowKey()))||emptyWorkflow()}catch(e){workflow=emptyWorkflow()}requestSent=!!currentReqSafe()?.status&&currentReqSafe().status!=='draft';accepted=['accepted','offer','signed','amendment_pending','issued'].includes(currentReqSafe()?.status);paid=currentReqSafe()?.status==='issued';}
+function loadWorkflow(){
+ try{
+  const key=accountWorkflowKey();
+  let raw=localStorage.getItem(key);
+  let parsed=raw?JSON.parse(raw):null;
+  // Preserve older demo records if a previous build stored them under a different workflow key.
+  if(!parsed || (!Array.isArray(parsed.requests)&&!Array.isArray(parsed.documents)) || (!(parsed.requests||[]).length&&!(parsed.documents||[]).length)){
+   let recovered=null, recoveredKey='';
+   for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i); if(!k||k===key||!(/riskora.*workflow|workflow.*riskora/i.test(k))) continue;
+    try{const candidate=JSON.parse(localStorage.getItem(k)||'null'); if(candidate&&(Array.isArray(candidate.requests)||Array.isArray(candidate.documents))&&((candidate.requests||[]).length||(candidate.documents||[]).length)){recovered=candidate;recoveredKey=k;break;}}catch(e){}
+   }
+   if(recovered){parsed={requests:recovered.requests||[],documents:recovered.documents||[],currentId:recovered.currentId||null}; localStorage.setItem(key,JSON.stringify(parsed));}
+  }
+  workflow=parsed?{requests:Array.isArray(parsed.requests)?parsed.requests:[],documents:Array.isArray(parsed.documents)?parsed.documents:[],currentId:parsed.currentId||null}:emptyWorkflow();
+ }catch(e){workflow=emptyWorkflow()}
+ requestSent=!!currentReqSafe()?.status&&currentReqSafe().status!=='draft';accepted=['accepted','offer','signed','amendment_pending','issued'].includes(currentReqSafe()?.status);paid=currentReqSafe()?.status==='issued';
+}
 function currentReqSafe(){return workflow.requests.find(r=>r.id===workflow.currentId)||null}
 function saveWorkflow(){try{localStorage.setItem(accountWorkflowKey(),JSON.stringify(workflow))}catch(e){}}
 function currentReq(){return workflow.requests.find(r=>r.id===workflow.currentId)||null;}
 window.riskoraLoadUserWorkflow=function(){loadWorkflow();syncRequests();const r=currentReq();if(r){assetName=r.assetName||'منزلي في الرياض';region=r.region||'الرياض';selectedType=r.assetType||'منزل';syncCityOptions(r.city||'');selectedPackage=r.package||'المتوازنة';$('#assetName').value=r.assetName||'';$('#region').value=r.region||'الرياض';syncCityOptions(r.city||'');$('#address').value=r.address||'';}else{requestSent=false;accepted=false;paid=false;assetName='منزلي في الرياض';region='الرياض';selectedType='منزل';selectedPackage='المتوازنة';$('#assetName').value='';$('#address').value='';}showPage('home')};
-loadWorkflow(); syncCityOptions('الرياض'); $('#region').addEventListener('change',()=>{syncCityOptions('');city=$('#city').value;}); $('#region').addEventListener('input',()=>{syncCityOptions('');city=$('#city').value;}); $('#city').addEventListener('change',()=>{city=$('#city').value}); function statusLabel(s){return ({pending:'قيد مراجعة الأصل',more:'بانتظار استكمال البيانات',accepted:'تم قبول الأصل',offer:'بانتظار إكمال العرض',offer_review:'العرض جاهز لمراجعة الإصدار',signed:'بانتظار الدفع',amendment_pending:'طلب التعديل قيد المراجعة',rejected_by_client:'مرفوض من العميل',expired:'انتهت صلاحية العرض',issued:'صدرت وثيقة تجريبية',rejected:'لم تتم الموافقة',claim_pending:'مطالبة التعويض قيد المراجعة',claim_partial:'تعويض جزئي تجريبي',claim_rejected:'غير مستحق للتعويض',claim_paid:'تم التعويض التجريبي'})[s]||'قيد المراجعة'}const pages=['home','asset','hazard','risk-details','review','packages','offer','policy','indicator','claim','requests','data','settings','notifications','about','policy-use','contact','faq','terms','privacy','renewal'];const titles={home:'الرئيسية',asset:'أصولي',hazard:'طلب التغطية','risk-details':'تفاصيل التغطية',review:'مراجعة الطلب',packages:'اختيار الباقة',offer:'مراجعة العرض والدفع',policy:'إصدار الوثيقة',indicator:'المؤشرات',claim:'طلب تعويض',requests:'طلباتي ووثائقي',data:'بيانات النموذج',settings:'الإعدادات',notifications:'الإشعارات',about:'عن مرصد رسكورا','policy-use':'سياسة الاستخدام',contact:'تواصل معنا',faq:'الأسئلة الشائعة',terms:'شروط وأحكام الاستخدام',privacy:'سياسة الخصوصية',renewal:'مكافأة التجديد'};function go(id){if((id==='packages'||id==='offer'||id==='policy'||id==='indicator'||id==='claim')&&!accepted){toast('تظهر هذه المرحلة بعد قبول الأصل في رحلة الطلب.');if(requestSent)showPage('review');else showPage('asset');return}showPage(id)}function showPage(id){if(id==='packages'){const r=currentReq();if(r&&['pending','accepted'].includes(r.status)){r.status='accepted';accepted=true;r.updatedAt=new Date().toISOString();saveWorkflow();syncRequests()}}if(id==='home'||id==='settings')applyDemoName(getSavedDemoName());$$('.page').forEach(p=>p.classList.toggle('active',p.id===id));$$('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id||(id==='hazard'&&b.dataset.page==='hazard')||(['review','packages','offer'].includes(id)&&b.dataset.page==='hazard')));window.scrollTo({top:0,behavior:'smooth'});if(id==='hazard')syncAsset();if(id==='risk-details')renderRiskDetails();if(id==='packages')syncPackageRiskCopy();if(id==='offer')syncOffer();if(id==='policy')syncPolicy();if(id==='indicator')syncIndicator();if(id==='claim'){syncClaimSimulation();}if(id==='requests')syncRequests();if(id==='data')renderWeatherData();if(id==='settings')syncSettings()}function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.classList.remove('show'),3000)}function startFreshRequest(){workflow.currentId=null;saveWorkflow();assetName='';region='الرياض';city='الرياض';selectedType='منزل';selectedPackage='المتوازنة';requestSent=false;accepted=false;paid=false;const name=$('#assetName');if(name)name.value='';const reg=$('#region');if(reg){reg.value='الرياض';syncCityOptions('الرياض');}const address=$('#address');if(address)address.value='';const photoInput=$('#assetPhotos');if(photoInput)photoInput.value='';document.querySelectorAll('.type').forEach(x=>x.classList.toggle('selected',x.dataset.type==='منزل'));document.querySelectorAll('.haz-option input').forEach(x=>x.checked=false);const other=$('#otherHazardText');if(other)other.value='';const notes=$('#hazNotes');if(notes)notes.value='';const terms=$('#terms');if(terms)terms.checked=false;document.querySelectorAll('.package').forEach(x=>x.classList.remove('selected'));document.querySelectorAll('.selectPackage').forEach(x=>{x.textContent='اختيار الباقة';x.classList.add('outline')});const rid=$('#requestId');if(rid)rid.textContent='سيظهر بعد إرسال الطلب';const otherField=$('#otherHazardField');if(otherField)otherField.hidden=true;}
+loadWorkflow(); syncCityOptions('الرياض'); $('#region').addEventListener('change',()=>{syncCityOptions('');city=$('#city').value;}); $('#region').addEventListener('input',()=>{syncCityOptions('');city=$('#city').value;}); $('#city').addEventListener('change',()=>{city=$('#city').value}); function statusLabel(s){return ({pending:'قيد مراجعة الأصل',more:'بانتظار استكمال البيانات',accepted:'تم قبول الأصل',offer:'بانتظار إكمال العرض',offer_review:'العرض جاهز لمراجعة الإصدار',signed:'بانتظار الدفع',amendment_pending:'طلب التعديل قيد المراجعة',rejected_by_client:'مرفوض من العميل',expired:'انتهت صلاحية العرض',issued:'صدرت وثيقة تجريبية',rejected:'لم تتم الموافقة'})[s]||'قيد المراجعة'}const pages=['home','asset','hazard','risk-details','review','packages','offer','policy','indicator','claim','requests','data','settings','notifications','about','policy-use','contact','faq','terms','privacy','renewal'];const titles={home:'الرئيسية',asset:'أصولي',hazard:'طلب التغطية','risk-details':'تفاصيل التغطية',review:'مراجعة الطلب',packages:'اختيار الباقة',offer:'مراجعة العرض والدفع',policy:'إصدار الوثيقة',indicator:'المؤشرات',claim:'طلب تعويض',requests:'طلباتي ووثائقي',data:'بيانات النموذج',settings:'الإعدادات',notifications:'الإشعارات',about:'عن مرصد رسكورا','policy-use':'سياسة الاستخدام',contact:'تواصل معنا',faq:'الأسئلة الشائعة',terms:'شروط وأحكام الاستخدام',privacy:'سياسة الخصوصية',renewal:'مكافأة التجديد'};function go(id){if(id==='claim'&&!currentIndicatorEligible){toast('لا يمكن تقديم مطالبة لأن المؤشر لم يبلغ حد التفعيل.');showPage('indicator');return}if((id==='packages'||id==='offer'||id==='policy'||id==='indicator'||id==='claim')&&!accepted){toast('تظهر هذه المرحلة بعد قبول الأصل في رحلة الطلب.');if(requestSent)showPage('review');else showPage('asset');return}showPage(id)}function showPage(id){if(id==='packages'){const r=currentReq();if(r&&['pending','accepted'].includes(r.status)){r.status='accepted';accepted=true;r.updatedAt=new Date().toISOString();saveWorkflow();syncRequests()}}if(id==='home'||id==='settings')applyDemoName(getSavedDemoName());$$('.page').forEach(p=>p.classList.toggle('active',p.id===id));$$('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id||(id==='hazard'&&b.dataset.page==='hazard')||(['review','packages','offer'].includes(id)&&b.dataset.page==='hazard')));window.scrollTo({top:0,behavior:'smooth'});if(id==='hazard')syncAsset();if(id==='risk-details')renderRiskDetails();if(id==='packages')syncPackageRiskCopy();if(id==='offer')syncOffer();if(id==='policy')syncPolicy();if(id==='indicator')syncIndicator();if(id==='claim')syncClaimOutcome();if(id==='requests')syncRequests();if(id==='data')renderWeatherData();if(id==='settings')syncSettings()}function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.classList.remove('show'),3000)}function startFreshRequest(){workflow.currentId=null;saveWorkflow();assetName='';region='الرياض';city='الرياض';selectedType='منزل';selectedPackage='المتوازنة';requestSent=false;accepted=false;paid=false;const name=$('#assetName');if(name)name.value='';const reg=$('#region');if(reg){reg.value='الرياض';syncCityOptions('الرياض');}const address=$('#address');if(address)address.value='';const photoInput=$('#assetPhotos');if(photoInput)photoInput.value='';document.querySelectorAll('.type').forEach(x=>x.classList.toggle('selected',x.dataset.type==='منزل'));document.querySelectorAll('.haz-option input').forEach(x=>x.checked=false);const other=$('#otherHazardText');if(other)other.value='';const notes=$('#hazNotes');if(notes)notes.value='';const terms=$('#terms');if(terms)terms.checked=false;document.querySelectorAll('.package').forEach(x=>x.classList.remove('selected'));document.querySelectorAll('.selectPackage').forEach(x=>{x.textContent='اختيار الباقة';x.classList.add('outline')});const rid=$('#requestId');if(rid)rid.textContent='سيظهر بعد إرسال الطلب';const otherField=$('#otherHazardField');if(otherField)otherField.hidden=true;}
 document.addEventListener('click',e=>{const goBtn=e.target.closest('[data-go]');if(goBtn){if(goBtn.dataset.newRequest==='true')startFreshRequest();go(goBtn.dataset.go)}const nav=e.target.closest('[data-page]');if(nav){if(nav.dataset.page==='asset'){const active=currentReq();if(active&&['rejected_by_client','issued'].includes(active.status)){workflow.currentId=null;saveWorkflow();assetName='';region='الرياض';selectedType='منزل';selectedPackage='المتوازنة';requestSent=false;accepted=false;paid=false;const name=$('#assetName');if(name)name.value='';const reg=$('#region');if(reg){reg.value='الرياض';syncCityOptions('الرياض');}const address=$('#address');if(address)address.value='';document.querySelectorAll('.type').forEach(x=>x.classList.toggle('selected',x.dataset.type==='منزل'));document.querySelectorAll('.haz-option input').forEach(x=>x.checked=false);const other=$('#otherHazardText');if(other)other.value='';}}go(nav.dataset.page)}});$$('.type').forEach(b=>b.addEventListener('click',()=>{$$('.type').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedType=b.dataset.type}));function syncAsset(){assetName=$('#assetName').value.trim()||`أصل ${selectedType} في ${$('#region').value}`;region=$('#region').value;city=$('#city')?.value||'';$('#summaryAsset').textContent=assetName;$('#summaryRegion').textContent=city?`${region} · ${city}`:region}async function collectAssetPhotos(existing=[]){
  const input=$('#assetPhotos');const files=[...(input?.files||[])].filter(f=>f.type.startsWith('image/')).slice(0,6);
  if(!files.length)return existing||[];
@@ -69,7 +86,7 @@ document.addEventListener('click',e=>{const goBtn=e.target.closest('[data-go]');
  }
  return out.length?out:(existing||[]);
 }
-$('#saveAsset').addEventListener('click',async()=>{syncAsset();if(!$('#address').value.trim()){toast('أضيفي وصف الموقع أو العنوان قبل المتابعة.');$('#address').focus();return}let draft=currentReq(); const savedPhotos=await collectAssetPhotos(draft?.assetPhotos||[]); if(!draft || draft.status==='issued'){draft={id:'REQ-2026-'+String(Date.now()).slice(-6),assetName,assetType:selectedType,region,city,address:$('#address').value.trim(),assetPhotos:savedPhotos,status:'draft',createdAt:new Date().toISOString(),risks:[]};workflow.requests.push(draft);workflow.currentId=draft.id;saveWorkflow()}else{draft.assetName=assetName;draft.assetType=selectedType;draft.region=region;draft.city=city;draft.address=$('#address').value.trim();draft.assetPhotos=savedPhotos;saveWorkflow()} toast('تم حفظ بيانات الأصل. أكملي تحديد الأخطار لإرسال الطلب.');go('hazard')});$('#submitRequest').addEventListener('click',()=>{syncAsset();if(document.querySelector('.haz-option[data-risk="other"] input').checked && !$('#otherHazardText').value.trim()){toast('اكتبي الخطر الطبيعي الذي ترغبين في تغطيته.');$('#otherHazardText').focus();return}showPage('risk-details')});function submitCoverageRequest(){syncAsset();requestSent=true;let req=currentReq();if(!req){req={id:'REQ-2026-'+String(Date.now()).slice(-6),createdAt:new Date().toISOString()};workflow.requests.push(req);workflow.currentId=req.id}req.assetName=assetName;req.assetType=selectedType;req.region=region;req.city=city;req.address=$('#address').value.trim();req.risks=[...document.querySelectorAll('.haz-option input:checked')].map(x=>({key:x.closest('.haz-option').dataset.risk,label:x.closest('.haz-option').querySelector('b').textContent}));req.otherRisk=$('#otherHazardText').value.trim();req.notes=$('#hazNotes').value.trim();req.status='pending';req.updatedAt=new Date().toISOString();accepted=false;paid=false;saveWorkflow();$('#requestId').textContent=req.id;syncRequests();showPage('review');toast('تم إنشاء الطلب وحفظه في طلباتي.')}$('#continueRiskDetails').addEventListener('click',submitCoverageRequest);$('#approveDemo').addEventListener('click',()=>{accepted=true;const req=currentReq();if(req){req.status='accepted';req.updatedAt=new Date().toISOString();saveWorkflow()}syncRequests();toast('تمت محاكاة قبول الأصل. الباقات أصبحت متاحة.');showPage('packages')});$$('.selectPackage').forEach(b=>b.addEventListener('click',()=>{const card=b.closest('.package');selectedPackage=card.dataset.package;$$('.package').forEach(p=>{p.classList.toggle('selected',p===card);p.classList.toggle('featured',p===card)});$$('.selectPackage').forEach(btn=>{btn.textContent=btn.closest('.package')===card?'✓ تم اختيار الباقة':'اختيار الباقة';btn.classList.toggle('outline',btn.closest('.package')!==card)});const req=currentReq();if(req){req.package=selectedPackage;req.status='offer';saveWorkflow()}toast('تم اختيار '+selectedPackage)}));const prices={'الأساسية':180,'المتوازنة':320,'الأعمال':590},benefits={'الأساسية':'2,500','المتوازنة':'5,000','الأعمال':'10,000'};const packageRiskCopy={
+$('#saveAsset').addEventListener('click',async()=>{syncAsset();if(!$('#address').value.trim()){toast('أضيفي وصف الموقع أو العنوان قبل المتابعة.');$('#address').focus();return}let draft=currentReq(); const savedPhotos=await collectAssetPhotos(draft?.assetPhotos||[]); if(!draft || draft.status==='issued'){draft={id:'REQ-2026-'+String(Date.now()).slice(-6),assetName,assetType:selectedType,region,city,address:$('#address').value.trim(),assetPhotos:savedPhotos,status:'draft',createdAt:new Date().toISOString(),risks:[]};workflow.requests.push(draft);workflow.currentId=draft.id;saveWorkflow()}else{draft.assetName=assetName;draft.assetType=selectedType;draft.region=region;draft.city=city;draft.address=$('#address').value.trim();draft.assetPhotos=savedPhotos;saveWorkflow()} toast('تم حفظ بيانات الأصل. أكملي تحديد الأخطار لإرسال الطلب.');go('hazard')});$('#submitRequest').addEventListener('click',()=>{syncAsset();if(!document.querySelector('.haz-option input:checked')){toast('اختاري خطرًا واحدًا للمتابعة.');return}if(document.querySelector('.haz-option[data-risk="other"] input').checked && !$('#otherHazardText').value.trim()){toast('اكتبي الخطر الطبيعي الذي ترغبين في تغطيته.');$('#otherHazardText').focus();return}showPage('risk-details')});function submitCoverageRequest(){try{syncAsset();const chosen=document.querySelector('.haz-option input:checked');if(!chosen){toast('اختاري خطرًا واحدًا قبل المتابعة.');showPage('hazard');return}if(chosen.closest('.haz-option')?.dataset.risk==='other'&&!$('#otherHazardText').value.trim()){toast('اكتبي اسم الخطر الآخر أولًا.');showPage('hazard');$('#otherHazardText').focus();return}requestSent=true;let req=currentReq();if(!req){req={id:'REQ-2026-'+String(Date.now()).slice(-6),createdAt:new Date().toISOString()};workflow.requests.push(req);workflow.currentId=req.id}req.assetName=assetName;req.assetType=selectedType;req.region=region;req.city=city;req.address=$('#address').value.trim();req.risks=[{key:chosen.closest('.haz-option').dataset.risk,label:chosen.closest('.haz-option').querySelector('b').textContent}];req.otherRisk=$('#otherHazardText').value.trim();req.notes=$('#hazNotes').value.trim();req.status='pending';req.updatedAt=new Date().toISOString();accepted=false;paid=false;saveWorkflow();$('#requestId').textContent=req.id;syncRequests();showPage('review');toast('تم إنشاء الطلب وحفظه في طلباتي.')}catch(err){console.error('Riskora submit error',err);toast('تعذر إكمال الطلب. تأكدي من بيانات الأصل والخطر ثم حاولي مرة أخرى.')}}$('#continueRiskDetails').addEventListener('click',submitCoverageRequest);$('#approveDemo').addEventListener('click',()=>{accepted=true;const req=currentReq();if(req){req.status='accepted';req.updatedAt=new Date().toISOString();saveWorkflow()}syncRequests();toast('تمت محاكاة قبول الأصل. الباقات أصبحت متاحة.');showPage('packages')});$$('.selectPackage').forEach(b=>b.addEventListener('click',()=>{const card=b.closest('.package');selectedPackage=card.dataset.package;$$('.package').forEach(p=>{p.classList.toggle('selected',p===card);p.classList.toggle('featured',p===card)});$$('.selectPackage').forEach(btn=>{btn.textContent=btn.closest('.package')===card?'✓ تم اختيار الباقة':'اختيار الباقة';btn.classList.toggle('outline',btn.closest('.package')!==card)});const req=currentReq();if(req){req.package=selectedPackage;req.status='offer';saveWorkflow()}toast('تم اختيار '+selectedPackage)}));const prices={'الأساسية':180,'المتوازنة':320,'الأعمال':590},benefits={'الأساسية':'2,500','المتوازنة':'5,000','الأعمال':'10,000'};const packageRiskCopy={
  rain:{name:'الأمطار الغزيرة والسيول',basic:['تغطية الأمطار الغزيرة والسيول وفق شروط الوثيقة','تنبيهات عند رصد ظروف مرتبطة بالأمطار الغزيرة والسيول'],mid:['تغطية الأمطار الغزيرة والسيول وفق شروط الوثيقة','متابعة مؤشرات هطول الأمطار وتجمّع المياه والسيول','تنبيهات وقائية وإرشادات للحد من أضرار الأمطار والسيول'],biz:['خيارات تغطية أوسع للأصول والمنشآت ضد الأمطار الغزيرة والسيول','متابعة مؤشرات الأمطار والسيول في موقع المنشأة','تنبيهات وقائية مرتبطة بالأمطار الغزيرة والسيول']},
  wind:{name:'الرياح الشديدة',basic:['تغطية أضرار الرياح الشديدة وفق شروط الوثيقة','تنبيهات عند رصد ظروف مرتبطة بالرياح الشديدة'],mid:['تغطية أضرار الرياح الشديدة وفق شروط الوثيقة','متابعة مؤشرات سرعة الرياح وشدتها','تنبيهات وقائية وإرشادات للحد من أضرار الرياح الشديدة'],biz:['خيارات تغطية أوسع للأصول والمنشآت ضد الرياح الشديدة','متابعة مؤشرات سرعة الرياح في موقع المنشأة','تنبيهات وقائية مرتبطة بالرياح الشديدة']},
  heat:{name:'موجات الحرارة',basic:['تغطية موجات الحرارة وفق شروط الوثيقة','تنبيهات عند ارتفاع درجات الحرارة إلى مستويات خطرة'],mid:['تغطية موجات الحرارة وفق شروط الوثيقة','متابعة درجات الحرارة القصوى وفترات الحر الشديد','تنبيهات وقائية وإرشادات للحد من أضرار موجات الحرارة'],biz:['خيارات تغطية أوسع للأصول والمنشآت ضد موجات الحرارة','متابعة درجات الحرارة القصوى في موقع المنشأة','تنبيهات وقائية مرتبطة بموجات الحرارة']},
@@ -172,75 +189,98 @@ function renderRiskDetails(){
  target.appendChild(ul);
 }
 document.querySelectorAll('#risk-details [data-risk-tab]').forEach(btn=>btn.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();activeRiskDetailTab=btn.dataset.riskTab;renderRiskDetails();}));
-function getClaimIndicator(req,key,cfg){
- if(!req||!cfg||!cfg.field)return null;
- const factor=regionFactors[req.region]||1;
- const row=weatherDataset[weatherDataset.length-1];
- return Math.round(Number(row?.[cfg.field]||0)*factor);
-}
-function getPackageCoverage(req){
- const benefits={'الأساسية':2500,'المتوازنة':5000,'الأعمال':10000};
- return Number(req?.coverageAmount||benefits[req?.package]||benefits['المتوازنة']);
-}
-function syncClaimSimulation(){
- const req=currentReq();
- const key=(req?.risks?.[0]?.key && riskConfig[req.risks[0].key])?req.risks[0].key:(getSelectedRisk()||'rain');
- const cfg=riskConfig[key]||riskConfig.rain;
- const names={rain:'الأمطار والسيول',wind:'الرياح الشديدة',heat:'موجات الحرارة',storm:'العواصف الرعدية',dust:'العواصف الترابية',other:(req?.otherRisk||'خطر مخصص')};
- const nameEl=$('#simRiskName'), thresholdEl=$('#simThreshold'), unitEl=$('#simUnit');
- if(nameEl)nameEl.textContent=names[key]||names.other;
- if(thresholdEl)thresholdEl.textContent=cfg.threshold??'يحدد بعد المراجعة';
- if(unitEl)unitEl.textContent=cfg.unit||'';
- const docSelect=$('#claimPolicySelect');
- if(docSelect){const docs=(workflow.documents||[]).filter(d=>!d.archived);docSelect.innerHTML=docs.length?docs.map(d=>`<option value="${escapeText(d.requestId)}" ${d.requestId===req?.id?'selected':''}>${escapeText(d.id)} — ${escapeText(d.assetName||'أصل')} · ${escapeText((d.risks||[]).map(x=>x.label).join('، ')||'الخطر')}</option>`).join(''):'<option value="">لا توجد وثائق صادرة</option>';}
- updateClaimSimulation();
-}
-function updateClaimSimulation(){
- const req=currentReq();
- const key=(req?.risks?.[0]?.key && riskConfig[req.risks[0].key])?req.risks[0].key:(getSelectedRisk()||'rain');
- const cfg=riskConfig[key]||riskConfig.rain;
- const value=getClaimIndicator(req,key,cfg);
- const damage=$('#simDamage')?.value||'yes';
- const hit=value!==null && value>=cfg.threshold;
- const cover=getPackageCoverage(req);
- const partialRate=Number(req?.partialCompensationRate??10);
- const payout=hit?(damage==='yes'?cover:Math.round(cover*partialRate/100)):0;
- const decision=$('#simDecision'), amount=$('#simPayout'), reason=$('#simReason'), result=$('#simResult');
- const damageFields=$('#claimDamageFields'), damageChoice=$('#simDamageChoice'), submitBtn=$('#claimDemo');
- const valueDisplay=$('#simValueDisplay'), valueUnit=$('#simValueUnit');
- if(valueDisplay)valueDisplay.textContent=value===null?'غير محدد':String(value);
- if(valueUnit)valueUnit.textContent=cfg.unit||'';
- if(!decision||!amount||!reason||!result)return;
- if(damageFields)damageFields.hidden=!hit;
- if(damageChoice)damageChoice.hidden=!hit;
- if(submitBtn)submitBtn.hidden=!hit;
- decision.textContent=value===null?'لا يمكن تحديد الاستحقاق — المؤشر غير محدد':!hit?'لا يستحق التعويض — لم يتحقق المؤشر':damage==='yes'?'المطالبة قيد المراجعة وفق المثال':'تعويض جزئي تجريبي';
- amount.textContent=payout.toLocaleString('en-US')+' ريال';
- reason.textContent=value===null?'هذا الخطر يحتاج إلى اعتماد مؤشر ومصدر بيانات قبل محاكاة التعويض.':!hit?`القيمة التوضيحية للمنطقة والخطر ${value} ${cfg.unit} أقل من حد التفعيل ${cfg.threshold} ${cfg.unit}؛ لا تعويض سواء حدث ضرر أم لا.`:damage==='yes'?`قيمة المؤشر ${value} ${cfg.unit} حققت حد التفعيل ${cfg.threshold} ${cfg.unit}. مبلغ المنفعة التجريبي للباقة ${cover.toLocaleString('en-US')} ريال، وتبقى المطالبة قيد المراجعة.`:`تحقق حد المؤشر دون تسجيل ضرر؛ يعرض النموذج تعويضًا جزئيًا تجريبيًا بنسبة ${partialRate}% من منفعة الباقة.`;
- result.classList.toggle('sim-no',!hit); result.classList.toggle('sim-partial',hit&&damage==='no');
- // Automatically reflect a failed trigger in the request and its linked document.
- if(req && req.status==='issued' && !hit && req.claimStatus!=='claim_paid'){
-  const doc=workflow.documents.find(d=>d.requestId===req.id);
-  const changed=req.claimStatus!=='claim_rejected'||Number(req.claimPayout)!==0;
-  req.claimStatus='claim_rejected';req.claimPayout=0;req.claimReason=value===null?'المؤشر غير محدد لهذا الخطر':'لم يتحقق حد المؤشر';
-  if(doc){doc.claimStatus=req.claimStatus;doc.claimPayout=0;doc.claimReason=req.claimReason;}
-  if(changed){req.updatedAt=new Date().toISOString();saveWorkflow();syncRequests();}
+let currentIndicatorEligible=false;
+function syncIndicator(){
+ const savedReq=currentReq();
+ if(savedReq){
+  assetName=savedReq.assetName||assetName; region=savedReq.region||region; city=savedReq.city||city; selectedType=savedReq.assetType||selectedType;
+  if($('#assetName')) $('#assetName').value=savedReq.assetName||'';
+  if($('#region')) $('#region').value=savedReq.region||'الرياض';
+  if($('#address')) $('#address').value=savedReq.address||'';
+  if(Array.isArray(savedReq.risks)&&savedReq.risks.length){
+   document.querySelectorAll('.haz-option input').forEach(input=>{input.checked=input.closest('.haz-option')?.dataset.risk===savedReq.risks[0].key;});
+   selectedRisk=savedReq.risks[0].key||'rain';
+   if($('#otherHazardText')&&savedReq.otherRisk) $('#otherHazardText').value=savedReq.otherRisk;
+  }
  }
+ syncAsset();
+ selectedRisk = (savedReq?.risks?.[0]?.key && (riskConfig[savedReq.risks[0].key]||savedReq.risks[0].key==='other')) ? savedReq.risks[0].key : getSelectedRisk();
+ const customRisk = selectedRisk === 'other';
+ const customName = (savedReq?.otherRisk || $('#otherHazardText')?.value || '').trim();
+ const cfg = riskConfig[selectedRisk];
+ const regionName = savedReq?.region || region || $('#region')?.value || 'الرياض';
+ const factor = regionFactors[regionName] || 1.0;
+ const row = weatherDataset[weatherDataset.length - 1];
+ const value = customRisk ? '—' : Math.round(row[cfg.field] * factor);
+ const unit = customRisk ? '—' : cfg.unit;
+ $('#indicatorAsset').textContent = assetName;
+ $('#indicatorRegion').textContent = regionName + ' · ' + (customRisk ? (customName || 'أخطار طبيعية أخرى') : (document.querySelector('.haz-option[data-risk="'+selectedRisk+'"] b')?.textContent || 'الخطر المختار'));
+ $('#indicatorRegionValue').textContent = regionName;
+ $('#indicatorMetricLabel').textContent = customRisk ? 'المؤشر المناخي' : cfg.label;
+ $('#indicatorValue').textContent = value;
+ $('#indicatorUnit').textContent = unit;
+ $('#thresholdCurrent').textContent = value;
+ $('#thresholdUnit').textContent = unit;
+ $('#thresholdValue').textContent = customRisk ? 'يُحدد لاحقًا' : cfg.threshold;
+ $('#thresholdUnit2').textContent = customRisk ? '' : unit;
+ $('#indicatorType').textContent = customRisk ? 'يُحدد المؤشر بعد مراجعة الخطر' : cfg.label;
+ $('#indicatorSource').textContent = customRisk ? 'غير محدد — نموذج تجريبي' : cfg.source;
+ const pct = customRisk ? 0 : Math.min(100, Math.round(value / cfg.threshold * 100));
+ $('#indicatorMeter').style.width = pct + '%';
+ const glyphs = {
+  rain:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17a5 5 0 1 1 .7-9.9A6 6 0 0 1 19 9a4 4 0 0 1 0 8Z"/><path d="m8 19-1 2m6-2-1 2m6-2-1 2"/></svg>',
+  wind:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h13a3 3 0 1 0-3-3M2 12h19a2 2 0 1 1-2 2M4 16h10"/></svg>',
+  heat:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="3"/><path d="M12 1v2m0 8v2M6 7H4m16 0h-2M10 15a2 2 0 0 1 4 0v5a2 2 0 0 1-4 0Z"/></svg>',
+  storm:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a5 5 0 0 1 5-5 6 6 0 0 1 11 2 4 4 0 0 1 0 8H7"/><path d="m13 12-4 6h4l-2 4 6-8h-4l2-2"/></svg>',
+  other:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18"/></svg>'
+ };
+ $('#indicatorGlyph').innerHTML = glyphs[customRisk ? 'other' : (cfg.glyph || selectedRisk)] || glyphs.other;
+ const status = $('#thresholdStatus');
+ currentIndicatorEligible=!customRisk && Number(value)>=Number(cfg.threshold);
+ const claimNav=document.querySelector('#indicator [data-go="claim"]'); if(claimNav){claimNav.hidden=!currentIndicatorEligible;claimNav.textContent=currentIndicatorEligible?'انتقل إلى طلب التعويض ←':'لا يمكن تقديم مطالبة قبل بلوغ المؤشر';}
+ if(customRisk){status.textContent='يُحدد المؤشر وحد التفعيل بعد مراجعة الخطر — نموذج تجريبي';status.className='status pending';}
+ else if(value >= cfg.threshold){status.textContent='تم بلوغ حد المؤشر في المحاكاة — مثال فقط';status.className='status';}
+ else {status.textContent='لم يتحقق حد التفعيل في المحاكاة — مثال فقط';status.className='status pending';}
 }
-$('#simDamage')?.addEventListener('change',updateClaimSimulation);
-$('#claimPolicySelect')?.addEventListener('change',()=>{const id=$('#claimPolicySelect').value;if(id&&workflow.requests.some(r=>r.id===id)){workflow.currentId=id;saveWorkflow();syncClaimSimulation();}});
-$('#claimDemo').addEventListener('click',()=>{
- const req=currentReq();if(!req){toast('اختاري وثيقة صادرة مرتبطة بالطلب أولًا.');return;}
- const key=req.risks?.[0]?.key||'rain',cfg=riskConfig[key]||riskConfig.rain,value=getClaimIndicator(req,key,cfg),damage=$('#simDamage')?.value||'yes';
- if(value===null||value<cfg.threshold){updateClaimSimulation();toast('لا يوجد تعويض: لم يتحقق حد المؤشر.');go('requests');return;}
- if(damage==='yes'&&!$('#claimDamageDescription')?.value.trim()&&!($('#claimDamagePhotos')?.files?.length)){toast('أضيفي وصف الضرر أو صورة واحدة على الأقل للمحاكاة.');return;}
- const cover=getPackageCoverage(req),rate=Number(req.partialCompensationRate??10),payout=damage==='yes'?cover:Math.round(cover*rate/100);
- req.claimStatus=damage==='yes'?'claim_pending':'claim_partial';req.claimPayout=payout;req.claimReason=damage==='yes'?'المؤشر تحقق والضرر مسجل؛ المطالبة بانتظار المراجعة':'المؤشر تحقق دون تسجيل ضرر؛ تعويض جزئي تجريبي';
- req.claimScenario={value,threshold:cfg.threshold,unit:cfg.unit,damage,description:$('#claimDamageDescription')?.value||'',damageDate:$('#damageDate')?.value||'',createdAt:new Date().toISOString()};req.updatedAt=new Date().toISOString();
- const doc=workflow.documents.find(d=>d.requestId===req.id);if(doc){doc.claimStatus=req.claimStatus;doc.claimPayout=payout;doc.claimReason=req.claimReason;doc.claimScenario=req.claimScenario;}
- saveWorkflow();syncRequests();toast(damage==='yes'?'تم تسجيل المطالبة التجريبية للمراجعة، ولم يتم اعتماد صرف فعلي.':'تم تسجيل التعويض الجزئي التجريبي.');go('requests');
-});
-$$('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
+document.querySelectorAll('.haz-option input').forEach(input => input.addEventListener('change', () => {
+  const all = [...document.querySelectorAll('.haz-option input')];
+  const checked = all.filter(x=>x.checked);
+  const risk = input.closest('.haz-option').dataset.risk || 'rain';
+  if(input.checked){
+    all.forEach(x=>{ if(x!==input) x.checked=false; });
+    if(risk !== 'other') selectedRisk = risk;
+  } else if(!checked.length) {
+    input.checked=true;
+  }
+  const otherChosen = document.querySelector('.haz-option[data-risk="other"] input').checked;
+  $('#otherHazardField').hidden = !otherChosen;
+  if(!otherChosen) $('#otherHazardText').value = '';
+  syncIndicator();
+}));
+$('#otherHazardText')?.addEventListener('input', () => { if(document.querySelector('.haz-option[data-risk="other"] input').checked) syncIndicator(); });
+function syncRequests(){
+ const reqs=workflow.requests||[],docs=workflow.documents||[];
+ const visibleReqs=reqs.filter(r=>!!r.archived===!!showArchivedRequests);
+ const visibleDocs=docs.filter(d=>!!d.archived===!!showArchivedDocs);
+ $('#requestCount').textContent=reqs.filter(r=>!r.archived).length;
+ $('#pendingCount').textContent=reqs.filter(r=>!r.archived&&['draft','pending','more','offer','offer_review'].includes(r.status)).length;
+ $('#completeCount').textContent=reqs.filter(r=>!r.archived&&r.status==='issued').length;
+ const list=$('#dynamicRequests');
+ if(list){list.innerHTML=visibleReqs.length?visibleReqs.slice().sort((a,b)=>new Date(b.updatedAt||b.createdAt||0)-new Date(a.updatedAt||a.createdAt||0)).map(r=>`<article class="request-row redesigned-request"><label class="record-select"><input type="checkbox" class="record-check" data-record-type="request" value="${escapeText(r.id)}" aria-label="تحديد الطلب"></label><span class="row-icon"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span><div class="row-content"><b>${r.status==='amendment_pending'?'طلب تعديل عرض السعر — ':'طلب تغطية — '}${escapeText(r.assetName||'أصل جديد')}</b><small>${escapeText(r.id)} · ${new Date(r.createdAt||Date.now()).toLocaleDateString('ar-SA')}</small><div class="request-meta"><span class="status ${r.status==='rejected_by_client'?'rejected':(r.status==='issued'||r.status==='accepted'?'':'pending')}">${statusLabel(r.status)}</span><span class="next-step">${r.status==='amendment_pending'?'طلب التعديل الذي أرسلته قيد المراجعة':r.status==='pending'?'بانتظار المراجعة':r.status==='accepted'?'يمكنك اختيار الباقة':r.status==='issued'?'الوثيقة التجريبية متاحة في وثائقي':r.status==='offer_review'?'راجعي العرض قبل إصدار الوثيقة':r.status==='draft'?'أكملي اختيار الأخطار':'تابعي تفاصيل الطلب'}</span></div></div><div class="record-actions">${r.status==='rejected_by_client'?'':'<button class="btn outline request-detail" data-open-request="'+escapeText(r.id)+'">عرض التفاصيل ←</button>'}<button class="btn outline" data-archive-request="${escapeText(r.id)}">${r.archived?'إلغاء الأرشفة':'أرشفة'}</button><button class="btn outline danger-action" data-delete-request="${escapeText(r.id)}">حذف</button></div></article>`).join(''):'<div class="empty-docs-note">'+(showArchivedRequests?'ما فيه طلبات مؤرشفة.':'ما عندك طلبات ظاهرة. ابدئي بإضافة أصل جديد.')+'</div>';}
+ list?.querySelectorAll('[data-open-request]').forEach(btn=>btn.addEventListener('click',()=>{workflow.currentId=btn.dataset.openRequest;saveWorkflow();const r=currentReq();if(!r)return;assetName=r.assetName||assetName;region=r.region||region;selectedType=r.assetType||selectedType;requestSent=true;accepted=['accepted','offer','issued'].includes(r.status);paid=r.status==='issued';$('#requestId').textContent=r.id;$('#assetName').value=r.assetName||'';$('#region').value=r.region||'الرياض';syncCityOptions(r.city||'');$('#address').value=r.address||'';if(r.status==='accepted'||r.status==='offer'){showPage('packages')}else if(r.status==='offer_review'){showPage('policy')}else if(r.status==='issued'){showPage('requests');$$('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab==='mydocs'));$('#myrequests').hidden=true;$('#mydocs').hidden=false}else{showPage('review')}}));
+ list?.querySelectorAll('[data-archive-request]').forEach(btn=>btn.addEventListener('click',()=>{const r=reqs.find(x=>x.id===btn.dataset.archiveRequest);if(r){const nextArchived=!r.archived;r.archived=nextArchived;const linkedDoc=docs.find(d=>d.requestId===r.id);if(linkedDoc)linkedDoc.archived=nextArchived;saveWorkflow();syncRequests();toast(linkedDoc?(nextArchived?'تمت أرشفة الطلب ووثيقته المرتبطة.':'تم استرجاع الطلب ووثيقته المرتبطة.'):(nextArchived?'تمت أرشفة الطلب.':'تم استرجاع الطلب.'));}}));
+ list?.querySelectorAll('[data-delete-request]').forEach(btn=>btn.addEventListener('click',()=>{if(!confirm('هل أنتِ متأكدة من حذف هذا الطلب ووثيقته المرتبطة؟ لا يمكن التراجع عن الحذف.'))return;const id=btn.dataset.deleteRequest;workflow.requests=workflow.requests.filter(x=>x.id!==id);workflow.documents=workflow.documents.filter(x=>x.requestId!==id);if(workflow.currentId===id)workflow.currentId=null;saveWorkflow();syncRequests();}));
+ $('#docCount').textContent=docs.filter(d=>!d.archived).length;$('#docActiveCount').textContent=0;$('#docExpiredCount').textContent=0;$('#docSuspendedCount').textContent=0;
+ const docsEl=$('#dynamicDocs'); if(docsEl){docsEl.innerHTML=visibleDocs.length?visibleDocs.slice().sort((a,b)=>new Date(b.issuedAt||b.createdAt||0)-new Date(a.issuedAt||a.createdAt||0)).map(d=>`<article class="document-card"><label class="record-select"><input type="checkbox" class="record-check" data-record-type="doc" value="${escapeText(d.requestId)}" aria-label="تحديد الوثيقة"></label><div class="document-top"><span class="row-icon"><svg viewBox="0 0 24 24"><path d="M7 3h8l4 4v14H7zM15 3v5h4M10 12h6M10 16h4"/></svg></span><div class="document-title"><b>وثيقة مرصد رسكورا التجريبية</b><small>رقم الوثيقة: ${escapeText(d.id)}</small></div><span class="status info-status">معاينة تجريبية</span></div><div class="document-facts"><div><small>الأصل المؤمن عليه</small><b>${escapeText(d.assetName)}</b></div><div><small>الباقة</small><b>${escapeText(d.package)}</b></div><div><small>قيمة التغطية</small><b>${escapeText(d.price)} ريال — تجريبي</b></div><div><small>الأخطار المحددة</small><b>${escapeText((d.risks||[]).map(x=>x.label).join('، ')||'حسب الطلب')}</b></div></div><div class="hint document-notice">وثيقة نموذج تجريبي فقط؛ لا تمثل وثيقة تأمين فعلية أو تغطية سارية.</div><div class="record-actions"><button class="btn outline document-detail" data-open-doc="${escapeText(d.requestId)}">عرض التفاصيل ←</button><button class="btn outline" data-archive-doc="${escapeText(d.requestId)}">${d.archived?'إلغاء الأرشفة':'أرشفة'}</button><button class="btn outline danger-action" data-delete-doc="${escapeText(d.requestId)}">حذف</button></div></article>`).join(''):'<div class="empty-docs-note">'+(showArchivedDocs?'ما فيه وثائق مؤرشفة.':'ما عندك وثائق ظاهرة.')+'</div>';}
+ docsEl?.querySelectorAll('[data-open-doc]').forEach(btn=>btn.addEventListener('click',()=>{const d=workflow.documents.find(x=>x.requestId===btn.dataset.openDoc);if(!d)return;workflow.currentId=d.requestId;saveWorkflow();syncPolicy();showPage('policy')}));
+ docsEl?.querySelectorAll('[data-archive-doc]').forEach(btn=>btn.addEventListener('click',()=>{const d=docs.find(x=>x.requestId===btn.dataset.archiveDoc);if(d){const nextArchived=!d.archived;d.archived=nextArchived;const linkedReq=reqs.find(r=>r.id===d.requestId);if(linkedReq)linkedReq.archived=nextArchived;saveWorkflow();syncRequests();toast(linkedReq?(nextArchived?'تمت أرشفة الوثيقة والطلب المرتبط بها.':'تم استرجاع الوثيقة والطلب المرتبط بها.'):(nextArchived?'تمت أرشفة الوثيقة.':'تم استرجاع الوثيقة.'));}}));
+ docsEl?.querySelectorAll('[data-delete-doc]').forEach(btn=>btn.addEventListener('click',()=>{if(!confirm('هل أنتِ متأكدة من حذف هذه الوثيقة نهائيًا؟ لا يمكن التراجع عن الحذف.'))return;const id=btn.dataset.deleteDoc;workflow.documents=workflow.documents.filter(x=>x.requestId!==id);saveWorkflow();syncRequests();}));
+ $('#demoDocumentCard').hidden=true;$('#emptyDocsNote').hidden=visibleDocs.length>0;
+ const r=currentReq();if(r){$('#requestId').textContent=r.id;assetName=r.assetName||assetName;region=r.region||region;$('#docAsset').textContent=assetName;$('#docPackage').textContent=r.package||selectedPackage;}
+}
+function escapeText(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function syncClaimOutcome(){const noDamage=$('#claimDamage')?.value==='no';const box=$('#noDamageBenefit');const fields=$('#damageFields');if(box)box.hidden=!noDamage;if(fields)fields.hidden=noDamage;const req=currentReq();const benefit=({'الأساسية':2500,'المتوازنة':5000,'الأعمال':10000})[req?.package||'المتوازنة']||5000;if($('#partialBenefitAmount'))$('#partialBenefitAmount').textContent=Math.round(benefit*.1).toLocaleString('en-US')+' ريال';}
+$('#claimDamage')?.addEventListener('change',syncClaimOutcome);$('#claimDemo').addEventListener('click',()=>{if(!currentIndicatorEligible){toast('المؤشر لم يبلغ حد التفعيل، لا يمكن إرسال المطالبة.');showPage('indicator');return}const req=currentReq();if(!req){toast('ما لقينا الطلب المرتبط بالمطالبة.');return}const noDamage=$('#claimDamage')?.value==='no';req.claimStatus=noDamage?'منفعة جزئية مقترحة — دون ضرر':'مطالبة بانتظار المراجعة';req.claimAmount=noDamage?Math.round((({'الأساسية':2500,'المتوازنة':5000,'الأعمال':10000})[req.package||'المتوازنة']||5000)*.1):null;req.updatedAt=new Date().toISOString();const doc=workflow.documents.find(d=>d.requestId===req.id);if(doc){doc.claimStatus=req.claimStatus;doc.claimAmount=req.claimAmount}window.claimSent=true;saveWorkflow();syncRequests();toast(noDamage?'تم تسجيل المنفعة الجزئية المقترحة في الطلب والوثيقة.':'تم إرسال مطالبة التعويض التجريبية للمراجعة.');go('requests')});$$('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
  const tab=b.dataset.tab;
  $$('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));
  const archive=tab==='myarchive', docs=tab==='mydocs';

@@ -546,3 +546,18 @@ body.theme-dark .drawer-logout,body.theme-dark .logout-button{background:#dc2626
 #dataMetricHeader{min-width:145px}
 #weatherRows td:nth-child(2){font-weight:700;color:#096dc2}
 @media(max-width:650px){.data-risk-summary{align-items:flex-start}.data-region-chip{white-space:normal}.data-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Single-page parametric compensation simulation */
+.claim-result{border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:18px;background:#f8fbff}
+.claim-result small{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
+.claim-result h2{margin:0 0 8px;font-size:19px}
+.claim-result strong{display:block;font-size:28px;margin:8px 0}
+.claim-result p{font-size:12px;line-height:1.9;margin:8px 0 0}
+.claim-result-no{background:#fff1f1;border-color:#ffcaca;color:#a92d38}
+.claim-result-partial{background:#fff8e9;border-color:#f4dfad;color:#8b5b0a}
+.claim-result-yes{background:#eafaf2;border-color:#b9ebd1;color:#08794f}
+.claim-fact{display:grid;gap:5px;padding:13px;border:1px solid var(--line);border-radius:10px;background:#f4f9ff;min-width:0}
+.claim-fact small{font-size:10px;color:var(--muted)}
+.claim-fact b{font-size:13px;overflow-wrap:anywhere}
+#claimDynamicContent .fields{margin-top:12px}
+#claimDynamicContent .claim-result .btn{margin-top:14px}

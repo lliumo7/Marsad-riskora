@@ -561,3 +561,15 @@ body.theme-dark .drawer-logout,body.theme-dark .logout-button{background:#dc2626
 .claim-fact b{font-size:13px;overflow-wrap:anywhere}
 #claimDynamicContent .fields{margin-top:12px}
 #claimDynamicContent .claim-result .btn{margin-top:14px}
+
+
+/* Single requested change: replace the home hero illustration with the supplied Saudi city panorama. */
+.hero .skyline {
+  background-image: linear-gradient(90deg, rgba(8,44,88,.08), rgba(8,44,88,.10)), url('saudi-city-panorama.jpeg') !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+.hero .skyline .sun,
+.hero .skyline .tower,
+.hero .skyline .cloud { display: none !important; }

@@ -561,3 +561,83 @@ body.theme-dark .drawer-logout,body.theme-dark .logout-button{background:#dc2626
 .claim-fact b{font-size:13px;overflow-wrap:anywhere}
 #claimDynamicContent .fields{margin-top:12px}
 #claimDynamicContent .claim-result .btn{margin-top:14px}
+
+/* Approved visual polish: high-contrast dark mode without changing layout or workflow */
+body.theme-dark {
+  --app-bg:#101923; --surface:#182633; --app-ink:#edf4fa; --app-muted:#b4c3d0; --app-line:#344858;
+  background:#101923 !important; color:#edf4fa !important;
+}
+body.theme-dark main, body.theme-dark footer { color:#edf4fa; }
+body.theme-dark .top, body.theme-dark .top nav, body.theme-dark .panel,
+body.theme-dark .quick, body.theme-dark .risk-card, body.theme-dark .package,
+body.theme-dark .list-panel, body.theme-dark .settings-menu, body.theme-dark .settings-content,
+body.theme-dark .settings-tab, body.theme-dark .appearance-choice,
+body.theme-dark .contact-form input, body.theme-dark .contact-form select,
+body.theme-dark .contact-form textarea, body.theme-dark .stepper,
+body.theme-dark .asset-summary, body.theme-dark .journey-card,
+body.theme-dark .payment-summary, body.theme-dark .pay-method,
+body.theme-dark .table-scroll, body.theme-dark .weather-table,
+body.theme-dark .language-card, body.theme-dark .language-setting,
+body.theme-dark .faq-list details, body.theme-dark .request-card,
+body.theme-dark .document-card, body.theme-dark .data-card,
+body.theme-dark .claim-simulation, body.theme-dark .indicator-card,
+body.theme-dark .modal-card, body.theme-dark .side-drawer {
+  background:#182633 !important; color:#edf4fa !important; border-color:#344858 !important;
+}
+body.theme-dark h1, body.theme-dark h2, body.theme-dark h3, body.theme-dark h4,
+body.theme-dark b, body.theme-dark strong, body.theme-dark label,
+body.theme-dark .heading h1, body.theme-dark .panel h2,
+body.theme-dark .quick b, body.theme-dark .risk-card b,
+body.theme-dark .package b, body.theme-dark .section-head h2 { color:#f0f6fb; }
+body.theme-dark p, body.theme-dark small, body.theme-dark .muted,
+body.theme-dark .heading p, body.theme-dark .quick small,
+body.theme-dark .risk-card small, body.theme-dark .package small,
+body.theme-dark .settings-content p, body.theme-dark .hint,
+body.theme-dark .asset-summary small, body.theme-dark .field-label small { color:#b7c7d5 !important; }
+body.theme-dark input, body.theme-dark select, body.theme-dark textarea,
+body.theme-dark .fields input, body.theme-dark .fields select,
+body.theme-dark .fields textarea, body.theme-dark .field-label textarea,
+body.theme-dark .language-card select, body.theme-dark .login-form input {
+  background:#101d28 !important; color:#f0f6fb !important; border-color:#40596b !important;
+  color-scheme:dark;
+}
+body.theme-dark input::placeholder, body.theme-dark textarea::placeholder { color:#91a7b8 !important; opacity:1; }
+body.theme-dark select option { background:#182633; color:#f0f6fb; }
+body.theme-dark .hint, body.theme-dark .notice, body.theme-dark .info-box,
+body.theme-dark .data-note, body.theme-dark .contact-support-note {
+  background:#1c3445 !important; color:#c6d9e8 !important; border-color:#3b586c !important;
+}
+body.theme-dark .type, body.theme-dark .haz-option, body.theme-dark .file-selection-row,
+body.theme-dark .actions, body.theme-dark .tl, body.theme-dark .data-toolbar,
+body.theme-dark .field-row { border-color:#344858 !important; }
+body.theme-dark .type, body.theme-dark .haz-option { background:#182633 !important; color:#e6f0f8 !important; }
+body.theme-dark .type.selected, body.theme-dark .haz-option:has(input:checked),
+body.theme-dark .top nav button.active, body.theme-dark .settings-tab.active,
+body.theme-dark .appearance-choice.active, body.theme-dark .mobile-nav button.active {
+  background:#203e53 !important; color:#ffffff !important; border-color:#4c9bd2 !important;
+}
+body.theme-dark .btn.outline, body.theme-dark .page-back-button,
+body.theme-dark .password-toggle { background:#203648 !important; color:#d9efff !important; border-color:#426176 !important; }
+body.theme-dark .mobile-nav { background:rgba(19,32,44,.98) !important; border-color:#344858 !important; }
+body.theme-dark .mobile-nav button { color:#b7c8d6; }
+body.theme-dark .mobile-nav button.active { color:#fff !important; }
+body.theme-dark .accepted { background:#17392f !important; border-color:#28644f !important; }
+body.theme-dark .accepted small { color:#a9d8c4 !important; }
+body.theme-dark .weather-table th { background:#203e53 !important; color:#e8f4fc !important; }
+body.theme-dark .weather-table td { background:#182633 !important; color:#e6f0f8 !important; border-color:#344858 !important; }
+body.theme-dark .risk-line-icon, body.theme-dark svg { transform:none !important; }
+body.theme-dark .logo, body.theme-dark .number { color:#fff; }
+body.theme-dark .demo { background:#19372f; color:#bcebd7; border-color:#315d4e; }
+body.lang-en { direction:ltr; }
+body.lang-en .top, body.lang-en main, body.lang-en .mobile-nav,
+body.lang-en .stepper, body.lang-en .actions, body.lang-en .fields,
+body.lang-en .hazard-options, body.lang-en .types { direction:ltr; }
+body.lang-en .quick, body.lang-en .asset-summary, body.lang-en .accepted,
+body.lang-en .haz-option, body.lang-en .tl, body.lang-en .file-selection-row { direction:ltr; text-align:left; }
+body.lang-en .quick { text-align:left; }
+body.lang-en .quick i { grid-column:1; }
+body.lang-en .fields label, body.lang-en .field-label { text-align:left; }
+body.lang-en .page-back-button, body.lang-en button, body.lang-en input,
+body.lang-en select, body.lang-en textarea { direction:ltr; }
+body.lang-en .back-arrow { transform:none !important; }
+body.lang-en svg, body.lang-en .icon, body.lang-en i { transform:none !important; }

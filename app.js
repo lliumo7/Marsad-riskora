@@ -345,6 +345,7 @@ function applyDemoName(name){
  const contactName=$('#contactName');
  if(contactName && !contactName.value.trim() && clean) contactName.value=clean;
 }
+try { if(localStorage.getItem('riskora_theme')==='dark') document.body.classList.add('theme-dark'); } catch(e) {}
 function syncSettings(){
  const theme=document.body.classList.contains('theme-dark')?'dark':'light';
  $$('[data-theme]').forEach(b=>b.classList.toggle('active',b.dataset.theme===theme));
@@ -371,6 +372,7 @@ document.addEventListener('click',e=>{
  const themeBtn=e.target.closest('[data-theme]');
  if(themeBtn){
   document.body.classList.toggle('theme-dark',themeBtn.dataset.theme==='dark');
+  try { localStorage.setItem('riskora_theme', themeBtn.dataset.theme); } catch(e) {}
   $$('[data-theme]').forEach(b=>b.classList.toggle('active',b===themeBtn));
  }
 });
@@ -538,7 +540,18 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
     'بدون دفع في البداية':'No payment at the start','معلومات مهمة قبل تجربة المنصة':'Important information before using the prototype',
     'الوضع الفاتح':'Light','داكن':'Dark','فاتح':'Light','اختر المنطقة':'Choose Region',
     'المنطقة':'Region','اسم الأصل':'Asset Name','العنوان أو وصف الموقع':'Address or Location Description',
-    'صور الأصل الحالية':'Current Asset Photos','إرسال الملاحظة':'Send Feedback'
+    'صور الأصل الحالية':'Current Asset Photos','إرسال الملاحظة':'Send Feedback',
+    'منزل':'House','متجر':'Shop','مزرعة':'Farm','منشأة صناعية':'Industrial Facility','مبنى تجاري':'Commercial Building','أخرى':'Other','أخطار طبيعية أخرى':'Other Natural Hazards',
+    'الرياض':'Riyadh','مكة المكرمة':'Makkah','المدينة المنورة':'Madinah','القصيم':'Al-Qassim','المنطقة الشرقية':'Eastern Province','عسير':'Asir','تبوك':'Tabuk','حائل':'Hail','الحدود الشمالية':'Northern Borders','جازان':'Jazan','نجران':'Najran','الباحة':'Al-Baha','الجوف':'Al-Jouf',
+    'الأمطار الغزيرة والسيول':'Heavy Rain & Floods','الأمطار والسيول':'Rain & Floods','الرياح الشديدة':'Strong Winds','موجات الحرارة':'Heat Waves','العواصف الرعدية':'Thunderstorms','العواصف الترابية':'Dust Storms','درجات الحرارة القصوى':'Extreme Temperatures',
+    'قيد المراجعة':'Under Review','بانتظار المعالجة':'Pending Processing','مكتمل':'Completed','مرفوض':'Rejected','مقبول':'Approved','مقبولة':'Approved','تم قبولها':'Approved','تم قبول الأصل مبدئيًا':'Asset Preliminarily Approved','وثائق سارية':'Active Policies','وثائق منتهية':'Expired Policies','وثائق موقوفة':'Suspended Policies',
+    'قيمة المؤشر':'Indicator Value','قيمة المؤشر الحالية':'Current Indicator Value','كمية الهطول المطري':'Rainfall Amount','سرعة الرياح':'Wind Speed','حد التفعيل التوضيحي':'Illustrative Trigger Threshold','حد تفعيل الخطر':'Hazard Trigger Threshold','مصدر البيانات':'Data Source','ملف Excel تجريبي':'Sample Excel File','بيانات محاكاة':'Simulated Data','بيانات الطقس':'Weather Data','بيانات النموذج':'Model Data','السجل السنوي للمؤشر':'Annual Indicator Record','سنوات البيانات':'Data Years','كل السنوات':'All Years','السنة':'Year','الوحدة':'Unit','ملم':'mm','ريال':'SAR','ريال / نموذج تجريبي':'SAR / Demo',
+    'إجمالي الطلبات':'Total Requests','إجمالي الوثائق':'Total Policies','جميع طلباتك':'All Your Requests','طلب آخر':'Another Request','عرض وثائقي وطلباتي':'View My Policies & Requests','عرض طلباتي':'View My Requests','عرض تفاصيل الوثيقة ←':'View Policy Details →','عرض تفاصيل الخطر ←':'View Hazard Details →','متابعة المؤشرات ←':'View Indicators →','متابعة المؤشرات':'Track Indicators','متابعة المؤشر':'Track Indicator','عرض بيانات المؤشر المرتبط بطلب التغطية الحالي':'View Indicator Data Linked to the Current Coverage Request',
+    'الاسم (اختياري)':'Name (Optional)','الاسم الكامل':'Full Name','اكتب اسمك':'Enter your name','اكتب رسالتك هنا...':'Write your message here...','اكتب موضوع الرسالة':'Enter message subject','اكتب موضوعك':'Enter your subject','اكتب سؤالك...':'Type your question...','اكتب كلمة المرور':'Enter password','أعد كتابة كلمة المرور':'Re-enter password','الاسم كما يظهر في العرض':'Name as shown on the offer','الحي، الشارع، أو وصف يساعد في تحديد الموقع':'District, street, or location description','مثال: منزلي في الرياض':'Example: My house in Riyadh','أي تفاصيل تساعد في مراجعة الطلب':'Any details that help review the request','اشرحي التعديل المطلوب':'Describe the requested change',
+    'أرسل ملاحظاتك ومقترحاتك لتطوير تطبيق مرصد رسكورا':'Send feedback and suggestions to improve Mirsad Riskora','إرسال الرسالة':'Send Message','إرسال طلب التعديل':'Submit Change Request','إرسال طلب التغطية':'Submit Coverage Request','إصدار الوثيقة':'Issue Policy','طلب التعويض':'Claim Request','طلب التعويض ومحاكاة الاستحقاق':'Claim Request & Eligibility Simulation','هل حدث ضرر؟':'Was Damage Sustained?','نعم، حدث ضرر':'Yes, Damage Occurred','لا، لم يحدث ضرر':'No, No Damage Occurred','حدث ضرر':'Damage Occurred','لم يحدث ضرر':'No Damage Occurred',
+    'حماية أوضح تبدأ من بياناتك':'Clearer Protection Starts with Your Data','أهلًا بك من جديد':'Welcome Back','ابدأ من هنا':'Get Started Here','رحلتك في 4 خطوات واضحة':'Your Journey in 4 Clear Steps','سجّل الأصل':'Register Asset','اختر الخطر':'Choose Risk','انتظر المراجعة':'Await Review','راجع العرض':'Review Offer','بدون دفع في البداية':'No Upfront Payment','معلومات مهمة قبل تجربة المنصة':'Important Information Before Using the Platform','طبيعة المنصة':'About the Platform','الاستخدام المسؤول':'Responsible Use','الطلبات والوثائق':'Requests & Policies','التحديثات':'Updates','الشروط والأحكام':'Terms & Conditions','الشروط العامة':'General Terms','الخصوصية والأمان':'Privacy & Security','تواصل معنا':'Contact Us','عن مرصد رسكورا':'About Mirsad Riskora','الأسئلة الشائعة':'Frequently Asked Questions','المساعدة':'Help','مساعد رسكورا':'Riskora Assistant','الملف الشخصي':'Profile','حفظ الاسم':'Save Name','تسجيل الخروج':'Sign Out','تسجيل الدخول':'Sign In','إنشاء حساب جديد':'Create a New Account','ما عندك حساب؟ إنشاء حساب جديد':"Don't have an account? Create one",'اختيار الملفات في النموذج الحالي للمعاينة فقط؛ لا تُرفع إلى خادم عبر هذه النسخة.':'Files selected in this prototype are for preview only and are not uploaded to a server.',
+    'آخر تحديث: أكتوبر 2026 · مسودة توضيحية للمشروع الطلابي.':'Last updated: October 2026 · Student project illustrative draft.','نسخة تجريبية':'Demo Version','تجريبية':'Demo','محاكاة فقط':'Simulation Only','توضيحية فقط':'Illustrative Only','السعر التوضيحي':'Illustrative Price','السعر قبل الضريبة':'Price Before VAT','ضريبة القيمة المضافة':'Value Added Tax (VAT)','الإجمالي':'Total','الإجمالي التوضيحي':'Illustrative Total','قيمة الأصل (ريال)':'Asset Value (SAR)','قيمة الضرر (ريال)':'Damage Value (SAR)','قيمة التغطية':'Coverage Amount','مدة التغطية':'Coverage Period','12 شهرًا — نموذج تجريبي':'12 months — demo','14 يومًا':'14 days','تاريخ إصدار العرض':'Offer Issue Date','صلاحية العرض':'Offer Validity','الباقة الأساسية':'Basic Package','الباقة المتوازنة':'Balanced Package','باقة الأعمال':'Business Package','الأكثر توازنًا':'Most Balanced','القسط بعد الخصم':'Premium After Discount','السعر أو القسط التأميني':'Price or Insurance Premium','الدفع التجريبي':'Demo Payment','بوابة الدفع':'Payment Gateway','بطاقة بنكية تجريبية':'Demo Bank Card','تأكيد الدفع التجريبي وإصدار الوثيقة ←':'Confirm Demo Payment & Issue Policy →','قبول العرض والانتقال للتوقيع':'Accept Offer & Continue to Sign','رفض العرض':'Decline Offer','مراجعة الطلب':'Review Request','حالة الطلب':'Request Status','حالة الوثيقة':'Policy Status','رقم الطلب':'Request Number','رقم الوثيقة':'Policy Number','الأصل المؤمن عليه':'Insured Asset','الأخطار المشمولة':'Covered Hazards','تفاصيل الطلب':'Request Details','تفاصيل الباقة':'Package Details','البيانات المدخلة':'Entered Data','ملاحظات إضافية (اختياري)':'Additional Notes (Optional)','المنطقة المختارة':'Selected Region','الخطر المرتبط بالطلب':'Hazard Linked to Request','المؤشر':'Indicator','آلية الاستحقاق':'Eligibility Mechanism','حسب شروط الوثيقة':'According to Policy Terms','حسب السجل الحالي':'Based on Current Record','تُعرض نتيجة المؤشر تلقائيًا حسب الوثيقة والخطر المحدد':'The indicator result is displayed automatically based on the policy and selected hazard',
+    'أرسل طلبك بنجاح':'Your request was submitted successfully','تم استلام الطلب':'Request Received','تم إرسال طلبك بنجاح':'Your request was submitted successfully','تم إنشاء وثيقة تجريبية':'Demo Policy Created','تم حفظ بيانات الأصل والمخاطر المحددة':'Asset details and selected hazards saved','إلغاء والعودة للعرض':'Cancel and Return to Offer','العودة إلى عرض السعر':'Return to Price Offer','العودة لاختيار الخطر':'Return to Hazard Selection','متابعة الطلبات':'Track Requests','تغطية الخطر المختار وفق شروط الوثيقة':'Coverage for the selected hazard subject to policy terms','اختيار نوع الأصل وإضافة موقعه وصوره':'Choose asset type, location, and photos','أدخل بيانات الأصل الذي ترغب في حمايته. الصور توثّق حالته الحالية قبل بدء التغطية.':'Enter the details of the asset you want to protect. Photos document its current condition before coverage begins.','اختر الأخطار التي ترغب في تغطيتها':'Choose the hazards you want covered','اختيار الخطر لا يعني بدء التغطية. سيُراجع الطلب أولًا، ثم تظهر الباقات عند قبول الأصل.':'Selecting a hazard does not activate coverage. The request is reviewed first; packages appear after the asset is accepted.','استلمنا طلبك بنجاح. سيظهر الطلب في «طلباتي» وتظهر نتيجة المراجعة عند اتخاذ القرار.':'Your request was received. It will appear under My Requests, and the review result will be shown when a decision is made.'
   };
   const originals = new WeakMap();
   function applyLanguage(lang){
@@ -558,6 +571,28 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
       if(key) value = value.replace(trimmed, translations[key]);
       n.nodeValue = value;
     }
+    // Translate common form attributes and option labels too (not just visible text nodes).
+    const translateExact = (text) => {
+      const raw = (text || '').trim();
+      if (!raw) return text;
+      const keys = Object.keys(translations).sort((a,b)=>b.length-a.length);
+      const exact = keys.find(k=>raw===k);
+      if (exact) return text.replace(raw, translations[exact]);
+      let out = raw;
+      keys.forEach(k=>{ if(out.includes(k)) out=out.split(k).join(translations[k]); });
+      return text.replace(raw,out);
+    };
+    document.querySelectorAll('input[placeholder],textarea[placeholder],input[aria-label],select[aria-label],button[aria-label],img[alt]').forEach(el=>{
+      ['placeholder','aria-label','alt'].forEach(attr=>{ if(el.hasAttribute(attr)){ if(!el.dataset['orig'+attr.replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]) el.dataset['orig'+attr.replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]=el.getAttribute(attr); const k='orig'+attr.replace(/-([a-z])/g,(_,c)=>c.toUpperCase()); el.setAttribute(attr,lang==='ar'?el.dataset[k]:translateExact(el.dataset[k])); }});
+    });
+    document.querySelectorAll('select option').forEach(el=>{
+      if(!el.dataset.originalOption) el.dataset.originalOption=el.textContent;
+      el.textContent=lang==='ar'?el.dataset.originalOption:translateExact(el.dataset.originalOption);
+    });
+    // Keep region and city labels consistent when options are populated dynamically.
+    document.querySelectorAll('select').forEach(el=>{ if(el.options && el.options.length){ const current=el.value; [...el.options].forEach(opt=>{ if(!opt.dataset.originalOption) opt.dataset.originalOption=opt.textContent; opt.textContent=lang==='ar'?opt.dataset.originalOption:translateExact(opt.dataset.originalOption); }); if([...el.options].some(o=>o.value===current)) el.value=current; }});
+    document.querySelectorAll('[data-type]').forEach(el=>{ if(!el.dataset.originalType) el.dataset.originalType=el.getAttribute('data-type'); if(lang==='en') el.setAttribute('aria-label',translateExact(el.dataset.originalType)); });
+    document.querySelectorAll('svg, .icon, i').forEach(el=>{el.style.transform='none'; el.style.direction='ltr';});
     document.querySelectorAll('[data-page-back] .back-label').forEach(el=>el.textContent = lang==='en'?'Back':'رجوع');
     document.querySelectorAll('[data-page-back] .back-arrow').forEach(el=>el.textContent = lang==='en'?'←':'→');
     document.querySelectorAll('[data-page-back]').forEach(el=>el.setAttribute('aria-label',lang==='en'?'Back':'رجوع'));

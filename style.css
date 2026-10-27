@@ -547,3 +547,6 @@ body.theme-dark .drawer-logout,body.theme-dark .logout-button{background:#dc2626
 #weatherRows td:nth-child(2){font-weight:700;color:#096dc2}
 @media(max-width:650px){.data-risk-summary{align-items:flex-start}.data-region-chip{white-space:normal}.data-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .claim-sim{border:1px solid #cfe5fb;background:linear-gradient(180deg,#fbfdff,#f2f8ff);border-radius:15px;padding:18px;margin:18px 0}.claim-sim .section-head{margin:0 0 10px}.claim-sim .section-head h2{margin:0}.claim-sim .details-grid{margin:12px 0}.sim-result{margin-top:16px;padding:18px;border:1px solid #bce9d0;border-radius:13px;background:#eafaf1}.sim-result small{color:#54836b;font-size:11px}.sim-result h2{color:#087b4c;margin:5px 0;font-size:18px}.sim-result strong{display:block;font-size:30px;color:#087b4c}.sim-result p{font-size:12px;color:#426e59;margin:8px 0 0}.sim-result.sim-no{background:#fff1f1;border-color:#f5c7c7}.sim-result.sim-no h2,.sim-result.sim-no strong{color:#b52c36}.sim-result.sim-no p{color:#874c52}.sim-result.sim-partial{background:#fff8e9;border-color:#f5dfaa}.sim-result.sim-partial h2,.sim-result.sim-partial strong{color:#9b6a10}.sim-result.sim-partial p{color:#806b42}
+
+/* Conditional claim flow: hide damage fields and submission when the trigger is not met. */
+[hidden] { display: none !important; }

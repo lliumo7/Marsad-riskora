@@ -42,7 +42,8 @@ $('#dataYearFilter')?.addEventListener('change',renderWeatherData);
 
 let selectedType='منزل',selectedPackage='المتوازنة',assetName='منزلي في الرياض',region='الرياض',city='الرياض',requestSent=false,accepted=false,paid=false;
 const regionCities={'الرياض':['الرياض','الخرج','الدرعية','الدوادمي','المجمعة','الزلفي','شقراء','وادي الدواسر'],'مكة المكرمة':['مكة المكرمة','جدة','الطائف','رابغ','القنفذة','الليث'],'المدينة المنورة':['المدينة المنورة','ينبع','العلا','مهد الذهب'],'القصيم':['بريدة','عنيزة','الرس','البكيرية','المذنب','البدائع'],'المنطقة الشرقية':['الدمام','الخبر','الظهران','الأحساء','الجبيل','القطيف','حفر الباطن'],'عسير':['أبها','خميس مشيط','بيشة','محايل عسير','النماص'],'تبوك':['تبوك','الوجه','ضباء','أملج','تيماء'],'حائل':['حائل','بقعاء','الغزالة'],'الحدود الشمالية':['عرعر','رفحاء','طريف','العويقيلة'],'جازان':['جازان','صبيا','أبو عريش','صامطة','بيش'],'نجران':['نجران','شرورة','حبونا'],'الباحة':['الباحة','بلجرشي','المندق'],'الجوف':['سكاكا','القريات','دومة الجندل','طبرجل']};
-function syncCityOptions(preferred){const sel=$('#city');const regionSel=$('#region');if(!sel||!regionSel)return;const selectedRegion=regionSel.value;const cities=regionCities[selectedRegion]||[selectedRegion];sel.replaceChildren(...cities.map(c=>{const option=document.createElement('option');option.value=c;option.textContent=c;return option;}));sel.value=(preferred&&cities.includes(preferred))?preferred:cities[0]||'';city=sel.value;}
+function syncCityOptions(preferred){const sel=$('#city');const regionSel=$('#region');if(!sel||!regionSel)return;const selectedRegion=regionSel.value;const cities=regionCities[selectedRegion]||[selectedRegion];const lang=document.documentElement.lang||'ar';sel.replaceChildren(...cities.map(c=>{const option=document.createElement('option');option.value=c;option.textContent=(lang==='en'?(riskoraLocationEnglish[c]||c):c);return option;}));sel.value=(preferred&&cities.includes(preferred))?preferred:cities[0]||'';city=sel.value;}
+const riskoraLocationEnglish={'الرياض':'Riyadh','مكة المكرمة':'Makkah','المدينة المنورة':'Madinah','القصيم':'Al Qassim','المنطقة الشرقية':'Eastern Province','عسير':'Asir','تبوك':'Tabuk','حائل':'Hail','الحدود الشمالية':'Northern Borders','جازان':'Jazan','نجران':'Najran','الباحة':'Al Bahah','الجوف':'Al Jouf','الخرج':'Al Kharj','الدرعية':'Diriyah','الدوادمي':'Ad Dawadmi','المجمعة':'Al Majmaah','الزلفي':'Az Zulfi','شقراء':'Shaqra','وادي الدواسر':'Wadi ad-Dawasir','جدة':'Jeddah','الطائف':'Taif','رابغ':'Rabigh','القنفذة':'Al Qunfudhah','الليث':'Al Lith','ينبع':'Yanbu','العلا':'AlUla','مهد الذهب':'Mahd adh-Dhahab','بريدة':'Buraidah','عنيزة':'Unaizah','الرس':'Ar Rass','البكيرية':'Al Bukayriyah','المذنب':'Al Mithnab','البدائع':'Al Badayea','الدمام':'Dammam','الخبر':'Al Khobar','الظهران':'Dhahran','الأحساء':'Al Ahsa','الجبيل':'Jubail','القطيف':'Qatif','حفر الباطن':'Hafar Al Batin','أبها':'Abha','خميس مشيط':'Khamis Mushait','بيشة':'Bisha','محايل عسير':'Muhayil Asir','النماص':'An Namas','الوجه':'Al Wajh','ضباء':'Duba','أملج':'Umluj','تيماء':'Tayma','بقعاء':'Baqaa','الغزالة':'Al Ghazalah','عرعر':'Arar','رفحاء':'Rafha','طريف':'Turaif','العويقيلة':'Al Uwayqilah','صبيا':'Sabya','أبو عريش':'Abu Arish','صامطة':'Samtah','بيش':'Baish','شرورة':'Sharurah','حبونا':'Hubuna','بلجرشي':'Baljurashi','المندق':'Al Mandaq','سكاكا':'Sakaka','القريات':'Al Qurayyat','دومة الجندل':'Dumat Al Jandal','طبرجل':'Tabarjal'};
 const WORKFLOW_KEY_PREFIX='riskora_workflow_user_v1:';
 function activeAccountName(){try{return (sessionStorage.getItem('riskora_demo_signed_in')==='1'?(sessionStorage.getItem('riskora_demo_name')||sessionStorage.getItem('riskora_user_name')||''):'').trim()}catch(e){return ''}}
 function accountWorkflowKey(name=activeAccountName()){return WORKFLOW_KEY_PREFIX+(name?name.toLocaleLowerCase('ar'):'signed-out')}
@@ -371,9 +372,12 @@ document.addEventListener('click',e=>{
  const themeBtn=e.target.closest('[data-theme]');
  if(themeBtn){
   document.body.classList.toggle('theme-dark',themeBtn.dataset.theme==='dark');
+  try{localStorage.setItem('riskora_theme',themeBtn.dataset.theme)}catch(e){}
   $$('[data-theme]').forEach(b=>b.classList.toggle('active',b===themeBtn));
  }
 });
+
+try{if(localStorage.getItem('riskora_theme')==='dark')document.body.classList.add('theme-dark')}catch(e){}
 
 // In-app help assistant. This is a local FAQ helper, not a live AI service.
 const helpAnswers=[
@@ -539,57 +543,9 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
     'الوضع الفاتح':'Light','داكن':'Dark','فاتح':'Light','اختر المنطقة':'Choose Region',
     'المنطقة':'Region','اسم الأصل':'Asset Name','العنوان أو وصف الموقع':'Address or Location Description',
     'صور الأصل الحالية':'Current Asset Photos','إرسال الملاحظة':'Send Feedback',
-    'مرحباً':'Welcome','منصة التأمين البارامتري':'Parametric Insurance Platform',
-    'حماية أوضح تبدأ من بياناتك':'Clearer Protection Starts with Your Data',
-    'سجّل الأصل أولاً، ثم اختر الخطر. بعد مراجعة الطلب وقبوله، ستظهر لك الباقات وعرض التغطية قبل الدفع التجريبي.':'Register your asset first, then choose a risk. After your request is reviewed and accepted, packages and a coverage offer will appear before demo payment.',
-    'ابدأ من هنا':'Get Started Here','رحلتك في 4 خطوات':'Your Journey in 4 Steps',
-    'إضافة أصل':'Add Asset','متابعة الطلبات':'Track Requests','متابعة المؤشرات':'Track Indicators',
-    'طلب تعويض':'Claim Compensation','طلب التعويض':'Compensation Request',
-    'الأصل المحدد':'Selected Asset','اختر الأخطار التي ترغب في تغطيتها':'Choose the risks you want covered',
-    'الأمطار الغزيرة والسيول':'Heavy Rain & Floods','موجات الحرارة':'Heat Waves',
-    'الرياح الشديدة':'Strong Winds','العواصف الرعدية':'Thunderstorms','العواصف الترابية':'Dust Storms',
-    'أخطار طبيعية أخرى':'Other Natural Hazards','ملاحظات إضافية (اختياري)':'Additional Notes (Optional)',
-    'أي تفاصيل تساعد في مراجعة الطلب':'Any details that may help review your request',
-    'قيمة المؤشر':'Indicator Value','حد التفعيل التوضيحي':'Illustrative Trigger Threshold',
-    'مصدر البيانات':'Data Source','نوع المؤشر':'Indicator Type','المنطقة المختارة':'Selected Region',
-    'آلية الاستحقاق':'Payout Method','حسب شروط الوثيقة':'According to policy terms',
-    'ملف Excel تجريبي':'Demo Excel File','عرض بيانات Excel التجريبية':'View Demo Excel Data',
-    'الوثيقة':'Policy Document','انتقل إلى طلب التعويض':'Go to Compensation Request',
-    'تفاصيل الوثيقة':'Policy Details','تفاصيل الباقة':'Package Details','التغطيات':'Coverage',
-    'الشروط والأحكام':'Terms & Conditions','المنافع والمسؤوليات':'Benefits & Responsibilities',
-    'ما الذي قد تشمله التغطية؟':'What may be covered?','تنبيه':'Notice',
-    'هذه بيانات محاكاة تعليمية وليست سجلات أرصاد رسمية، ولا تمثل قياسات فعلية خاصة بالمنطقة.':'These are educational simulation data, not official weather records or actual measurements for this region.',
-    'الأساسية':'Basic','المتوازنة':'Balanced','الأعمال':'Business',
-    'الرياض':'Riyadh','جدة':'Jeddah','مكة المكرمة':'Makkah','المدينة المنورة':'Madinah',
-    'الدمام':'Dammam','الخبر':'Al Khobar','الطائف':'Taif','تبوك':'Tabuk','أبها':'Abha',
-    'جازان':'Jazan','بريدة':'Buraydah','حائل':'Hail','الجوف':'Al Jouf','نجران':'Najran',
-    'القصيم':'Al Qassim','مبلغ التعويض':'Compensation Amount','حالة الوثيقة':'Policy Status',
-    'حالة الطلب':'Request Status','قيد المراجعة':'Under Review','مقبول':'Accepted','مرفوض':'Rejected',
-    'مسودة':'Draft','صادر':'Issued','مكتمل':'Completed','غير متاح':'Unavailable',
-    'تسجيل الخروج':'Sign Out','الأسئلة الشائعة':'Frequently Asked Questions',
-    'سياسة الخصوصية':'Privacy Policy','مكافأة التجديد':'Renewal Reward',
-    'المساعد الذكي':'AI Assistant','اسأل عن التأمين واستخدام المنصة':'Ask about insurance and using the platform',
-    'إجابات عن الطلبات والمؤشرات':'Answers about requests and indicators','قواعد استخدام النموذج':'Prototype usage rules',
-    'البيانات والمرفقات':'Data and attachments','التعرف على التطبيق ومميزاته':'Learn about the app and its features',
-    'ملاحظات ومقترحات لتطوير التطبيق':'Feedback and suggestions','خصم مقترح عند تجديد التغطية':'Suggested discount when renewing coverage',
-    'القائمة والخدمات':'Menu and Services','مرصد رسكورا · نموذج تجريبي':'Mirsad Riskora · Demo Prototype',
-    'أضف الأصل المراد تأمينه':'Add the asset you want to insure','أدخل بيانات الأصل الذي ترغب في حمايته':'Enter the details of the asset you want to protect',
-    'اختر المنطقة':'Select Region','المدينة':'City','نوع الأصل':'Asset Type','منزل':'House','متجر':'Shop',
-    'مزرعة':'Farm','منشأة صناعية':'Industrial Facility','مبنى تجاري':'Commercial Building','أخرى':'Other',
-    'العنوان أو وصف الموقع':'Address or location description','مثال: منزلي في الرياض':'Example: My home in Riyadh',
-    'المنطقة المختارة':'Selected Region','المدينة المختارة':'Selected City','الأصل المؤمن عليه':'Insured Asset',
-    'عرض السعر التأميني':'Insurance Quote','بيانات العرض والعميل':'Quote and Customer Details',
-    'رقم الطلب / العرض':'Request / Quote Number','اسم العميل':'Customer Name','وصف الموقع':'Location Description',
-    'مدة التغطية المقترحة':'Proposed Coverage Period','تفاصيل الأخطار المختارة والتغطية':'Selected Risks and Coverage Details',
-    'ما الذي قد تشمله التغطية؟':'What May Be Covered?','خسائر محددة مرتبطة بالحرارة إذا نصت الباقة عليها.':'Specified heat-related losses if included in the package.',
-    'الأضرار التي ينطبق عليها مؤشر الحرارة المتفق عليه.':'Damage meeting the agreed heat index.',
-    'الأصول أو الأنشطة المشمولة فقط ضمن حدود العرض.':'Only assets or activities included within the quote limits.',
-    'تنبيه:':'Notice:','متابعة ←':'Continue →','العودة لاختيار الخطر':'Back to Risk Selection',
-    'عرض السعر المبدئي':'Preliminary Quote','حالة الوثيقة':'Policy Status','صلاحية العرض':'Quote Validity',
-    'ينتهي في':'Expires on','الأصل في':'Asset in','ريال':'SAR','ملم':'mm','درجة مئوية':'°C',
-    'سجّل الأصل أولاً':'Register your asset first','ثم اختر الخطر':'Then choose a risk',
-    'الأساسية':'Basic','المتوازنة':'Balanced','الأعمال':'Business','بدون دفع في البداية':'No upfront payment',
-    'سجّل الأصل':'Register Asset','اختر الخطر':'Choose Risk','انتظر المراجعة':'Await Review','راجع العرض':'Review Offer'
+    'منزل':'House','متجر':'Shop','مزرعة':'Farm','منشأة صناعية':'Industrial Facility','مبنى تجاري':'Commercial Building','أخرى':'Other',
+    'مكة المكرمة':'Makkah','المدينة المنورة':'Madinah','القصيم':'Al Qassim','المنطقة الشرقية':'Eastern Province','عسير':'Asir','تبوك':'Tabuk','حائل':'Hail','الحدود الشمالية':'Northern Borders','جازان':'Jazan','نجران':'Najran','الباحة':'Al Bahah','الجوف':'Al Jouf','الرياض':'Riyadh',
+    'الخرج':'Al Kharj','الدرعية':'Diriyah','الدوادمي':'Ad Dawadmi','المجمعة':'Al Majmaah','الزلفي':'Az Zulfi','شقراء':'Shaqra','وادي الدواسر':'Wadi ad-Dawasir','جدة':'Jeddah','الطائف':'Taif','رابغ':'Rabigh','القنفذة':'Al Qunfudhah','الليث':'Al Lith','ينبع':'Yanbu','العلا':'AlUla','مهد الذهب':'Mahd adh-Dhahab','بريدة':'Buraidah','عنيزة':'Unaizah','الرس':'Ar Rass','البكيرية':'Al Bukayriyah','المذنب':'Al Mithnab','البدائع':'Al Badayea','الدمام':'Dammam','الخبر':'Al Khobar','الظهران':'Dhahran','الأحساء':'Al Ahsa','الجبيل':'Jubail','القطيف':'Qatif','حفر الباطن':'Hafar Al Batin','أبها':'Abha','خميس مشيط':'Khamis Mushait','بيشة':'Bisha','محايل عسير':'Muhayil Asir','النماص':'An Namas','الوجه':'Al Wajh','ضباء':'Duba','أملج':'Umluj','تيماء':'Tayma','بقعاء':'Baqaa','الغزالة':'Al Ghazalah','عرعر':'Arar','رفحاء':'Rafha','طريف':'Turaif','العويقيلة':'Al Uwayqilah','صبيا':'Sabya','أبو عريش':'Abu Arish','صامطة':'Samtah','بيش':'Baish','شرورة':'Sharurah','حبونا':'Hubuna','بلجرشي':'Baljurashi','المندق':'Al Mandaq','سكاكا':'Sakaka','القريات':'Al Qurayyat','دومة الجندل':'Dumat Al Jandal','طبرجل':'Tabarjal'
   };
   const originals = new WeakMap();
   function applyLanguage(lang){
@@ -599,49 +555,30 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let n;
     while((n=walker.nextNode())){
-      if(!n.nodeValue.trim() || n.parentElement.closest('script,style,input,textarea,.no-translate')) continue;
+      if(!n.nodeValue.trim() || n.parentElement.closest('script,style,select,option,input,textarea,.no-translate')) continue;
       if(!originals.has(n)) originals.set(n,n.nodeValue);
       const original = originals.get(n);
       if(lang === 'ar'){ n.nodeValue = original; continue; }
       let value = original;
       const trimmed = value.trim();
-      const keys = Object.keys(translations).sort((a,b)=>b.length-a.length);
-      for (const key of keys) {
-        if (value.includes(key)) value = value.split(key).join(translations[key]);
-      }
-      value = value.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+      const key = Object.keys(translations).sort((a,b)=>b.length-a.length).find(k=>trimmed===k);
+      if(key) value = value.replace(trimmed, translations[key]);
       n.nodeValue = value;
     }
-    const attrOriginals = window.__riskoraLanguageAttrOriginals || (window.__riskoraLanguageAttrOriginals = new WeakMap());
-    const attrKeys = ['placeholder','title','aria-label'];
-    document.querySelectorAll('input,textarea,button,[title],[aria-label]').forEach(el=>{
-      for (const attr of attrKeys) {
-        if (!el.hasAttribute(attr)) continue;
-        let saved = attrOriginals.get(el);
-        if (!saved) { saved = {}; attrOriginals.set(el,saved); }
-        if (!(attr in saved)) saved[attr] = el.getAttribute(attr);
-        const original = saved[attr];
-        let translated = original;
-        if (lang === 'en') {
-          for (const key of Object.keys(translations).sort((a,b)=>b.length-a.length)) {
-            if (translated.includes(key)) translated = translated.split(key).join(translations[key]);
-          }
-        }
-        translated = translated.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-        el.setAttribute(attr,translated);
-      }
+    // Translate native select options explicitly (the text walker intentionally skips them).
+    document.querySelectorAll('select option').forEach(option=>{
+      if(!originals.has(option)) originals.set(option,option.textContent);
+      const original=originals.get(option).trim();
+      option.textContent=lang==='en'?(translations[original]||riskoraLocationEnglish[original]||original):original;
     });
-    document.querySelectorAll('option').forEach(el=>{
-      if (!el.dataset.riskoraArText) el.dataset.riskoraArText = el.textContent;
-      let val = el.dataset.riskoraArText;
-      if (lang === 'en') {
-        for (const key of Object.keys(translations).sort((a,b)=>b.length-a.length)) {
-          if (val.includes(key)) val = val.split(key).join(translations[key]);
-        }
-      }
-      val = val.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-      el.textContent = val;
+    document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{
+      if(!originals.has(el)) originals.set(el,el.getAttribute('placeholder'));
+      const original=originals.get(el);
+      const map={'مثال: منزلي في الرياض':'Example: My home in Riyadh','الحي، الشارع، أو وصف يساعد في تحديد الموقع':'District, street, or location description','اكتب اسم المستخدم':'Enter username','اكتب كلمة المرور':'Enter password','أعد كتابة كلمة المرور':'Re-enter password'};
+      el.setAttribute('placeholder',lang==='en'?(map[original]||original):original);
     });
+    // Keep dependent city options in the currently selected language without changing their stored values.
+    if(typeof syncCityOptions==='function' && document.getElementById('region')) syncCityOptions(document.getElementById('city')?.value||'');
     document.querySelectorAll('[data-page-back] .back-label').forEach(el=>el.textContent = lang==='en'?'Back':'رجوع');
     document.querySelectorAll('[data-page-back] .back-arrow').forEach(el=>el.textContent = lang==='en'?'←':'→');
     document.querySelectorAll('[data-page-back]').forEach(el=>el.setAttribute('aria-label',lang==='en'?'Back':'رجوع'));
@@ -651,19 +588,6 @@ document.querySelectorAll('input[type="file"]').forEach((input,index)=>{
   if(languageSelect) languageSelect.addEventListener('change',()=>applyLanguage(languageSelect.value));
   let saved='ar'; try { saved=localStorage.getItem('riskora_language')||'ar'; } catch(e){}
   applyLanguage(saved);
-  // Re-apply the selected language to content rendered later (drawer, quote, policy, request views).
-  let languageRefreshQueued = false;
-  const languageObserver = new MutationObserver(records => {
-    if (!records.some(record => [...record.addedNodes].some(node => node.nodeType === Node.ELEMENT_NODE))) return;
-    if (languageRefreshQueued) return;
-    languageRefreshQueued = true;
-    queueMicrotask(() => {
-      languageRefreshQueued = false;
-      const currentLang = document.documentElement.lang === 'en' ? 'en' : 'ar';
-      applyLanguage(currentLang);
-    });
-  });
-  languageObserver.observe(document.body, { childList:true, subtree:true });
 
   function activePageId(){
     return document.querySelector('main .page.active')?.id || 'home';

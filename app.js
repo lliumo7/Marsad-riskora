@@ -112,14 +112,14 @@ function syncPaymentSuccess(){
  const pkg=req.package||selectedPackage||'المتوازنة';
  const descriptions={'الأساسية':'للاحتياجات الأساسية','المتوازنة':'للحماية المتوازنة للأصول','الأعمال':'للأصول والأنشطة التجارية'};
  const rewards={'الأساسية':2,'المتوازنة':3,'الأعمال':10};
- const icons={'الأساسية':'⌂','المتوازنة':'◇','الأعمال':'▦'};
+ const icons={'الأساسية':`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5.5 9v12h13V9M9.5 21v-7h5v7"/></svg>`, 'المتوازنة':`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></svg>`, 'الأعمال':`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5l8-2 8 2v16M2 21h20M8 8h2m4 0h2M8 12h2m4 0h2M10 21v-4h4v4"/></svg>`};
  const put=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value};
  put('successPackageName','باقة '+pkg);
  put('successPackageDescription',descriptions[pkg]||'للحماية حسب الباقة المختارة');
  put('successRewardTitle','مكافأة تجديد '+(pkg.startsWith('باقة ')?pkg:'باقة '+pkg));
  put('successRewardPercent',(rewards[pkg]||3)+'%');
  put('successRewardDescription','خصم مقترح عند تجديد وثيقتك القادمة');
- put('successPackageIcon',icons[pkg]||'◇');
+ const packageIcon=document.getElementById('successPackageIcon');if(packageIcon)packageIcon.innerHTML=icons[pkg]||icons['المتوازنة'];
 }
 document.getElementById('viewMyPolicy')?.addEventListener('click',()=>{syncPolicy();showPage('policy');});
 $('#payDemo').addEventListener('click',()=>{const req=currentReq();if(!req||req.status!=='signed'){toast('اقبلي العرض ووقّعيه أولًا قبل الدفع.');return}if(!$('#terms').checked){toast('يرجى تأكيد مراجعة الشروط أولًا.');return}paid=true;req.status='issued';req.package=selectedPackage;req.price=({'الأساسية':180,'المتوازنة':320,'الأعمال':590}[selectedPackage]||320);req.vat=Math.round(req.price*.15*100)/100;req.total=req.price+req.vat;req.policyId='POL-DEMO-'+req.id.slice(-6);req.issuedAt=new Date().toISOString();workflow.documents=workflow.documents.filter(d=>d.requestId!==req.id);workflow.documents.push({requestId:req.id,id:req.policyId,assetName:req.assetName,assetType:req.assetType,region:req.region,package:selectedPackage,price:req.price,total:req.total,risks:req.risks||[],city:req.city||'',address:req.address||'',assetPhotos:req.assetPhotos||[],status:'demo',issuedAt:req.issuedAt});saveWorkflow();toast('تم تأكيد الدفع التجريبي. لا توجد عملية مالية فعلية.');syncRequests();syncPaymentSuccess();showPage('payment-success');const title=$('#policyStatusTitle'),desc=$('#policyStatusDescription');if(title)title.textContent='تم إنشاء وثيقة تجريبية';if(desc)desc.textContent='هذه ليست وثيقة تأمين حقيقية ولا تمنح تغطية فعلية.';});

@@ -596,3 +596,13 @@ body.theme-dark .drawer-logout,body.theme-dark .logout-button{background:#dc2626
 .renewal-note{margin:12px 0;padding:10px 12px;border:1px solid #e4edf5;border-radius:10px;color:var(--muted);font-size:12px;text-align:center}
 .payment-success-document{width:100%;font-size:16px}
 @media(max-width:600px){.payment-success-wrap{padding:14px;margin:8px auto 20px}.payment-success-card{padding:12px}.payment-success-package{gap:9px}.payment-package-icon{width:50px;height:50px}.payment-success-package h3{font-size:17px}.payment-success-badge{font-size:11px;padding:7px 9px}.payment-success-hero>h1{font-size:24px}.payment-success-hero>h2{font-size:19px}}
+
+/* Professional icon consistency: SVG line icons only; no emoji/glyph substitutes. */
+.payment-package-icon svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
+.reward-icon{display:grid;place-items:center}
+.reward-icon svg{width:34px;height:34px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
+.payment-success-document{display:flex;align-items:center;justify-content:center;gap:10px}
+.success-document-icon{display:inline-flex;align-items:center}
+.success-document-icon svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
+.requests-tabs .tab-symbol{display:inline-flex;align-items:center;justify-content:center}
+.requests-tabs .tab-symbol svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
